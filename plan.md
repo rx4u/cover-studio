@@ -70,7 +70,7 @@ Lives in `site/` in this repo with its own package.json (Next.js); the CLI stays
 | R3 | Reference board, Raja picks 2 or 3 | screen.studio, godly.website, bun.sh |
 | R4 | Design DNA spec per pick, one build spec | done (claude/cover-studio-site-locked-decisions.md) |
 | 0 to 1 | Concept, colours, type, hero locked | concept "Plates" proposed |
-| Canvas | Concept shown on the Design canvas, approved before code | sent 21 Nov, awaiting approval |
-| Build | Next.js, only the hero animates, every cover shown is a real cover-studio output | |
+| Canvas | Concept shown on the Design canvas, approved before code | v1 reviewed; v2 direction given in chat (colours, motion, author, teaser, Schibsted Grotesk 900, Ostler phones) |
+| Build | Next.js, GSAP and Lenis (motion asked for by Raja), every cover shown is a real cover-studio output | done 21 Nov |
 | Q | 1440px side by side with the picks, every score 4 or more | |
 | Ship | Live Vercel link in the README; Registry row SHIPPED with repo and site links, Content Log, portfolio.json | |

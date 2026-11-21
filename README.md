@@ -1,5 +1,7 @@
 # cover-studio
 
+Site: https://cover-studio-cli.vercel.app
+
 Turn any live website into presentation-ready covers for Dribbble, Contra, X, portfolios, case studies and template listings. One config file, one command, every size.
 
 - Captures the real pages at 2x (desktop and mobile), plus components and a full-page capture, with scroll reveals played through first.
