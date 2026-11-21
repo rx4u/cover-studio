@@ -24,6 +24,7 @@ Open-source CLI that turns a live website into presentation-ready covers in prov
   - The first phone frame was a thick flat slab with the island over the site's nav, and the trio was small and sparse. The phone now has a thin bezel, metal edge, side buttons and a status bar band in the page's sampled top colour; trio phones are large and overlap.
   - Apple's official bezels look best, but their licence only covers mock-ups of Apple-only apps and bans embedding. Device frames come from react-mockframe (MIT).
   - Frames dropped straight onto a screenshot put the island over the nav. Every device screen has a status bar band and home indicator, and captures use the device's real viewport.
+  - One iPhone status bar copied onto every device was wrong. Each platform draws its own system UI: iOS, iPadOS (no signal bars, date), Android (Material icons), macOS (menu bar, no status bar).
   - Cropping phone screens from the tall capture opened on half-revealed text. Section screens are captured by scrolling the phone to each section.
   - An earlier 8-phase plan (18 patterns, film, presets UI) was too big. Do not grow V1 scope.
 - What must not change: no text or logo on the cover unless `branding.onCover` is true; every pixel of product comes from a real capture; nothing invented.
