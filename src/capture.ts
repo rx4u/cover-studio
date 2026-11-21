@@ -185,6 +185,21 @@ async function topPixelColor(page: Page): Promise<string> {
   }, buf.toString("base64"));
 }
 
+/** Opens a page. Heavy WebGL pages can miss the load event under software rendering: fall back to DOM ready, then skip. */
+async function open(page: Page, url: string): Promise<{ status(): number } | null> {
+  try {
+    return await page.goto(url, { waitUntil: "load", timeout: 90_000 });
+  } catch {
+    try {
+      console.warn(`  slow load, continuing from DOM ready: ${url}`);
+      return await page.goto(url, { waitUntil: "domcontentloaded", timeout: 90_000 });
+    } catch {
+      console.warn(`  skipped, did not load: ${url}`);
+      return null;
+    }
+  }
+}
+
 export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const dir = cacheDir(c);
   const manifestPath = join(dir, "manifest.json");
@@ -216,9 +231,9 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
     for (const [pi, path] of c.source.pages.entries()) {
       const url = new URL(path, c.source.url).href;
       console.log(`capture: ${url}`);
-      const res = await page.goto(url, { waitUntil: "load", timeout: 90_000 });
-      if (res && res.status() >= 400) {
-        console.warn(`  skipped: ${url} returned ${res.status()}`);
+      const res = await open(page, url);
+      if (!res || res.status() >= 400) {
+        if (res) console.warn(`  skipped: ${url} returned ${res.status()}`);
         continue;
       }
       await settle(page, c);
@@ -269,8 +284,8 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
           const tag = `w${vp.width}-${scheme}`;
           for (const [pi, path] of c.source.pages.entries()) {
             const url = new URL(path, c.source.url).href;
-            const res = await mp.goto(url, { waitUntil: "load", timeout: 90_000 });
-            if (res && res.status() >= 400) continue;
+            const res = await open(mp, url);
+            if (!res || res.status() >= 400) continue;
             await settle(mp, c);
             if (c.source.finishReveals) await finishReveals(mp);
             const file = join(dir, `m${pi}-${tag}-y0.png`);

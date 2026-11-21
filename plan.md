@@ -41,7 +41,7 @@ About 20 to 25 minutes of Claude time per pattern with gates, about 40 minutes f
 | Item | G1 | G2 | G3 | G4 | G5 |
 |---|---|---|---|---|---|
 | Grounds | done | done | done | done (all 6 score 4 on Aequor and Verda) | approved 21 Nov |
-| Device frames | done | done | done (react-mockframe, status bar, home bar, real viewports, mixed models, MacBook, iPad, dark scheme) | done on Aequor, Verda pending | |
+| Device frames | done | done | done (react-mockframe, status bar, home bar, real viewports, mixed models, MacBook, iPad, dark scheme) | done (all variants score 4 on Aequor and Verda) | sent 21 Nov |
 | full-bleed | | | | | |
 | lead-peek | | | | | |
 | photo-ground | | | | | |
