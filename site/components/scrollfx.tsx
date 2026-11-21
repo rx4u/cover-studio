@@ -6,7 +6,7 @@ import { gsap, ScrollTrigger, reduced } from "./motion";
 /**
  * Page-wide scroll motion, applied by data attributes and classes so sections stay plain markup:
  * - h2.split: headings break into words that rise out of a mask, staggered, as they enter.
- * - [data-clip]: blocks open from an inset rounded clip to full, scrubbed with the scroll.
+ * - [data-clip]: blocks open from an inset rounded clip to full, scrubbed with the scroll. "flat" ends with square corners.
  * - [data-drift]: elements move against the scroll by the given number of px.
  * - [data-count]: numbers count up from zero when they enter.
  * - .scroll-bar: a cobalt progress line under the header.
@@ -18,10 +18,10 @@ export function ScrollFx() {
 
     document.querySelectorAll<HTMLElement>("h2.split").forEach((h) => {
       if (!h.dataset.done) {
-        const words = (h.textContent ?? "").trim().split(/\s+/);
+        const words = (h.textContent ?? "").trim().split(/[ \n\t]+/); // a non-breaking space keeps two words in one unit
         h.setAttribute("aria-label", words.join(" "));
         h.innerHTML = words
-          .map((w) => `<span aria-hidden="true" style="display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:0.08em;margin-bottom:-0.08em"><span class="w" style="display:inline-block">${w}</span></span>`)
+          .map((w) => `<span aria-hidden="true" style="display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:0.14em;margin-bottom:-0.14em"><span class="w" style="display:inline-block">${w}</span></span>`)
           .join(" ");
         h.dataset.done = "1";
       }
@@ -38,8 +38,8 @@ export function ScrollFx() {
     gsap.utils.toArray<HTMLElement>("[data-clip]").forEach((el) => {
       gsap.fromTo(
         el,
-        { clipPath: "inset(10% 8% 10% 8% round 40px)", scale: 0.96 },
-        { clipPath: "inset(0% 0% 0% 0% round 28px)", scale: 1, ease: "none", scrollTrigger: { trigger: el, start: "top 95%", end: "top 35%", scrub: 0.6 } },
+        { clipPath: "inset(8% 6% 8% 6% round 40px)", scale: 0.97 },
+        { clipPath: `inset(0% 0% 0% 0% round ${el.dataset.clip === "flat" ? 0 : 28}px)`, scale: 1, ease: "none", scrollTrigger: { trigger: el, start: "top 100%", end: "top 55%", scrub: 0.6 } },
       );
     });
 

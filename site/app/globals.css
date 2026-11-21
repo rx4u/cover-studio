@@ -5,7 +5,7 @@
   --color-ink: #0e0f0f;
   --color-ink-2: #3b3d3c;
   --color-mute: #626463;
-  --color-line: #d9d8d2;
+  --color-line: #dfdfe3;
   --color-cobalt: #2f43f5;
   --color-lilac: #dcd5ff;
   --color-mint: #c8ead5;
@@ -14,48 +14,116 @@
   --font-display: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* One radius scale: media and large cards, tiles, inner pieces. Pills are fully round. */
+  --radius-card: 28px;
+  --radius-tile: 20px;
+  --radius-inner: 12px;
 }
 
 html {
   background: var(--color-paper);
   color: var(--color-ink);
+  scroll-padding-top: 72px;
 }
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 ::selection {
   background: var(--color-cobalt);
   color: #fff;
 }
-.display {
-  font-family: var(--font-display);
-  font-weight: 900;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-mute);
+h1,
+h2,
+h3 {
+  text-wrap: balance;
 }
-.wrap {
-  max-width: 1216px;
-  margin-inline: auto;
-  padding-inline: 32px;
+p,
+li,
+figcaption {
+  text-wrap: pretty;
 }
+
+/* Type and layout classes sit in the components layer so utilities can still override them. */
+@layer components {
+  .display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: -0.045em;
+    line-height: 0.94;
+  }
+  .h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(36px, 6vw, 64px);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+  }
+  .h3 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 28px;
+    letter-spacing: -0.035em;
+    line-height: 1.06;
+  }
+  .lead {
+    font-size: clamp(17px, 1.4vw, 19px);
+    line-height: 1.55;
+    max-width: 600px;
+    color: var(--color-ink-2);
+  }
+  .body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 1216px;
+    margin-inline: auto;
+    padding-inline: 32px;
+  }
+  .section {
+    padding-top: clamp(96px, 11vw, 160px);
+  }
+  .link {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-underline-offset: 4px;
+    transition: color 0.2s, text-decoration-color 0.2s;
+  }
+  .link:hover {
+    text-decoration-color: currentColor;
+  }
+}
+@media (max-width: 479px) {
+  .wrap {
+    padding-inline: 20px;
+  }
+}
+
 html.lenis,
 html.lenis body {
   height: auto;
 }
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
-}
-@media (prefers-reduced-motion: reduce) {
-  .no-motion-hide {
-    opacity: 1 !important;
-    transform: none !important;
-  }
 }

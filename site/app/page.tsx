@@ -14,9 +14,7 @@ export default function Page() {
       <Patterns />
       <Sizes />
       <Grounds />
-      <div className="mt-32 sm:mt-40">
-        <Phones />
-      </div>
+      <Phones />
       <OpenSource />
       <About />
       <Closing />

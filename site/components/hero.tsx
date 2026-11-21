@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP, reduced } from "./motion";
-import { Command, Logo, REPO } from "./ui";
+import { Command, CONTRA, GitHubMark, Logo, REPO } from "./ui";
 
 const COLS = [
   ["w01", "w05", "w09", "w03"],
@@ -12,7 +12,7 @@ const COLS = [
 ];
 
 const NAV = [
-  ["Why", "#why"],
+  ["Who it's for", "#why"],
   ["How it works", "#how"],
   ["Patterns", "#patterns"],
   ["Open source", "#open-source"],
@@ -35,7 +35,7 @@ function Header() {
       }`}
     >
       <div className="wrap flex h-[72px] items-center justify-between">
-        <a href="#top" aria-label="cover-studio home">
+        <a href="#top" aria-label="cover-studio home" className="rounded-md">
           <Logo light={!solid} />
         </a>
         <nav aria-label="Main" className="flex items-center gap-1 text-[14px] font-medium">
@@ -48,7 +48,7 @@ function Header() {
             href={REPO}
             className={`ml-2 inline-flex items-center gap-2 rounded-full px-4 py-2.5 transition-colors ${solid ? "bg-ink text-white hover:bg-cobalt" : "bg-white text-ink hover:bg-white/85"}`}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z" /></svg>
+            <GitHubMark />
             Star on GitHub
           </a>
         </nav>
@@ -85,38 +85,38 @@ export function Hero() {
           {COLS.map((col, i) => (
             <div key={i} className="h-col flex flex-col">
               {[...col, ...col, ...col, ...col].map((id, j) => (
-                <img key={j} src={`/covers/${id}.webp`} alt="" className="mb-5 block aspect-[4/3] w-full rounded-xl object-cover shadow-[0_30px_60px_-20px_rgba(4,8,60,0.55)]" />
+                <img key={j} src={`/covers/${id}.webp`} alt="" className="mb-5 block aspect-[4/3] w-full rounded-inner object-cover shadow-[0_30px_60px_-20px_rgba(4,8,60,0.55)]" />
               ))}
             </div>
           ))}
         </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#2f43f5_0%,rgba(47,67,245,0.7)_12%,rgba(47,67,245,0)_34%),linear-gradient(180deg,#2f43f5_0%,rgba(47,67,245,0)_16%)] max-lg:bg-[linear-gradient(180deg,#2f43f5_0%,rgba(47,67,245,0)_40%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#2f43f5_0%,#2f43f5_12%,rgba(47,67,245,0.8)_24%,rgba(47,67,245,0)_46%),linear-gradient(180deg,#2f43f5_0%,rgba(47,67,245,0)_16%)] max-lg:bg-[linear-gradient(180deg,#2f43f5_0%,rgba(47,67,245,0)_40%)]" />
       </div>
 
       <section id="top" className="wrap relative flex min-h-[100svh] flex-col justify-center pt-28 pb-24 max-lg:min-h-0 max-lg:pb-[560px]">
         <div className="max-w-[600px]">
-          <p className="eyebrow h-fade !text-white/70">Covers and mockups · Open source · Free</p>
-          <h1 className="display mt-7 whitespace-nowrap text-[clamp(54px,7.2vw,104px)]">
-            <span className="h-line block overflow-hidden pb-[0.06em]"><span className="block">Live site in.</span></span>
-            <span className="h-line block overflow-hidden pb-[0.06em]"><span className="block">Covers out.</span></span>
+          <p className="eyebrow h-fade text-white/85">Open-source CLI · Free · MIT</p>
+          <h1 className="display mt-6 whitespace-nowrap text-[clamp(52px,7.2vw,104px)]">
+            <span className="h-line block overflow-hidden pb-[0.08em]"><span className="block">Live site in.</span></span>
+            <span className="h-line -mt-[0.08em] block overflow-hidden pb-[0.08em]"><span className="block">Covers out.</span></span>
           </h1>
-          <p className="h-fade mt-8 max-w-[470px] text-[19px] leading-[1.55] text-white/85">
-            Presentation covers and device mockups for designers who post their work. Point it at your live design and get 18 tested
-            patterns at every size a channel needs. Nothing invented.
+          <p className="h-fade mt-7 max-w-[460px] text-[clamp(17px,1.4vw,19px)] leading-[1.55] text-white/90">
+            Presentation covers and device mockups for designers who post their work. Made from your live design, in 18 tested patterns, at every size.
           </p>
-          <div className="h-fade mt-10 max-w-[470px]">
-            <Command cmd="npm run cover -- render site.config.ts" />
+          <div className="h-fade mt-9 max-w-[460px]">
+            <Command cmd="npm run cover -- render cover.config.ts" />
           </div>
-          <div className="h-fade mt-5 flex flex-wrap gap-3">
-            <a href={REPO} className="rounded-full bg-white px-6 py-3.5 text-[16px] font-semibold text-ink hover:bg-white/85">
+          <div className="h-fade mt-4 flex flex-wrap gap-3">
+            <a href={REPO} className="inline-flex items-center gap-2.5 rounded-full bg-white px-6 py-3.5 text-[16px] font-semibold text-ink transition-colors hover:bg-white/85">
+              <GitHubMark size={18} />
               Get it on GitHub
             </a>
-            <a href="#patterns" className="rounded-full border border-white/40 px-6 py-3.5 text-[16px] font-semibold hover:border-white">
+            <a href="#patterns" className="rounded-full border border-white/45 px-6 py-3.5 text-[16px] font-semibold transition-colors hover:border-white hover:bg-white/10">
               See the patterns
             </a>
           </div>
-          <p className="h-fade mt-10 font-mono text-[12px] text-white/70">
-            Every cover here is made from a site designed by Raja. <a href="https://contra.com/siraguhq" className="underline underline-offset-4 hover:text-white">Hire on Contra</a>
+          <p className="h-fade mt-10 font-mono text-[12px] leading-[1.6] text-white/85">
+            Every cover on this page is Raja&apos;s own work. <a href={CONTRA} className="link text-white">Hire him on Contra</a>
           </p>
         </div>
       </section>
