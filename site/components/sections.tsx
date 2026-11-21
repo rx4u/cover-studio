@@ -358,7 +358,7 @@ export function About() {
       <div data-rise-group className="grid gap-10 rounded-[32px] bg-lilac p-8 sm:p-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <p className="eyebrow rise !text-ink-2">06 · About</p>
-          <h2 className="display rise mt-5 text-[44px] sm:text-[56px]">Made by Rajaraman Arumugam.</h2>
+          <h2 className="display rise mt-5 text-[44px] sm:text-[56px]">Made by Raja.</h2>
         </div>
         <div className="lg:col-span-6 lg:col-start-7">
           <p className="rise text-[20px] leading-[1.55]">

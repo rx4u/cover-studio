@@ -1,7 +1,7 @@
 node_modules/
 dist/
 .cover-cache/
-covers/
+/covers/
 *.log
 .DS_Store
 .refs/
