@@ -11,7 +11,8 @@
   },
   "scripts": {
     "cover": "tsx src/cover.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:corners": "tsx scripts/check-corners.mts"
   },
   "engines": {
     "node": ">=20"

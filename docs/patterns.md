@@ -35,6 +35,7 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 | Browser bar | With frame.style "browser", MacBook and iPad screens carry a window bar in the browser frame's proportions (bar 0.033W, dots 0.0092W, gap 0.0067W, inset 0.015W; a third larger on the iPad), grey inactive-window dots, no address text, light or dark by frame.theme. MacBook: below the menu bar. iPad: the status bar takes the bar colour |
 | Plain grounds | solid (#E4E4E2 light, #0E0F0F dark, or any stop) and tint (a flat, very light tint of the accent). No pattern layer by default |
 | Frameless | Screen only, radius 0.155 of its width, hairline rim |
+| Corners | Every system bar takes its left and right inset from the screen's corner radius (iPhone 63.5pt, Pixel 50pt, Galaxy 36pt, iPad 29pt, MacBook 18.7pt) so nothing meets the curve. `npm run check:corners` renders every device and fails if any text or icon crosses a rounded corner |
 | Fit | Phones stay whole on every size; page devices bleed as above |
 
 ## Global rules

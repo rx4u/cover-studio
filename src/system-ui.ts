@@ -9,6 +9,21 @@ const ANDROID_FONT = "'Google Sans','Google Sans Text',Roboto,Inter,system-ui,sa
 
 export type Os = "ios" | "ipados" | "android" | "macos";
 
+/**
+ * Horizontal inset that keeps content clear of a rounded screen corner of radius `r`, for content whose top edge sits
+ * `yTop` points below the top of the screen, plus a margin. Content never meets the curve.
+ */
+export function cornerInset(r: number, yTop: number, margin = 6): number {
+  if (yTop >= r) return margin;
+  return r - Math.sqrt(r * r - (r - yTop) ** 2) + margin;
+}
+
+/** Left and right padding for a bar `height` tall whose content is `content` tall, centred, given the corner radius. */
+function pads(r: number, height: number, content: number, base: [number, number], shift = 0): [number, number] {
+  const need = cornerInset(r, (height - content) / 2 + shift);
+  return [Math.max(base[0], need), Math.max(base[1], need)];
+}
+
 const iosSignal = (ink: string) =>
   `<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="${ink}"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="${ink}"/><rect x="10" y="3" width="3" height="9" rx="1" fill="${ink}"/><rect x="15" y="0" width="3" height="12" rx="1" fill="${ink}"/></svg>`;
 const appleWifi = (ink: string, w = 16) =>
@@ -29,25 +44,29 @@ const androidBattery = (ink: string) =>
   `<svg width="9" height="16" viewBox="0 0 9 16"><rect x="2.5" y="0" width="4" height="2" rx=".6" fill="${ink}"/><rect x="0" y="1.5" width="9" height="14.5" rx="1.8" fill="${ink}"/></svg>`;
 
 /** iPhone: time left of the island, signal, wifi and battery right of it. 62pt tall on Dynamic Island models. */
-export function iosStatus(width: number, height: number, ink: string): string {
-  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:4px 34px 0 42px;box-sizing:border-box;font:600 17px/1 ${APPLE_FONT};color:${ink}"><span>9:41</span><span style="display:flex;gap:6px;align-items:center">${iosSignal(ink)}${appleWifi(ink)}${appleBattery(ink)}</span></div>`;
+export function iosStatus(width: number, height: number, ink: string, r: number): string {
+  const [l, rt] = pads(r, height, 17, [42, 34], 2);
+  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:4px ${rt}px 0 ${l}px;box-sizing:border-box;font:600 17px/1 ${APPLE_FONT};color:${ink}"><span>9:41</span><span style="display:flex;gap:6px;align-items:center">${iosSignal(ink)}${appleWifi(ink)}${appleBattery(ink)}</span></div>`;
 }
 
 /** iPad (wifi model): time and date left, wifi and battery right. No cellular bars. 24pt tall. */
-export function ipadStatus(width: number, height: number, ink: string): string {
-  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;box-sizing:border-box;font:600 13px/1 ${APPLE_FONT};color:${ink}"><span>9:41<span style="font-weight:500;margin-left:7px">Sat 21 Nov</span></span><span style="display:flex;gap:6px;align-items:center">${appleWifi(ink, 15)}${appleBattery(ink, 25)}</span></div>`;
+export function ipadStatus(width: number, height: number, ink: string, r: number): string {
+  const [l, rt] = pads(r, height, 13, [22, 22]);
+  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:0 ${rt}px 0 ${l}px;box-sizing:border-box;font:600 13px/1 ${APPLE_FONT};color:${ink}"><span>9:41<span style="font-weight:500;margin-left:7px">Sat 21 Nov</span></span><span style="display:flex;gap:6px;align-items:center">${appleWifi(ink, 15)}${appleBattery(ink, 25)}</span></div>`;
 }
 
 /** Android (Pixel, Galaxy): time left, wifi, signal and battery right, Material shapes. */
-export function androidStatus(width: number, height: number, ink: string): string {
-  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:2px 22px 0 24px;box-sizing:border-box;font:500 14px/1 ${ANDROID_FONT};color:${ink}"><span>9:41</span><span style="display:flex;gap:5px;align-items:center">${androidWifi(ink)}${androidSignal(ink)}${androidBattery(ink)}</span></div>`;
+export function androidStatus(width: number, height: number, ink: string, r: number): string {
+  const [l, rt] = pads(r, height, 16, [24, 22], 1);
+  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:2px ${rt}px 0 ${l}px;box-sizing:border-box;font:500 14px/1 ${ANDROID_FONT};color:${ink}"><span>9:41</span><span style="display:flex;gap:5px;align-items:center">${androidWifi(ink)}${androidSignal(ink)}${androidBattery(ink)}</span></div>`;
 }
 
 /**
  * macOS menu bar on a notched MacBook Pro: 37pt tall. App name in bold and the app's menus on the left,
  * Control Centre, wifi, battery and the date and time on the right; nothing under the notch (centred, about 200pt wide).
  */
-export function macMenuBar(width: number, height: number, bg: string, ink: string): string {
+export function macMenuBar(width: number, height: number, bg: string, ink: string, r: number): string {
+  const [l, rt] = pads(r, height, 13, [22, 18]);
   const menus = ["File", "Edit", "View", "History", "Bookmarks", "Window", "Help"].map((m) => `<span>${m}</span>`).join("");
-  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;background:${bg};display:flex;align-items:center;justify-content:space-between;padding:0 18px 0 22px;box-sizing:border-box;font:500 13px/1 ${APPLE_FONT};color:${ink};z-index:3"><span style="display:flex;gap:20px;align-items:center;max-width:${width / 2 - 120}px;overflow:hidden;white-space:nowrap"><b style="font-weight:700">Safari</b>${menus}</span><span style="display:flex;gap:16px;align-items:center;white-space:nowrap">${macControl(ink)}${appleWifi(ink, 15)}${appleBattery(ink, 24)}<span>Sat 21 Nov&nbsp;&nbsp;9:41</span></span></div>`;
+  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;background:${bg};display:flex;align-items:center;justify-content:space-between;padding:0 ${rt}px 0 ${l}px;box-sizing:border-box;font:500 13px/1 ${APPLE_FONT};color:${ink};z-index:3"><span style="display:flex;gap:20px;align-items:center;max-width:${width / 2 - 120}px;overflow:hidden;white-space:nowrap"><b style="font-weight:700">Safari</b>${menus}</span><span style="display:flex;gap:16px;align-items:center;white-space:nowrap">${macControl(ink)}${appleWifi(ink, 15)}${appleBattery(ink, 24)}<span>Sat 21 Nov&nbsp;&nbsp;9:41</span></span></div>`;
 }

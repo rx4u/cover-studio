@@ -22,17 +22,19 @@ type Spec = {
   status: number;
   /** Home indicator: width and height in points, or none. */
   home: [number, number] | null;
+  /** Screen corner radius in points, measured from the frame CSS; system UI keeps clear of it. */
+  radius: number;
   /** Colour tone of each finish, for shadows and the auto pick. */
   tones: Record<string, "light" | "dark" | "tint">;
 };
 
 export const SPECS: Record<string, Spec> = {
-  "iphone-17": { os: "ios", pt: 402, status: 62, home: [134, 5], tones: { black: "dark", white: "light", "mist-blue": "tint", sage: "tint", lavender: "tint", "deep-blue": "dark" } },
-  "iphone-18-pro": { os: "ios", pt: 402, status: 62, home: [134, 5], tones: { silver: "light", glacier: "tint", black: "dark", burgundy: "dark" } },
-  "pixel-10": { os: "android", pt: 412, status: 40, home: [108, 4], tones: { obsidian: "dark", frost: "light", indigo: "tint" } },
-  "galaxy-s25": { os: "android", pt: 360, status: 36, home: [100, 4], tones: { "icy-blue": "tint", "silver-shadow": "light", navy: "dark", mint: "tint", "blue-black": "dark" } },
-  "ipad-pro": { os: "ipados", pt: 1032, status: 24, home: [320, 5], tones: { "space-black": "dark", silver: "light" } },
-  "macbook-pro": { os: "macos", pt: 1512, status: 37, home: null, tones: { "space-black": "dark", silver: "light" } },
+  "iphone-17": { os: "ios", pt: 402, status: 62, home: [134, 5], radius: 63.5, tones: { black: "dark", white: "light", "mist-blue": "tint", sage: "tint", lavender: "tint", "deep-blue": "dark" } },
+  "iphone-18-pro": { os: "ios", pt: 402, status: 62, home: [134, 5], radius: 63.6, tones: { silver: "light", glacier: "tint", black: "dark", burgundy: "dark" } },
+  "pixel-10": { os: "android", pt: 412, status: 40, home: [108, 4], radius: 50, tones: { obsidian: "dark", frost: "light", indigo: "tint" } },
+  "galaxy-s25": { os: "android", pt: 360, status: 36, home: [100, 4], radius: 36, tones: { "icy-blue": "tint", "silver-shadow": "light", navy: "dark", mint: "tint", "blue-black": "dark" } },
+  "ipad-pro": { os: "ipados", pt: 1032, status: 24, home: [320, 5], radius: 29, tones: { "space-black": "dark", silver: "light" } },
+  "macbook-pro": { os: "macos", pt: 1512, status: 37, home: null, radius: 18.7, tones: { "space-black": "dark", silver: "light" } },
 };
 
 export const PHONES = ["iphone-17", "iphone-18-pro", "pixel-10", "galaxy-s25"] as const;
@@ -144,9 +146,9 @@ function screen(model: string, img: string, pageTop: string, statusBar: boolean,
   const band = hasBar && tablet ? c.bg : pageTop;
   const ink = lum(band) > 150 ? "#000" : "#fff";
   let system = "";
-  if (laptop) system = scaled(macMenuBar(s.pt, s.status, c.menu, c.ink), s.status);
+  if (laptop) system = scaled(macMenuBar(s.pt, s.status, c.menu, c.ink, s.radius), s.status);
   else if (statusBar) {
-    const html = s.os === "ios" ? iosStatus(s.pt, s.status, ink) : s.os === "android" ? androidStatus(s.pt, s.status, ink) : ipadStatus(s.pt, s.status, ink);
+    const html = s.os === "ios" ? iosStatus(s.pt, s.status, ink, s.radius) : s.os === "android" ? androidStatus(s.pt, s.status, ink, s.radius) : ipadStatus(s.pt, s.status, ink, s.radius);
     system = scaled(html, s.status);
   }
   const f = tablet ? 1.35 : 1;
