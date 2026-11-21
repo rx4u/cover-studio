@@ -1,86 +1,38 @@
-# cover-studio build plan
+# cover-studio V1 plan
 
-8 phases, about 9 hours of build in Claude Code. One fresh session per phase. Each phase ends with its TEST; do not start the next phase until it passes. Update "Current Status" in CLAUDE.md after each phase. Session prompts are in `prompts/`.
+One Claude Code session, about 45 to 60 minutes. Paste `prompts/build.md`. Then run the proof on a real site.
 
 ## V1 scope
-1. Capture: desktop and mobile at 2x, full page, element crops, reveals finished, paused clock.
-2. Config file and presets, validated.
-3. Look controls: ground, pattern, frame, phone.
-4. 8 patterns: full-bleed, lead-peek, photo-ground, strips, macro, page-phone, phone-trio, bento.
-5. Branding per render, off by default.
-6. Export: 1600x1200, 1600x900, 1200x630, contact sheet, checks.
-7. Motion loop and full film.
+1. Capture: desktop 1440x900 at 2x, two scroll positions or pages, hero photo, reveals finished.
+2. Config: `cover.config.ts` with Zod validation and two presets (`neutral-light`, `neutral-dark`).
+3. Look: ground (solid, linear, radial, image, photo), pattern (none, grid, dots, lines, rings, svg) with colour, opacity, scale and fade, browser frame, branding slots.
+4. Patterns: full-bleed, lead-peek, photo-ground.
+5. Export: 1600x1200, 1600x900, 1200x630 per pattern.
 
-## V2 parking lot
-- Local preview UI with live controls (needs a stable config first).
-- The 10 remaining patterns in docs/patterns.md.
-- Case study and proposal set recipes.
-- npm publish (`npx cover-studio`) once the API settles.
-- Agent-skill wrapper.
+## Later (not V1)
+Mobile captures and phone patterns, strips, macro, bento, the rest of docs/patterns.md, film, contact sheet, checks command, preview UI, npm publish.
 
-## Phases
+## Steps
+### 1. Foundation (10 min)
+- [ ] package.json (type module), tsconfig, .gitignore
+- [ ] `src/config.ts`: Zod schema from docs/config.md, defaults, `extends` preset merge
+- [ ] `presets/neutral-light.json`, `presets/neutral-dark.json`, `examples/example.config.ts`
+TEST: loading the example prints the resolved config; a bad `ground.type` prints the path and allowed values.
 
-### A. Setup, config, presets (45 min)
-- [ ] package.json (type module), tsconfig strict, tsx, vitest, .gitignore (.cover-cache, covers, node_modules, dist)
-- [ ] `src/config/schema.ts`: Zod schema for every field in docs/config.md, with defaults
-- [ ] `src/config/load.ts`: load `.ts` config via tsx, merge `extends` preset, validate
-- [ ] `presets/neutral-light.json`, `presets/neutral-dark.json`
-- [ ] `src/cli.ts`: Commander with `init`, `validate`
-- [ ] `examples/minimal.config.ts`, `examples/aequor.config.ts`
-TEST: validate passes on both examples; `ground.type: "foo"` prints `ground.type` and the allowed values; `init` output validates.
+### 2. Capture (15 min)
+- [ ] `capture` command: launch Chromium (CHROME_PATH or bundled), deviceScaleFactor 2, install and pause clock, scroll through once to finish reveals, capture each page at each scroll position, extract the hero photo from `source.photo`
+- [ ] cache with `manifest.json`, `--fresh`
+TEST: capture on a real URL writes the expected files at 2880x1800; second run is a cache hit.
 
-### B. Capture (60 min)
-- [ ] `src/capture/browser.ts`: launch Chromium (CHROME_PATH or bundled), deviceScaleFactor 2
-- [ ] `src/capture/clock.ts`: install clock, pauseAt, advance helper
-- [ ] `src/capture/capture.ts`: per page desktop 1440x900 and mobile 390x844, scroll positions, full page, element shots, hero photo
-- [ ] reveal finishing: wait for `waitFor`, scroll through the page once, return to target, settle
-- [ ] cache with `manifest.json`; `--fresh`
-TEST: capture on Aequor writes all expected files at 2x; second run is a cache hit under 2 s.
+### 3. Look and patterns (20 min)
+- [ ] `src/look.ts`: ground, pattern with fade mask, browser frame, branding slots
+- [ ] `src/patterns/full-bleed.ts`, `lead-peek.ts`, `photo-ground.ts` per docs/patterns.md
+- [ ] `render` command: each pattern at the 3 sizes into `covers/<name>/`, named `<name>-<pattern>-<w>x<h>.png`
+TEST: 9 PNGs render; covers have no text; branding appears only when enabled; the 1600x900 versions are recomposed, not cropped.
 
-### C. Look engine (60 min)
-- [ ] `src/look/ground.ts`: solid, linear, radial, mesh, image, photo
-- [ ] `src/look/pattern.ts`: grid, dots, lines, rings, contours, svg; colour, opacity, scale, angle, fade mask
-- [ ] `src/look/frame.ts`: browser chrome (dots only), none; radius, shadow, theme
-- [ ] `src/look/phone.ts`: plain bezel
-- [ ] `src/look/branding.ts`: left and right logo slots, `onCover`
-- [ ] `src/render/render.ts`: HTML to PNG at (w, h)
-- [ ] `swatch` command
-TEST: swatch renders a 4x3 sheet; no noise anywhere; pattern opacity is zero inside frame areas; branding absent by default.
+### 4. README (10 min)
+- [ ] Install, 3-command quick start, config example, pattern list, MIT
+TEST: a fresh clone follows the README and renders.
 
-### D. Patterns 1 (75 min)
-- [ ] `src/patterns/types.ts`, `index.ts` registry
-- [ ] full-bleed, lead-peek, photo-ground, strips (specs in docs/patterns.md)
-- [ ] unit tests for strips coverage math and layout proportions
-TEST: 4 patterns render for Aequor at 1600x1200 and 1600x900; strips tests pass.
-
-### E. Patterns 2 (90 min)
-- [ ] macro, page-phone, phone-trio, bento
-- [ ] bento content guard: stat, colours and type names only from config
-TEST: all 8 render at 3 sizes; bento without `bento.stat` skips the stat tile with a warning.
-
-### F. Export and checks (45 min)
-- [ ] `render --set`, naming, rounds and final
-- [ ] contact sheet
-- [ ] `check`: 400x300 thumbnail, 16:9 safe area report, cover text guard
-TEST: set renders 12 files plus a contact sheet; check flags an off-centre focus.
-
-### G. Motion loop and film (90 min)
-- [ ] frame renderer on paused clock, eased scroll keyframes with holds
-- [ ] compose frames into the pattern's frame and ground
-- [ ] ffmpeg-static: H.264, CRF 18, preset veryfast, yuv420p, faststart
-- [ ] loop (about 7 s) and full (about 32 s), optional end card
-TEST: loop opens on a lit frame; holds show near-zero frame difference; performance.now moves 33 ms per frame.
-
-### H. Docs and proof run (60 min)
-- [ ] README, docs/getting-started.md
-- [ ] Proof run on Aequor; contact sheet to `docs/gallery/`
-- [ ] GitHub Actions: typecheck and test
-TEST: fresh clone runs end to end from README steps; CI green.
-
-## Pre-release checklist
-- [ ] All 8 patterns at 3 sizes for one real site
-- [ ] No text on covers unless allowed
-- [ ] No noise or grain options exist
-- [ ] No amber, gold or warm yellow-orange defaults
-- [ ] No em dashes in docs, comments or output
-- [ ] README gallery uses real outputs only
+## Proof run
+Run on a real site, look at the 9 images, and note fixes in CLAUDE.md "What was tried and failed".
