@@ -76,7 +76,7 @@ export default {
   layout: {
     columns: 3,                        // strips and strips-brand: 2 to 4
     bleed: "right",                    // macro: right | bottom
-    tilt: 18                           // tilt: degrees, 0 to 35
+    tilt: 7                            // tilt: degrees the mosaic turns, 0 to 35
   },
 
   bento: {

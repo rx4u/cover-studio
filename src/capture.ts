@@ -589,8 +589,9 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
       const res = await page.goto(c.source.before, { waitUntil: "load", timeout: 90_000 });
       if (res && res.status() < 400) {
         await settle(page, c);
+        // Stitched like the new design's tall capture, so both sides can be shown at the same height.
         before = join(dir, "before.png");
-        await page.screenshot({ path: before, type: "png", timeout: 120_000 });
+        await stitchPage(page, before, join(dir, "before-full.png"), TALL_HEIGHT, TALL_HEIGHT);
       } else console.warn(`  before: ${c.source.before} did not load`);
     }
   } finally {

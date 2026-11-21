@@ -68,3 +68,64 @@ export function componentSize(file: string, maxW: number, maxH: number, maxScale
   const s = Math.min(maxW / cssW, maxH / cssH, maxScale);
   return { w: cssW * s, h: cssH * s };
 }
+
+/**
+ * A staggered page mosaic (EKON, KORDA): three rows of crops, the hero first screen in the middle at 0.52W (16:10),
+ * the other tiles distinct sections of the stitched page, each opened just above a section start, then the site's own
+ * photographs when sections run out. Nothing repeats. Rows bleed off every edge. `rotate` turns the whole mosaic in
+ * plane (degrees) with a mild perspective; it is scaled up to keep the corners covered.
+ */
+export function mosaic(ctx: Ctx, w: number, h: number, rotate = 0): string {
+  const { c, m } = ctx;
+  const gap = w * 0.016;
+  const heroW = w * 0.52;
+  const heroH = heroW / 1.6;
+  const midY = (h - heroH) / 2;
+  const topH = midY - gap + w * 0.06;
+  const botY = midY + heroH + gap;
+  const botH = h - botY + w * 0.06;
+  // [x0, x1] per tile in fractions of W, measured from EKON; the middle tile of the middle row is the hero.
+  const rows: { y: number; h: number; xs: [number, number][] }[] = [
+    { y: -w * 0.06, h: topH, xs: [[-0.25, 0.355], [0.371, 0.847], [0.863, 1.25]] },
+    { y: midY, h: heroH, xs: [[-0.1, 0.238], [0.254, 0.774], [0.79, 1.2]] },
+    { y: botY, h: botH, xs: [[-0.2, 0.09], [0.106, 0.597], [0.613, 1.2]] },
+  ];
+  const full = m.full?.[0]?.file;
+  const starts = m.sections?.[0] ?? [];
+  const picked: number[] = [];
+  for (const t of starts) {
+    if (t < 700) continue;
+    if (picked.length && t - picked[picked.length - 1] < 540) continue;
+    picked.push(t);
+  }
+  // The page's CSS height, from the PNG header (width is always 1440 CSS px), so no tile runs past the page end.
+  let pageH = Infinity;
+  if (full) {
+    const [fw, fh] = pngSize(full);
+    pageH = (fh / fw) * 1440;
+  }
+  const imgs = (m.images ?? []).slice(1);
+  let si = 0, ii = 0;
+  const r = 10 * (w / 1600);
+  let out = "";
+  for (const [ri, row] of rows.entries()) {
+    for (const [ci, [a, b]] of row.xs.entries()) {
+      const x = a * w, tw = (b - a) * w;
+      const box = `position:absolute;left:${Math.round(x)}px;top:${Math.round(row.y)}px;width:${Math.round(tw)}px;height:${Math.round(row.h)}px;border-radius:${r}px;overflow:hidden;background:#fff`;
+      if (ri === 1 && ci === 1) {
+        out += `<div style="${box};box-shadow:0 30px 60px -30px rgba(0,0,0,.35)"><img src="${url(m.talls[0].file)}" style="display:block;width:100%;height:100%;object-fit:cover;object-position:50% ${c.focus.y * 100}%"></div>`;
+        continue;
+      }
+      // Wide tiles show a section at page scale; for a section, the page is scaled so 1440 CSS px fill the tile.
+      if (full && si < picked.length) {
+        const pw = Math.max(tw, row.h * 1.6);
+        const t = Math.min(picked[si++], pageH - row.h * (1440 / pw) + 24);
+        out += `<div style="${box}"><img src="${url(full)}" style="display:block;width:${Math.round(pw)}px;transform:translate(${Math.round((tw - pw) / 2)}px,-${Math.round((t - 24) * (pw / 1440))}px)"></div>`;
+      } else if (ii < imgs.length) {
+        out += `<div style="${box}"><img src="${url(imgs[ii++])}" style="display:block;width:100%;height:100%;object-fit:cover"></div>`;
+      }
+    }
+  }
+  if (!rotate) return out;
+  return `<div style="position:absolute;inset:0;perspective:${Math.round(3200 * (w / 1600))}px"><div style="position:absolute;inset:0;transform:rotateX(8deg) rotateZ(${rotate}deg) scale(1.18);transform-origin:50% 50%">${out}</div></div>`;
+}

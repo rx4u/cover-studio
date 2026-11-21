@@ -100,7 +100,7 @@ export const schema = z
       .object({
         columns: z.number().int().min(2).max(4).default(3),
         bleed: z.enum(["right", "bottom"]).default("right"),
-        tilt: z.number().min(0).max(35).default(18),
+        tilt: z.number().min(0).max(35).default(7),
       })
       .strict()
       .default({}),

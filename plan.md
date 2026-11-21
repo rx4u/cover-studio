@@ -57,6 +57,6 @@ About 20 to 25 minutes of Claude time per pattern with gates, about 40 minutes f
 | floating | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | editorial | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | brand-split | done | done | done | done (4 on the gate sites) | sent 21 Nov |
-| overview-grid | | | | | |
-| before-after | | | | | |
-| tilt | | | | | |
+| overview-grid | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| before-after | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| tilt | done | done | done | done (4 on the gate sites) | sent 21 Nov |

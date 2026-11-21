@@ -143,9 +143,20 @@ The product beside its brand. Measured from Moyra's BartKolenda case study and O
 
 ## Further patterns
 - `strips-brand`: strips on the brand colour.
-- `overview-grid`: six screens in an even 3x2 grid, for case study openers.
-- `before-after`: current site and new design, same section.
-- `tilt`: one frame in 3D tilt (rotateY about 18deg, rotateX about 8deg).
+
+## overview-grid
+The whole site at a glance. Measured from the EKON Studio cover, gated 21 Nov 2026.
+- Three staggered rows that bleed off every edge. The middle tile of the middle row is the first screen, 0.52W wide at 16:10, centred.
+- Gaps 0.016W, radius 10. Tile edges per row (fractions of W): top -0.25, 0.355, 0.371, 0.847, 0.863, 1.25; middle -0.1, 0.238, 0.254, 0.774, 0.79, 1.2; bottom -0.2, 0.09, 0.106, 0.597, 0.613, 1.2.
+- Every other tile is a distinct section of the stitched page (starts at least 540 px apart), opened 24 px above the section start and clamped to the page end, then the site's own photographs. Nothing repeats.
+
+## tilt
+The overview-grid mosaic turned in plane. Measured from the KORDA Studio cover and Gleb Kuznetsov's laid-down screens, gated 21 Nov 2026.
+- Rotated `layout.tilt` degrees counter-clockwise (default 7), leaning back 8 degrees with perspective 3200, scaled 1.18 so no corner shows the ground.
+
+## before-after
+The current site and the new design, side by side, the same part of each.
+- `source.before` is stitched like the tall capture. Two matching frames, 0.445W each, a 0.03W gap, centred, from 0.08H and running off the bottom, both from the top of the page.
 
 ## Out of scope
 - Laptops, tablets, hands and photographed device scenes.
