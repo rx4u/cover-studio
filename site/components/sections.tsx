@@ -121,7 +121,7 @@ export function How() {
         const tl = gsap.timeline({
           scrollTrigger: { trigger: ".how-pin", start: "top top", end: "+=2200", pin: true, scrub: 0.8 },
         });
-        tl.to(".how-strip", { yPercent: -62, ease: "none", duration: 1 }, 0)
+        tl.to(".how-strip", { yPercent: -70, ease: "none", duration: 1 }, 0)
           .to(".how-step-0", { opacity: 0.28, duration: 0.15 }, 0.85)
           .to(".how-step-1", { opacity: 1, duration: 0.15 }, 0.85)
           .to(".how-v0", { opacity: 0, scale: 0.96, duration: 0.2 }, 0.9)
@@ -130,7 +130,7 @@ export function How() {
           .to(".how-step-1", { opacity: 0.28, duration: 0.15 }, 1.9)
           .to(".how-step-2", { opacity: 1, duration: 0.15 }, 1.9)
           .to(".how-v1", { opacity: 0, scale: 0.96, duration: 0.2 }, 1.95)
-          .from(".how-v2", { opacity: 0, scale: 1.08, duration: 0.35 }, 2.05)
+          .from(".how-v2 figure", { opacity: 0, y: 40, stagger: 0.08, duration: 0.3 }, 2.05)
           .to({}, { duration: 0.5 });
       });
     },
@@ -154,8 +154,8 @@ export function How() {
             ))}
           </ol>
           <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-night lg:col-span-7">
-            <div className="how-v0 absolute inset-0 flex justify-center overflow-hidden pt-8">
-              <img src="/covers/how-capture.webp" alt="The stitched full-page capture of a real site" className="how-strip w-[46%] self-start rounded-t-lg" />
+            <div className="how-v0 absolute inset-0 overflow-hidden">
+              <img src="/covers/how-capture.webp" alt="The stitched full-page capture of a real site" className="how-strip block w-full" />
             </div>
             <div className="how-v1 absolute inset-0 hidden flex-col justify-center gap-2 p-12 font-mono text-[15px] leading-[1.9] text-paper lg:flex">
               <p className="how-line"><span className="text-white/40">export default</span> {"{"}</p>
@@ -166,7 +166,22 @@ export function How() {
               <p className="how-line pl-6">export: {"{"} sizes: [<span className="text-mint">&quot;1600x1200&quot;</span>, <span className="text-mint">&quot;1200x630&quot;</span>] {"}"},</p>
               <p className="how-line">{"}"}</p>
             </div>
-            <img src="/covers/how-result.webp" alt="A bento cover rendered by cover-studio" className="how-v2 absolute inset-0 hidden h-full w-full object-cover lg:block" />
+            <div className="how-v2 absolute inset-0 hidden grid-cols-12 content-center gap-3 p-6 lg:grid">
+              <figure className="col-span-7 m-0 self-center">
+                <img src="/covers/how-r-4x3.webp" alt="Bento cover at 1600 by 1200" className="block w-full rounded-lg" />
+                <figcaption className="mt-2 font-mono text-[11px] text-white/60">1600 × 1200</figcaption>
+              </figure>
+              <div className="col-span-5 flex flex-col justify-center gap-3">
+                <figure className="m-0">
+                  <img src="/covers/how-r-16x9.webp" alt="Bento cover at 1600 by 900" className="block w-full rounded-lg" />
+                  <figcaption className="mt-2 font-mono text-[11px] text-white/60">1600 × 900</figcaption>
+                </figure>
+                <figure className="m-0">
+                  <img src="/covers/how-r-og.webp" alt="Bento cover at 1200 by 630" className="block w-full rounded-lg" />
+                  <figcaption className="mt-2 font-mono text-[11px] text-white/60">1200 × 630</figcaption>
+                </figure>
+              </div>
+            </div>
           </div>
         </div>
       </div>
