@@ -1,5 +1,6 @@
 import { Hero } from "@/components/hero";
 import { SmoothScroll } from "@/components/motion";
+import { ScrollFx } from "@/components/scrollfx";
 import { About, Closing, How, OpenSource, Patterns, Phones, Sizes, Why } from "@/components/sections";
 
 export default function Page() {
@@ -17,6 +18,7 @@ export default function Page() {
       <OpenSource />
       <About />
       <Closing />
+      <ScrollFx />
     </main>
   );
 }

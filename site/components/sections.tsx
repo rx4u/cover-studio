@@ -28,7 +28,7 @@ function Head({ eyebrow, title, line }: { eyebrow: string; title: string; line?:
   return (
     <div data-rise-group className="max-w-[820px]">
       <p className="eyebrow rise">{eyebrow}</p>
-      <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">{title}</h2>
+      <h2 className="display split mt-5 text-[48px] sm:text-[64px]">{title}</h2>
       {line && <p className="rise mt-6 max-w-[620px] text-[19px] leading-[1.55] text-ink-2">{line}</p>}
     </div>
   );
@@ -65,7 +65,7 @@ export function Why() {
       <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
         <div data-rise-group className="lg:col-span-5">
           <p className="eyebrow rise">01 · Why it exists</p>
-          <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Same site. Drag to see the difference.</h2>
+          <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Same site. Drag to see the difference.</h2>
         </div>
         <ul data-rise-group className="grid gap-3 sm:grid-cols-3 lg:col-span-7">
           {POINTS.map((p) => (
@@ -76,7 +76,7 @@ export function Why() {
           ))}
         </ul>
       </div>
-      <div className="cmp relative mt-12 aspect-[4/3] select-none overflow-hidden rounded-[28px] bg-night sm:aspect-[16/10]">
+      <div data-clip className="cmp relative mt-12 aspect-[4/3] select-none overflow-hidden rounded-[28px] bg-night sm:aspect-[16/10]">
         <img src="/covers/why-after.webp" alt="The same site as a bento cover made by cover-studio" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
           <img src="/covers/why-before.webp" alt="A raw screenshot of the site" className="absolute inset-0 h-full w-full object-cover object-top" />
@@ -154,7 +154,7 @@ export function How() {
               </li>
             ))}
           </ol>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-night lg:col-span-7">
+          <div data-clip className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-night lg:col-span-7">
             <div className="how-v0 absolute inset-0 overflow-hidden">
               <img src="/covers/how-capture.webp" alt="The stitched full-page capture of a real site" className="how-strip block w-full" />
             </div>
@@ -228,7 +228,7 @@ export function Patterns() {
         <div className="wrap flex flex-wrap items-end justify-between gap-6">
           <div data-rise-group>
             <p className="eyebrow rise">03 · Patterns</p>
-            <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Eight of eighteen.</h2>
+            <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Eight of eighteen.</h2>
             <p className="rise mt-4 text-[17px] text-ink-2">Each one made from a site designed by Raja.</p>
           </div>
           <a href={`${REPO}/blob/main/docs/patterns.md`} className="font-mono text-[14px] underline decoration-ink/30 underline-offset-4 hover:text-cobalt">
@@ -267,7 +267,7 @@ export function Sizes() {
   useGSAP(
     () => {
       if (reduced()) return;
-      gsap.from(".sz", { y: 100, opacity: 0, scale: 0.92, duration: 1.3, ease: "expo.out", stagger: 0.14, scrollTrigger: { trigger: ".sz-row", start: "top 80%" } });
+      gsap.from(".sz img", { opacity: 0, scale: 0.9, duration: 1.3, ease: "expo.out", stagger: 0.14, scrollTrigger: { trigger: ".sz-row", start: "top 80%" } });
     },
     { scope: root },
   );
@@ -275,14 +275,14 @@ export function Sizes() {
     <section ref={root} className="wrap pt-32 sm:pt-40">
       <div data-rise-group className="max-w-[820px]">
         <p className="eyebrow rise">04 · Every size</p>
-        <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Laid out again for each channel.</h2>
+        <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Laid out again for each channel.</h2>
         <p className="rise mt-6 max-w-[620px] text-[19px] leading-[1.55] text-ink-2">
           One render, three canvases. Each size is composed for its own shape, so nothing is squeezed or cut off. This one is Lune, a hotel site I designed.
         </p>
       </div>
       <div className="sz-row mt-14 grid gap-6 md:grid-cols-12 md:items-start">
         {SIZES.map((s, i) => (
-          <figure key={s.id} className={`sz m-0 min-w-0 ${i === 0 ? "md:col-span-7 md:row-span-2" : "md:col-span-5"}`}>
+          <figure key={s.id} data-drift={[20, 70, 120][i]} className={`sz m-0 min-w-0 ${i === 0 ? "md:col-span-7 md:row-span-2" : "md:col-span-5"}`}>
             <img src={`/covers/s-${s.id}.webp`} alt={`The same cover at ${s.l}`} className="block w-full rounded-[18px]" />
             <figcaption className="mt-3 font-mono text-[13px]">
               <span className="font-medium">{s.l}</span> <span className="text-mute">· {s.u}</span>
@@ -316,7 +316,7 @@ export function Phones() {
       <div className="wrap">
         <div data-rise-group className="max-w-[760px]">
           <p className="eyebrow rise !text-white/55">05 · Mobile, too</p>
-          <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Phones at their real size, with their real screens.</h2>
+          <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Phones at their real size, with their real screens.</h2>
           <p className="rise mt-6 max-w-[600px] text-[19px] leading-[1.55] text-white/70">
             Phone screens are captured at each device&apos;s true viewport, in light and dark. These are from Ostler, a fleet van rental app I designed.
           </p>
@@ -358,7 +358,7 @@ export function OpenSource() {
       <div data-rise-group className="grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <p className="eyebrow rise">06 · Open source</p>
-          <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Free, MIT, and yours to change.</h2>
+          <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Free, MIT, and yours to change.</h2>
           <a href={REPO} className="rise mt-10 block rounded-[22px] border border-line p-6 transition-colors hover:border-ink">
             <span className="flex items-center gap-3 font-mono text-[14px]">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z" /></svg>
@@ -376,7 +376,7 @@ export function OpenSource() {
           <ul className="grid grid-cols-2 gap-3">
             {BOX.map(([n, t], i) => (
               <li key={n + t} className={`rise rounded-[22px] p-6 ${["bg-lilac", "bg-mint", "bg-sky", "bg-ink/5"][i]}`}>
-                <span className="display block text-[56px]">{n}</span>
+                <span data-count={n} className="display block text-[56px]">{n}</span>
                 <span className="mt-2 block text-[15px] leading-[1.45] text-ink-2">{t}</span>
               </li>
             ))}
@@ -403,10 +403,10 @@ export function About() {
   useRise(root);
   return (
     <section id="about" ref={root} className="wrap pt-32 sm:pt-40">
-      <div data-rise-group className="grid gap-10 rounded-[32px] bg-lilac p-8 sm:p-14 lg:grid-cols-12">
+      <div data-rise-group data-clip className="grid gap-10 rounded-[32px] bg-lilac p-8 sm:p-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <p className="eyebrow rise !text-ink-2">07 · About</p>
-          <h2 className="display rise mt-5 text-[44px] sm:text-[56px]">Made by Raja.</h2>
+          <h2 className="display split mt-5 text-[44px] sm:text-[56px]">Made by Raja.</h2>
         </div>
         <div className="lg:col-span-6 lg:col-start-7">
           <p className="rise text-[20px] leading-[1.55]">
@@ -449,9 +449,9 @@ export function Closing() {
   const root = useRef<HTMLElement>(null);
   useRise(root);
   return (
-    <section ref={root} className="mt-32 bg-cobalt text-white sm:mt-40">
+    <section ref={root} data-clip className="mt-32 bg-cobalt text-white sm:mt-40">
       <div data-rise-group className="wrap grid gap-12 py-28 lg:grid-cols-12 lg:items-center">
-        <h2 className="display rise text-[52px] sm:text-[76px] lg:col-span-7">Make the next cover from the site itself.</h2>
+        <h2 className="display split text-[52px] sm:text-[76px] lg:col-span-7">Make the next cover from the site itself.</h2>
         <div className="flex flex-col gap-3 lg:col-span-5">
           {["git clone https://github.com/rx4u/cover-studio", "npm install", "npm run cover -- capture site.config.ts", "npm run cover -- render site.config.ts"].map((c) => (
             <div key={c} className="rise">
