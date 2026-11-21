@@ -1,4 +1,4 @@
-import { phone } from "../look.ts";
+import { phone, phoneFinish } from "../look.ts";
 import type { Ctx, Pattern } from "./types.ts";
 
 type Screen = { file: string; band: string };
@@ -36,7 +36,7 @@ export const phoneTrio: Pattern = {
     const x0 = Math.round((w - (pw * 3 + gap * 2)) / 2);
     // Nixtio: the raised trio leans together, about 6 degrees.
     const lean = raised ? "transform:rotate(-6deg);transform-origin:50% 50%;" : "";
-    const opts = (s: Screen) => ({ band: s.band, style: c.phone.style, statusBar: c.phone.statusBar, extra: lean });
+    const opts = (s: Screen) => ({ band: s.band, style: c.phone.style, statusBar: c.phone.statusBar, finish: phoneFinish(c), extra: lean });
     return (
       phone(w, a.file, { x: x0, y: top2 + lift, w: pw }, opts(a)) +
       phone(w, d.file, { x: x0 + (pw + gap) * 2, y: top2 + lift, w: pw }, opts(d)) +

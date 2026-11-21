@@ -163,7 +163,39 @@ export function branding(c: Config, w: number, h: number, isCover: boolean): { h
   return { html: side(b.left, "left") + side(b.right, "right"), top: Math.round(y + tallest + h * 0.04) };
 }
 
+export type Finish = "graphite" | "silver" | "white";
+
+const FINISH: Record<Finish, string> = {
+  // Black glass, graphite edge.
+  graphite: "background:#0b0b0c;border-color:#1c1c1e;box-shadow:inset 0 0 4px 2px #9a9a9f,inset 0 0 0 6px #2c2c2e",
+  // Black glass, bright silver edge (devices.css silver, neutral).
+  silver: "background:#0b0b0c;border-color:#b9bbbd;box-shadow:inset 0 0 4px 2px #fff,inset 0 0 0 6px #dfe0e2",
+  // White glass, light edge.
+  white: "background:#f4f4f6;border-color:#cfcfd4;box-shadow:inset 0 0 4px 2px #fff,inset 0 0 0 6px #e4e4e8",
+};
+
+function luminance(hexColor: string): number {
+  const n = parseInt(hexColor.replace("#", "").slice(0, 6), 16);
+  return 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+}
+
+/**
+ * The phone finish for this render. "auto" follows the ground so black frames are not used everywhere:
+ * dark grounds take graphite, photo, brand and silk grounds take silver, light grounds take white.
+ */
+export function phoneFinish(c: Config): Finish {
+  const f = c.phone.finish;
+  if (f !== "auto") return f;
+  const t = c.ground.type;
+  if (t === "dark") return "graphite";
+  if (t === "photo" || t === "brand-gradient" || t === "silk" || t === "image") return "silver";
+  if (t === "mesh" || t === "photo-clear") return "white";
+  const avg = c.ground.stops.reduce((a, s) => a + luminance(s), 0) / c.ground.stops.length;
+  return avg < 90 ? "graphite" : "white";
+}
+
 export type PhoneOpts = {
+  finish?: Finish;
   /** Crop start in CSS px of the 390-wide capture. */
   offset?: number;
   /** Status bar band colour (the page's own top colour). */
@@ -212,7 +244,7 @@ export function phone(canvasW: number, img: string, box: { x: number; y: number;
     return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;height:${Math.round(844 * s)}px;filter:${shadow};${o.extra ?? ""}"><div style="transform:scale(${s});transform-origin:0 0;width:390px;height:844px;border-radius:62px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.08),inset 0 0 0 1.5px rgba(255,255,255,.55)">${screen(390, 844, 62).replace('class="device-screen" ', "")}</div></div>`;
   }
   const s = box.w / 428;
-  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;height:${Math.round(868 * s)}px;filter:${shadow};${o.extra ?? ""}"><div style="transform:scale(${s});transform-origin:0 0;width:428px;height:868px"><div class="device device-iphone-14-pro"><div class="device-frame" style="background:#0b0b0c;border-color:#1c1c1e;box-shadow:inset 0 0 4px 2px #9a9a9f,inset 0 0 0 6px #2c2c2e">${screen(390, 830, 49)}</div><div class="device-stripe"></div><div class="device-header"></div><div class="device-sensors"></div><div class="device-btns"></div><div class="device-power"></div><div class="device-home"></div></div></div></div>`;
+  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;height:${Math.round(868 * s)}px;filter:${shadow};${o.extra ?? ""}"><div style="transform:scale(${s});transform-origin:0 0;width:428px;height:868px"><div class="device device-iphone-14-pro cs-${o.finish ?? "graphite"}"><div class="device-frame" style="${FINISH[o.finish ?? "graphite"]}">${screen(390, 830, 49)}</div><div class="device-stripe"></div><div class="device-header"></div><div class="device-sensors"></div><div class="device-btns"></div><div class="device-power"></div><div class="device-home"></div></div></div></div>`;
 }
 
 /** A borderless rounded image tile with a soft shadow, cover-fit inside its box. */

@@ -54,6 +54,7 @@ export default {
 
   phone: {
     style: "bezel",                    // bezel (iPhone 14 Pro, devices.css) | frameless
+    finish: "auto",                    // auto (follows the ground) | graphite | silver | white
     statusBar: true,                   // 9:41 status bar in the page's own top colour
     trio: "raised"                     // raised (middle phone up, leaning) | level
   },

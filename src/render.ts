@@ -28,6 +28,11 @@ function page(c: Config, m: Manifest, patternId: string, w: number, h: number, i
   const brand = branding(c, w, h, isCover);
   const inner = p.render({ c, m, top: brand.top }, w, h);
   return `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${url(DEVICES_CSS)}"><style>
+.cs-graphite .device-btns,.cs-graphite .device-btns::before,.cs-graphite .device-btns::after,.cs-graphite .device-power{background:#2c2c2e}
+.cs-silver .device-btns,.cs-silver .device-btns::before,.cs-silver .device-btns::after,.cs-silver .device-power{background:#b9bbbd}
+.cs-white .device-btns,.cs-white .device-btns::before,.cs-white .device-btns::after,.cs-white .device-power{background:#cfcfd4}
+.cs-white .device-stripe::after,.cs-white .device-stripe::before{border-color:rgba(0,0,0,.08)}
+
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:${w}px;height:${h}px;overflow:hidden}
 body{position:relative}

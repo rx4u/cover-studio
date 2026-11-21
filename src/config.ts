@@ -73,6 +73,7 @@ export const schema = z
     phone: z
       .object({
         style: z.enum(["bezel", "frameless"]).default("bezel"),
+        finish: z.enum(["auto", "graphite", "silver", "white"]).default("auto"),
         statusBar: z.boolean().default(true),
         trio: z.enum(["level", "raised"]).default("raised"),
       })

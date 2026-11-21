@@ -22,7 +22,8 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 
 | Setting | Measure |
 |---|---|
-| Bezel | devices.css iPhone 14 Pro frame, neutral graphite (#0B0B0C body, #2C2C2E inner ring), thin, side buttons |
+| Bezel | devices.css iPhone 14 Pro frame, thin, side buttons |
+| Finish | graphite (black glass, dark edge), silver (black glass, bright edge), white (white glass, light edge). Auto: dark ground graphite; photo, brand gradient, silk and image silver; mesh, clear photo and light grounds white |
 | Frameless | Rounded screen, radius 0.16 of width, hairline light rim, no hardware (Nixtio) |
 | Status bar | 9:41, signal, wifi, battery, 47px band in the page's sampled top colour; ink black or white by luminance |
 | Shadow | Contact 3/5px at .18 plus ambient 40/60px at .22 (bezel) or .30 (frameless), scaled to canvas |
