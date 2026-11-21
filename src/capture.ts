@@ -27,7 +27,9 @@ export type Manifest = {
   talls: Tall[];
   /** Full-page captures (capped at FULL_HEIGHT) for strips. */
   full: Tall[];
-  /** Mobile viewport shots (390 wide) and tall mobile captures. */
+  /** For each desktop page: section start offsets in CSS px, so crops can open on a section, never mid-sentence. */
+  sections?: number[][];
+  /** Mobile viewport shots and tall mobile captures. */
   mobile: Shot[];
   mobileTalls: Tall[];
   /** For each mobile tall capture: section start offsets in CSS px, so phone crops never open mid-sentence. */
@@ -206,7 +208,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const key = cacheKey(c);
   if (!fresh && existsSync(manifestPath)) {
     const m = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest;
-    if (m.key === key && m.full && "photoAlt" in m && m.mobileSections && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
+    if (m.key === key && m.full && "photoAlt" in m && m.sections && m.mobileSections && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
       console.log(`capture: using cache (${m.shots.length} shots). Pass --fresh to recapture.`);
       return m;
     }
@@ -223,6 +225,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const mobile: Shot[] = [];
   const mobileTalls: Tall[] = [];
   const mobileSections: number[][] = [];
+  const sections: number[][] = [];
   const elements: string[] = [];
   let before: string | null = null;
   let photoAlt: string | null = null;
@@ -249,6 +252,14 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
         shots.push({ page: path, y, file });
       }
       await scrollTo(page, 0);
+      sections.push(
+        await page.evaluate(() => {
+          const tops = [...document.querySelectorAll("section, main > *, article, footer, [class*='section']")]
+            .map((e) => Math.round(e.getBoundingClientRect().top + window.scrollY))
+            .filter((t) => t > 200);
+          return [...new Set(tops)].sort((a, b) => a - b);
+        }),
+      );
       const height = await page.evaluate(() => document.documentElement.scrollHeight);
       const tall = join(dir, `p${pi}-tall.png`);
       await page.screenshot({ path: tall, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: VIEWPORT.width, height: Math.min(height, TALL_HEIGHT) } });
@@ -332,7 +343,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   } finally {
     await browser.close();
   }
-  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, elements, before, photo, photoAlt, capturedAt: new Date().toISOString() };
+  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, sections, elements, before, photo, photoAlt, capturedAt: new Date().toISOString() };
   await writeFile(manifestPath, JSON.stringify(m, null, 2));
   console.log(`capture: ${shots.length} shots${photo ? " + photo" : ""} in ${dir}`);
   return m;

@@ -48,24 +48,25 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 ## V1
 
 ### full-bleed
-The hero fills the canvas.
-- Needs: desktop viewport capture of `pages[0]`.
-- Layout: capture scaled to cover the canvas minus an inset of 0.025W on all sides, radius 16 px. Optional `inset: 0` for edge to edge.
-- Focus: `focus` (x, y in 0..1) anchors the crop; default (0, 0).
-- Check: hero headline readable at 400x300.
+The page large on the canvas. Measured from Roobinium (Sentry), Nixtio (TRQ) and Skatenerd on Dribbble, gated 21 Nov 2026.
+- Needs: the tall desktop capture of `pages[0]`.
+- Whole (default): x 0.055W, y 0.07H, 0.89W wide, ending at 0.92H; the tall capture cropped from the top, `focus` moves it.
+- `layout.bleed: "bottom"`: x 0.035W, y 0.047H, 0.93W wide, running off the bottom edge.
+- No browser chrome. Radius 10, lifted shadow. The ground shows on every side that does not bleed.
 
 ### lead-peek
-A large lead page with the next page cropped at the right edge.
-- Needs: viewport captures of two pages or two scroll positions.
-- Lead frame: x 0.05W, y 0.07H, width 0.70W, runs off the bottom.
-- Peek frame: x lead right + 0.02W, y 0.13H, same width, runs off the right edge.
-- Frames: browser chrome by default.
+One long page read as two columns. Measured from Apollo and Norde on Dribbble, gated 21 Nov 2026.
+- Needs: the full-page desktop capture and the section starts recorded at capture.
+- Lead column: x 0.035W, y 0.047H, 0.553W wide, running off the bottom, the top of the page.
+- Peek column: from 0.613W (gap 0.025W), same width, running off the top and the right. It opens on the first section that starts after what the lead column shows, with that section's top 0.05H below the canvas edge, so no line is cut and nothing repeats.
+- No browser chrome. Radius 10 on visible corners, soft shadow.
 
 ### photo-ground
-The page sits on its own hero photograph.
-- Needs: viewport capture and the site's hero image (`source.photo` selector or URL).
-- Ground: the photo, cover-fit, optional `dim` 0 to 0.3.
-- Frame: width 0.68W, centred horizontally, top 0.16H, runs off the bottom. Soft shadow.
+The page on its own hero photograph. Measured from Atelier Aesthetica on Dribbble, gated 21 Nov 2026.
+- Needs: the tall desktop capture and the hero photo (`source.photo`, else the largest image in the first screens).
+- Ground: the photo ground (blurred, dimmed, darker at the bottom).
+- Page: x 0.05W, 0.9W wide, centred vertically with 0.127H above and below; the tall capture cropped from the top.
+- No browser chrome. Radius 10, lifted shadow.
 
 ### strips
 The whole page as tall columns.
