@@ -9,12 +9,20 @@ export const pagePhone: Pattern = {
     const { c, top } = ctx;
     const laptop = c.frame.device === "macbook-pro";
     const tablet = c.frame.device === "ipad-pro";
-    const by = Math.max(Math.round(h * (laptop || tablet ? 0.12 : 0.1)), top);
-    // Devices stay whole; the browser frame keeps running off the bottom edge.
-    let bw = Math.round(w * (laptop ? 0.8 : tablet ? 0.5 : 0.75));
-    if (laptop) bw = Math.min(bw, Math.round(((h * 0.8 - by + h * 0.12) / 728.4) * 1207.2));
-    if (tablet) bw = Math.min(bw, Math.round(((h * 0.86 - by) / 729.2) * 558.2));
-    const bx = laptop ? Math.round((w - bw) / 2 - w * 0.06) : tablet ? Math.round(w * 0.16) : Math.round(w * 0.07);
+    // Every page device runs off at least one canvas edge, like the browser frame:
+    // the browser and the iPad off the bottom, the MacBook off the left.
+    const by = Math.max(Math.round(h * 0.1), top);
+    let bw: number, bx: number;
+    if (laptop) {
+      bw = Math.round(Math.min(w * 1.0, ((h * 0.92 - by) / 728.4) * 1207.2));
+      bx = Math.round(-bw * 0.1);
+    } else if (tablet) {
+      bw = Math.round(Math.max(w * 0.55, ((h - by) / 729.2) * 558.2 * 1.08));
+      bx = Math.round(w * 0.07);
+    } else {
+      bw = Math.round(w * 0.75);
+      bx = Math.round(w * 0.07);
+    }
     const page = pageFrame(ctx, w, { x: bx, y: by, w: bw });
     const model = c.phone.model;
     const shot = phoneScreens(ctx, model)[0];
