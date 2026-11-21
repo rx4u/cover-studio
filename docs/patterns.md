@@ -84,7 +84,8 @@ The whole page as tall columns. Measured from the Oliver Hayes three-strip cover
 ### macro
 One real component at poster scale. Gated 21 Nov 2026.
 - Needs: a component capture (`source.elements`), taken with 32 CSS px of the page's own surface around it and with fixed layers that do not hold it hidden.
-- Never cropped: scaled to at most 0.84W by 0.76H and at most 2.4x its page size, centred, radius 16, soft shadow. `layout.bleed` does not apply.
+- Never cropped: scaled to at most 0.84W by 0.76H and at most 2.4x its page size, centred. `layout.bleed` does not apply.
+- Of the captured components, the one that covers most of the canvas is used. The canvas around it is the component's own page surface, edge to edge, as if zoomed into the page: no card, no ground (fixed for dead space 21 Nov 2026).
 
 ### page-phone
 The page in a browser frame with the same page on a phone overlapping its lower right.
@@ -121,7 +122,7 @@ A bento made only of real components, every tile exactly its component. Measured
 
 ### cascade
 Three pages layered diagonally, back to front. Measured from Zajno on Raja's reference board, gated 21 Nov 2026.
-- Pages about 0.5W wide, steps of 0.13W right and 0.11H down, the group centred and fitted inside 0.88W by 0.86H. Front page lifted shadow, others soft.
+- Pages 0.76W wide from 0.05W and 0.07H, steps of 0.12W right and 0.11H down. Every page runs off the bottom and the front page off the right, so no ground shows beside or below the group (fixed for dead space 21 Nov 2026). Front page lifted shadow, others soft.
 - Views are three distinct parts of the stitched page: the top, then the section starts nearest a third and two thirds down. Section starts are recorded in the stitched image's own coordinates.
 
 ### floating

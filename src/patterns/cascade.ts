@@ -3,8 +3,8 @@ import type { Pattern } from "./types.ts";
 
 /**
  * Three pages layered diagonally, back to front. Measured from Zajno's cascade on Raja's reference board:
- * each page about 0.5W wide, each step 0.13W right and 0.11H down, the group centred, plain frames, the front page
- * casting the deepest shadow. The three views are distinct sections of the page, each opened on a section start:
+ * plain frames layered back to front, the front page casting the deepest shadow, scaled up so the group fills the
+ * canvas and bleeds off the right and bottom. The three views are distinct sections of the page, each opened on a section start:
  * the top, then sections about a third and two thirds down. Extra pages in source.pages are used first when given.
  */
 export const cascade: Pattern = {
@@ -14,15 +14,15 @@ export const cascade: Pattern = {
     const k = w / 1600;
     const file = m.full[0].file;
     const [iw, ih] = pngSize(file);
-    const dx = w * 0.13;
+    // The group fills the canvas: pages 0.76W wide from 0.05W, each step 0.12W right and 0.11H down, so the front
+    // page runs off the right and every page runs off the bottom. No ground shows below or beside the group.
+    const dx = w * 0.12;
     const dy = h * 0.11;
     const bar = c.frame.style === "browser" ? 40 * k : 0;
-    // Page width from the space: three steps must fit inside 0.88W by 0.86H.
-    let fw = w * 0.5;
-    const fh = (x: number) => (x / 1440) * 900 * 0.92 + bar;
-    while (fw + dx * 2 > w * 0.88 || fh(fw) + dy * 2 > h * 0.86) fw *= 0.97;
-    const x0 = (w - (fw + dx * 2)) / 2;
-    const y0 = Math.max((h - (fh(fw) + dy * 2)) / 2, top);
+    const fw = w * 0.76;
+    const x0 = w * 0.05;
+    const y0 = Math.max(h * 0.07, top);
+    const fh = (i: number) => h - (y0 + dy * i) + 40 * k;
     // Section starts in CSS px; pick the top, then the starts nearest a third and two thirds down.
     const pageH = (ih / iw) * 1440;
     const starts = m.sections?.[0] ?? [];
@@ -32,9 +32,7 @@ export const cascade: Pattern = {
       .map((o, i) => {
         const fwr = Math.round(fw);
         const scale = fwr / 1440;
-        const imgH = Math.round(fh(fw) - bar);
-        const shadow = i === 2 ? "" : "";
-        return frame({ ...c, frame: { ...c.frame, shadow: i === 2 ? "lifted" : "soft" } }, w, file, { x: Math.round(x0 + dx * i), y: Math.round(y0 + dy * i), w: fwr, h: Math.round(fh(fw)) }, `50% -${Math.round(o * scale)}px`, `z-index:${i + 1}${shadow}`);
+        return frame({ ...c, frame: { ...c.frame, shadow: i === 2 ? "lifted" : "soft" } }, w, file, { x: Math.round(x0 + dx * i), y: Math.round(y0 + dy * i), w: fwr, h: Math.round(fh(i)) }, `50% -${Math.round(o * scale)}px`, `z-index:${i + 1}`);
       })
       .join("");
   },
