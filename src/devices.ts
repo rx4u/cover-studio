@@ -86,7 +86,7 @@ function hue(color: string): number {
 export function darkGround(c: Config): boolean {
   const t = c.ground.type;
   if (t === "dark" || t === "photo" || t === "brand-gradient") return true;
-  if (t === "mesh" || t === "photo-clear") return false;
+  if (t === "mesh" || t === "photo-clear" || t === "tint") return false;
   const accent = c.ground.accent ?? c.bento.accent ?? c.ground.stops[0];
   if (t === "silk" || t === "image") return lum(accent) < 70;
   return c.ground.stops.reduce((a, s) => a + lum(s), 0) / c.ground.stops.length < 90;
@@ -116,11 +116,18 @@ const ICONS = (ink: string) =>
   `<svg width="78" height="13" viewBox="0 0 78 13"><rect x="0" y="8" width="3" height="4" rx="1" fill="${ink}"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="${ink}"/><rect x="10" y="3" width="3" height="9" rx="1" fill="${ink}"/><rect x="15" y="0" width="3" height="12" rx="1" fill="${ink}"/><path transform="translate(25 0)" d="M8 11.5 10.4 9a3.4 3.4 0 0 0-4.8 0Z M3.2 6.6a6.8 6.8 0 0 1 9.6 0l1.6-1.6a9.1 9.1 0 0 0-12.8 0Z M0 3.4a11.3 11.3 0 0 1 16 0L14.4 5A9 9 0 0 0 1.6 5Z" fill="${ink}"/><g transform="translate(48 0)"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="${ink}" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="${ink}"/><path d="M25 4.5v4a2 2 0 0 0 0-4Z" fill="${ink}" opacity=".4"/></g></svg>`;
 
 /** The screen contents: status bar band in the page's own top colour, the capture below it, and the home indicator over it. */
-function screen(model: string, img: string, band: string, statusBar: boolean, offset: number, imgWidth: number | null): string {
+export type Chrome = { bg: string; dot: string; border: string };
+
+/** Browser window bar inside a laptop or tablet screen: plain, three dots, no address text (frame defaults). */
+const TOOLBAR: Record<string, number> = { macos: 40, ipados: 40 };
+
+function screen(model: string, img: string, band: string, statusBar: boolean, offset: number, imgWidth: number | null, chrome: Chrome | null = null): string {
   const s = SPECS[model];
   const [, , sw, sh] = geometry(model).screen;
   const k = sw / s.pt;
-  const barH = s.status * k;
+  const tb = chrome && TOOLBAR[s.os] ? TOOLBAR[s.os] * k : 0;
+  if (chrome && tb) band = chrome.bg;
+  const barH = s.status * k + tb;
   const ink = lum(band) > 150 ? "#000" : "#fff";
   const pad = s.os === "ios" ? [4, 34, 42] : s.os === "android" ? [0, 22, 24] : [0, 20, 20];
   const font = s.os === "android" ? "500 15px Roboto,system-ui,sans-serif" : "600 17px -apple-system,'SF Pro Text',system-ui,sans-serif";
@@ -131,7 +138,11 @@ function screen(model: string, img: string, band: string, statusBar: boolean, of
     ? `<div style="position:absolute;left:50%;bottom:${8 * k}px;width:${s.home[0] * k}px;height:${s.home[1] * k}px;margin-left:${(-s.home[0] * k) / 2}px;border-radius:9px;background:rgba(255,255,255,.92);box-shadow:0 0 1px rgba(0,0,0,.35);z-index:3"></div>`
     : "";
   const w = imgWidth ?? sw;
-  return `<div style="position:relative;width:${sw}px;height:${sh}px;overflow:hidden;background:${band}">${bar}<div style="position:absolute;left:0;right:0;top:${barH}px;bottom:0;overflow:hidden"><img src="${url(img)}" style="display:block;width:${w}px;transform:translateY(-${Math.round(offset * (w / s.pt))}px)"></div>${home}</div>`;
+  const d = 12 * k;
+  const toolbar = tb
+    ? `<div style="position:absolute;left:0;right:0;top:${s.status * k}px;height:${tb}px;display:flex;align-items:center;gap:${8 * k}px;padding:0 ${18 * k}px;background:${chrome!.bg};border-bottom:1px solid ${chrome!.border};box-sizing:border-box;z-index:3">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${chrome!.dot};display:block"></i>`.repeat(3)}</div>`
+    : "";
+  return `<div style="position:relative;width:${sw}px;height:${sh}px;overflow:hidden;background:${band}">${bar}${toolbar}<div style="position:absolute;left:0;right:0;top:${barH}px;bottom:0;overflow:hidden"><img src="${url(img)}" style="display:block;width:${w}px;transform:translateY(-${Math.round(offset * (w / s.pt))}px)"></div>${home}</div>`;
 }
 
 export type DeviceOpts = {
@@ -144,6 +155,8 @@ export type DeviceOpts = {
   extra?: string;
   /** Laptops show a desktop capture fitted to the screen width. */
   desktop?: boolean;
+  /** Browser window bar inside a laptop or tablet screen. */
+  chrome?: Chrome | null;
   /** No hardware: the screen alone with rounded corners and a hairline rim (Nixtio). */
   frameless?: boolean;
 };
@@ -161,7 +174,7 @@ export function device(canvasW: number, img: string, box: { x: number; y: number
   const [a1, a2] = tone === "dark" ? [0.2, 0.26] : [0.12, 0.16];
   const ink = tone === "dark" ? "0,0,0" : "20,30,45";
   const shadow = `drop-shadow(0 ${Math.round(3 * k)}px ${Math.round(5 * k)}px rgba(${ink},${a1})) drop-shadow(0 ${Math.round(40 * k)}px ${Math.round(60 * k)}px rgba(${ink},${a2}))`;
-  const scr = screen(o.model, img, o.band ?? "#ffffff", o.statusBar !== false, o.offset ?? 0, o.desktop ? g.geometry.screen[2] : null);
+  const scr = screen(o.model, img, o.band ?? "#ffffff", o.statusBar !== false, o.offset ?? 0, o.desktop ? g.geometry.screen[2] : null, o.chrome ?? null);
   if (o.frameless) {
     const [, , sw, sh] = g.geometry.screen;
     const f = box.w / sw;

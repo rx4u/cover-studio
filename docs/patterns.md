@@ -31,6 +31,8 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 | Trio, level | 0.78W for the group, gap 0.016W, centred, equal screen heights across mixed models (Afterglow) |
 | Trio, raised | Middle phone 0.07H higher and in front, all three lean 6 degrees (Nixtio) |
 | Page plus phone | Phone about 0.2W, bottom at 0.92H, overlapping the page device. Browser 0.75W from 0.07W; MacBook 0.8W, whole; iPad 0.5W from 0.16W, whole (ZeBeyond, Growly) |
+| Browser bar | With frame.style "browser", MacBook and iPad screens show a plain window bar below the status or menu bar: 40pt, three neutral dots, no address text, light or dark by frame.theme |
+| Plain grounds | solid (#E4E4E2 light, #0E0F0F dark, or any stop) and tint (a flat, very light tint of the accent). No pattern layer by default |
 | Frameless | Screen only, radius 0.155 of its width, hairline rim |
 | Fit | Every device stays whole on every size |
 

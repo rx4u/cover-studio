@@ -47,7 +47,9 @@ export function pageFrame(ctx: Ctx, cw: number, box: { x: number; y: number; w: 
   const d = c.frame.device;
   if (d === "browser") return { html: frame(c, cw, m.talls[0].file, box), h: Infinity };
   const colour = colourFor(c, d, c.frame.colour);
-  if (d === "macbook-pro") return { html: device(cw, m.talls[0].file, box, { model: d, colour, band: m.mobile[0]?.topColor, desktop: true }), h: drawnHeight(d, box.w, false) };
+  const dark = c.frame.theme === "dark";
+  const chrome = c.frame.style === "browser" ? { bg: dark ? "#1B1C1C" : "#F6F6F4", dot: dark ? "#3B3C3C" : "#D8D8D5", border: dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.08)" } : null;
+  if (d === "macbook-pro") return { html: device(cw, m.talls[0].file, box, { model: d, colour, band: m.mobile[0]?.topColor, desktop: true, chrome }), h: drawnHeight(d, box.w, false) };
   const shot = shotsFor(c, m.mobile, "ipad-pro")[0] ?? m.mobile[0];
-  return { html: device(cw, shot.file, box, { model: d, colour, band: shot.topColor, statusBar: c.phone.statusBar }), h: drawnHeight(d, box.w, false) };
+  return { html: device(cw, shot.file, box, { model: d, colour, band: shot.topColor, statusBar: c.phone.statusBar, chrome }), h: drawnHeight(d, box.w, false) };
 }

@@ -24,7 +24,7 @@ export default {
   focus: { x: 0, y: 0 },               // crop anchor for full-bleed, 0..1
 
   ground: {
-    type: "solid",                     // solid | linear | radial | image | photo | photo-clear | brand-gradient | dark | mesh | silk
+    type: "solid",                     // solid | linear | radial | image | photo | photo-clear | brand-gradient | dark | tint | mesh | silk
     accent: null,                      // brand colour for derived grounds (falls back to bento.accent, then stops[0])
     blur: 48,                          // photo: blur at 1600 wide
     brightness: 0.5,                   // photo: 0.1 to 1

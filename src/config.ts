@@ -37,7 +37,7 @@ export const schema = z
     focus: z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }).strict().default({ x: 0, y: 0 }),
     ground: z
       .object({
-        type: z.enum(["solid", "linear", "radial", "image", "photo", "photo-clear", "brand-gradient", "dark", "mesh", "silk"]).default("solid"),
+        type: z.enum(["solid", "linear", "radial", "image", "photo", "photo-clear", "brand-gradient", "dark", "tint", "mesh", "silk"]).default("solid"),
         accent: hex.nullable().default(null),
         blur: z.number().min(0).max(120).default(48),
         brightness: z.number().min(0.1).max(1).default(0.5),

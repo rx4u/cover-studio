@@ -57,6 +57,9 @@ export function groundLayer(c: Config, photo: string | null, shaderFile: string 
     case "brand-gradient":
       // Ramotion Borea: light accent into deep accent into near black, on the diagonal.
       return layer(`background:linear-gradient(155deg, ${tint(acc, 0.35)} 0%, ${acc} 34%, ${shade(acc, 0.7)} 70%, #0A0A0B 100%)`);
+    case "tint":
+      // A flat, very light tint of the accent: a plain ground with the product's colour in it.
+      return layer(`background:${pastel(acc, 0.3, 0.93)}`);
     case "dark":
       // Zajno: a flat, deep, tinted dark (measured #09161C for a navy accent).
       return layer(`background:${shade(acc, 0.8)}`);
