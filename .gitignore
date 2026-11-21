@@ -5,3 +5,9 @@ dist/
 *.log
 .DS_Store
 .refs/
+
+# Internal working files, kept local
+CLAUDE.md
+plan.md
+plan-tree.json
+prompts/

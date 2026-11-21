@@ -1,11 +1,14 @@
 {
   "name": "cover-studio",
   "version": "0.1.0",
-  "description": "Turn any live website into presentation-ready covers in proven patterns, at every size a channel needs.",
+  "description": "Live site in. Covers out. Turn any live website into presentation covers in 18 proven patterns, at every size a channel needs.",
   "type": "module",
   "license": "MIT",
-  "author": "Rajaraman Arumugam",
-  "repository": "github:rx4u/cover-studio",
+  "author": "Raja (https://contra.com/siraguhq)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rx4u/cover-studio"
+  },
   "bin": {
     "cover-studio": "src/cover.ts"
   },
@@ -26,5 +29,21 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.9.0"
+  },
+  "homepage": "https://cover-studio-cli.vercel.app",
+  "keywords": [
+    "cover",
+    "dribbble",
+    "contra",
+    "screenshot",
+    "mockup",
+    "playwright",
+    "cli",
+    "design",
+    "portfolio",
+    "og-image"
+  ],
+  "bugs": {
+    "url": "https://github.com/rx4u/cover-studio/issues"
   }
 }

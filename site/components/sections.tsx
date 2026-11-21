@@ -36,10 +36,10 @@ function Head({ eyebrow, title, line }: { eyebrow: string; title: string; line?:
 
 /* 01 Why: drag to compare the raw screenshot with the cover ---------------- */
 
-const POINTS = [
-  { c: "bg-lilac", t: "A screenshot is not a cover", d: "Next to designed posts, a raw capture looks unfinished." },
-  { c: "bg-mint", t: "Every channel wants a size", d: "4:3, 16:9 and 1.91:1, rebuilt by hand each time." },
-  { c: "bg-sky", t: "Mockups make things up", d: "Stock scenes and devices you do not ship on." },
+const STORY = [
+  { c: "bg-lilac", n: "16", u: "images", t: "For every project", d: "Each concept I ship needs four sets of four post images at 1600 × 1200: the teaser, the brand, the sections and the inner page." },
+  { c: "bg-mint", n: "5", u: "rounds", t: "Rebuilt every time", d: "Every set was designed again from scratch in an AI session, prompt after prompt. One project took five rounds of covers before one held up." },
+  { c: "bg-sky", n: "1", u: "command", t: "Now, one command", d: "cover-studio captures the live site and renders every set from one config file. No design session, no prompts, no AI tokens per cover." },
 ];
 
 export function Why() {
@@ -62,19 +62,27 @@ export function Why() {
   );
   return (
     <section id="why" ref={root} className="wrap pt-32 sm:pt-40">
-      <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
-        <div data-rise-group className="lg:col-span-5">
-          <p className="eyebrow rise">01 · Why it exists</p>
-          <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Same site. Drag to see the difference.</h2>
-        </div>
-        <ul data-rise-group className="grid gap-3 sm:grid-cols-3 lg:col-span-7">
-          {POINTS.map((p) => (
-            <li key={p.t} className={`rise ${p.c} rounded-2xl p-5`}>
-              <p className="text-[16px] font-semibold leading-tight">{p.t}</p>
-              <p className="mt-2 text-[14px] leading-[1.5] text-ink-2">{p.d}</p>
-            </li>
-          ))}
-        </ul>
+      <div data-rise-group className="max-w-[880px]">
+        <p className="eyebrow rise">01 · Why I built it</p>
+        <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Sixteen images for every project. Rebuilt every time.</h2>
+      </div>
+      <ol data-rise-group className="mt-14 grid gap-4 md:grid-cols-3">
+        {STORY.map((p, i) => (
+          <li key={p.t} className={`rise ${p.c} flex min-h-[320px] flex-col justify-between rounded-[28px] p-8`}>
+            <span className="font-mono text-[13px]">0{i + 1}</span>
+            <div>
+              <p className="flex items-baseline gap-2">
+                <span data-count={p.n} className="display text-[88px] leading-none">{p.n}</span>
+                <span className="font-mono text-[14px] text-ink-2">{p.u}</span>
+              </p>
+              <h3 className="display mt-4 text-[28px] leading-[1.02]">{p.t}</h3>
+              <p className="mt-3 text-[15px] leading-[1.55] text-ink-2">{p.d}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <div data-rise-group className="mt-24 max-w-[760px]">
+        <h2 className="display split text-[40px] sm:text-[52px]">Same site. Drag to see the difference.</h2>
       </div>
       <div data-clip className="cmp relative mt-12 aspect-[4/3] select-none overflow-hidden rounded-[28px] bg-night sm:aspect-[16/10]">
         <img src="/covers/why-after.webp" alt="The same site as a bento cover made by cover-studio" className="absolute inset-0 h-full w-full object-cover" />
@@ -100,6 +108,91 @@ export function Why() {
         />
       </div>
       <p className="mt-4 font-mono text-[12px] text-mute">Lune, a hotel site designed by Raja. Left: a raw screenshot. Right: the same site through cover-studio.</p>
+    </section>
+  );
+}
+
+/* 02 What it saves -------------------------------------------------------------- */
+
+const SAVES = [
+  { c: "bg-ink text-white", n: "0", u: "AI tokens per cover", d: "It runs on your machine with no model in the loop. Nothing to prompt, nothing to prompt again when a round misses.", big: true },
+  { c: "bg-lilac", n: "1", u: "second per cover", d: "After a one-time capture of one to four minutes, every pattern and size renders in about a second. Measured." },
+  { c: "bg-mint", n: "18", u: "tested patterns", d: "Each measured from a reference cover and checked on real sites: no empty space, no cut text, no cropped headline." },
+  { c: "bg-sky", n: "1", u: "config, every project", d: "The same layouts and proportions every time, so your posts read as one consistent, professional series." },
+  { c: "bg-cobalt text-white", n: "0", u: "cost", d: "Free and MIT. No account, no API key, no subscription, no watermark.", big: true },
+];
+
+export function Saves() {
+  const root = useRef<HTMLElement>(null);
+  useRise(root);
+  return (
+    <section ref={root} className="wrap pt-32 sm:pt-40">
+      <div data-rise-group className="max-w-[880px]">
+        <p className="eyebrow rise">02 · What it saves</p>
+        <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Professional covers without the session.</h2>
+      </div>
+      <ul data-rise-group className="mt-14 grid gap-4 md:grid-cols-6">
+        {SAVES.map((x, i) => (
+          <li key={x.u} className={`rise ${x.c} flex min-h-[280px] flex-col justify-between rounded-[28px] p-8 ${i < 2 ? "md:col-span-3" : i < 4 ? "md:col-span-3 lg:col-span-2" : "md:col-span-6 lg:col-span-2"}`}>
+            <p className="flex items-baseline gap-3">
+              <span data-count={x.n} className="display text-[96px] leading-none">{x.n}</span>
+              <span className="font-mono text-[14px] opacity-75">{x.u}</span>
+            </p>
+            <p className="mt-6 max-w-[420px] text-[16px] leading-[1.55] opacity-85">{x.d}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* Make it yours: one cover, six grounds ----------------------------------------- */
+
+const GROUNDS = [
+  { id: "light", l: "Light" },
+  { id: "dark", l: "Dark" },
+  { id: "tint", l: "Tint" },
+  { id: "radial", l: "Gradient and rings" },
+  { id: "photo", l: "Site photo" },
+  { id: "grid", l: "Dark with grid" },
+];
+
+export function Grounds() {
+  const root = useRef<HTMLElement>(null);
+  const [on, setOn] = useState(0);
+  useRise(root);
+  const pick = (i: number) => {
+    if (i === on) return;
+    setOn(i);
+    if (reduced()) return;
+    gsap.fromTo(`.gr-${i}`, { opacity: 0, scale: 1.03 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" });
+  };
+  return (
+    <section ref={root} className="wrap pt-32 sm:pt-40">
+      <div data-rise-group className="flex flex-wrap items-end justify-between gap-8">
+        <div className="max-w-[720px]">
+          <p className="eyebrow rise">06 · Make it yours</p>
+          <h2 className="display split mt-5 text-[48px] sm:text-[64px]">One cover, any ground.</h2>
+          <p className="rise mt-6 text-[19px] leading-[1.55] text-ink-2">
+            Eleven ground types, from flat colour to gradients, tints from your accent and your own photos, plus grid, dot, line, ring or SVG overlays.
+            Light or dark captures, light or dark frames.
+          </p>
+        </div>
+      </div>
+      <div role="group" aria-label="Ground" className="mt-10 flex flex-wrap gap-2">
+        {GROUNDS.map((g, i) => (
+          <button key={g.id} type="button" onClick={() => pick(i)} aria-pressed={on === i}
+            className={`cursor-pointer rounded-full px-5 py-2.5 text-[15px] font-medium transition-colors ${on === i ? "bg-ink text-white" : "bg-ink/5 hover:bg-ink/10"}`}>
+            {g.l}
+          </button>
+        ))}
+      </div>
+      <div data-clip className="relative mt-6 aspect-[4/3] overflow-hidden rounded-[28px]">
+        {GROUNDS.map((g, i) => (
+          <img key={g.id} src={`/grounds/${g.id}.webp`} alt={`The same cover on the ${g.l.toLowerCase()} ground`}
+            className={`gr-${i} absolute inset-0 h-full w-full object-cover ${on === i ? "opacity-100" : "pointer-events-none opacity-0"}`} />
+        ))}
+      </div>
     </section>
   );
 }
@@ -140,7 +233,7 @@ export function How() {
   return (
     <section id="how" ref={root} className="pt-32 sm:pt-40">
       <div className="wrap">
-        <Head eyebrow="02 · How it works" title="One URL. Every cover." />
+        <Head eyebrow="03 · How it works" title="One URL. Every cover." />
       </div>
       <div className="how-pin">
         <div className="wrap grid gap-10 py-14 lg:min-h-screen lg:grid-cols-12 lg:items-center">
@@ -227,7 +320,7 @@ export function Patterns() {
       <div className="pat-pin flex flex-col justify-center overflow-hidden lg:h-screen">
         <div className="wrap flex flex-wrap items-end justify-between gap-6">
           <div data-rise-group>
-            <p className="eyebrow rise">03 · Patterns</p>
+            <p className="eyebrow rise">04 · Patterns</p>
             <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Eight of eighteen.</h2>
             <p className="rise mt-4 text-[17px] text-ink-2">Each one made from a site designed by Raja.</p>
           </div>
@@ -274,7 +367,7 @@ export function Sizes() {
   return (
     <section ref={root} className="wrap pt-32 sm:pt-40">
       <div data-rise-group className="max-w-[820px]">
-        <p className="eyebrow rise">04 · Every size</p>
+        <p className="eyebrow rise">05 · Every size</p>
         <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Laid out again for each channel.</h2>
         <p className="rise mt-6 max-w-[620px] text-[19px] leading-[1.55] text-ink-2">
           One render, three canvases. Each size is composed for its own shape, so nothing is squeezed or cut off. This one is Lune, a hotel site I designed.
@@ -315,7 +408,7 @@ export function Phones() {
     <section ref={root} className="overflow-hidden bg-night pt-32 pb-40 text-paper sm:pt-40">
       <div className="wrap">
         <div data-rise-group className="max-w-[760px]">
-          <p className="eyebrow rise !text-white/55">05 · Mobile, too</p>
+          <p className="eyebrow rise !text-white/55">07 · Mobile, too</p>
           <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Phones at their real size, with their real screens.</h2>
           <p className="rise mt-6 max-w-[600px] text-[19px] leading-[1.55] text-white/70">
             Phone screens are captured at each device&apos;s true viewport, in light and dark. These are from Ostler, a fleet van rental app I designed.
@@ -357,8 +450,8 @@ export function OpenSource() {
     <section id="open-source" ref={root} className="wrap pt-32 sm:pt-40">
       <div data-rise-group className="grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <p className="eyebrow rise">06 · Open source</p>
-          <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Free, MIT, and yours to change.</h2>
+          <p className="eyebrow rise">08 · Open source</p>
+          <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Free forever. MIT. Yours to change.</h2>
           <a href={REPO} className="rise mt-10 block rounded-[22px] border border-line p-6 transition-colors hover:border-ink">
             <span className="flex items-center gap-3 font-mono text-[14px]">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z" /></svg>
@@ -405,7 +498,7 @@ export function About() {
     <section id="about" ref={root} className="wrap pt-32 sm:pt-40">
       <div data-rise-group data-clip className="grid gap-10 rounded-[32px] bg-lilac p-8 sm:p-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <p className="eyebrow rise !text-ink-2">07 · About</p>
+          <p className="eyebrow rise !text-ink-2">09 · About</p>
           <h2 className="display split mt-5 text-[44px] sm:text-[56px]">Made by Raja.</h2>
         </div>
         <div className="lg:col-span-6 lg:col-start-7">
