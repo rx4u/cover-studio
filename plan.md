@@ -42,12 +42,12 @@ About 20 to 25 minutes of Claude time per pattern with gates, about 40 minutes f
 |---|---|---|---|---|---|
 | Grounds | done | done | done | done (all 6 score 4 on Aequor and Verda) | approved 21 Nov |
 | Device frames | done | done | done (react-mockframe, status bar, home bar, real viewports, mixed models, MacBook, iPad, dark scheme) | done (all variants score 4 on Aequor and Verda) | sent 21 Nov |
-| full-bleed | | | | | |
-| lead-peek | | | | | |
-| photo-ground | | | | | |
-| phone-trio | | | | | |
-| page-phone | | | | | |
-| bento | | | | | |
+| full-bleed | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| lead-peek | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| photo-ground | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| phone-trio | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| page-phone | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| bento | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | strips | | | | | |
 | strips-brand | | | | | |
 | macro | | | | | |

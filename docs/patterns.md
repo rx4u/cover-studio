@@ -95,11 +95,13 @@ Three phones, middle one raised.
 - Use for mobile apps and responsive proof.
 
 ### bento
-A grid of tiles from the brand and the product.
-- Needs: brand inputs (logo, colours, type names) plus captures.
-- Grid: 3 columns by 2 rows by default, one dominant tile (2 columns wide), gaps 12 px, radius 10 px.
-- Tile types: `logo` (on accent with pattern), `hero-split`, `stat` (number from config over a photo), `ui` (element capture), `photo` (site image), `type-colour` (Aa specimen and four swatches with hex).
-- Rule: every number and line comes from config or the site. Never invent.
+A mosaic of real tiles. Measured from Clyra, Raya Reserve and a dark product bento on Dribbble, gated 21 Nov 2026.
+- Margins 0.05W by 0.06H, gaps 0.014W, radius 14, no shadows. 4 columns by 3 rows.
+- The desktop hero over 3 columns and 2 rows, the tall capture fitted to the tile's width so the page is never cut at the sides.
+- A phone screen down the 4th column: 2 rows on 4:3, all 3 on wide canvases.
+- Small tiles along the bottom (four on 4:3, three on wide), in order, only from real inputs: components (`source.elements`), the hero photo, phone screens captured at their sections, other pages' phone screens, the brand logo, `bento.stat`, `bento.colours`, more desktop screens.
+- Phone section shots are captured by scrolling each section to just below any sticky header (recorded at capture), skipping sections closer than 0.6 of a screen to the last, so every tile opens on its own heading and none repeat.
+- Never an empty tile: with fewer inputs than slots, the remaining tiles span the gap.
 
 ## Further patterns
 - `cascade`: 3 or 4 pages layered diagonally.

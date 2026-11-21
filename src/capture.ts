@@ -18,6 +18,8 @@ export type Shot = {
   /** Mobile shots: the viewport width they were captured at, and the colour scheme. */
   w?: number;
   scheme?: "light" | "dark";
+  /** Section shots: height of the sticky header covering the top, in CSS px. */
+  nav?: number;
 };
 export type Tall = { page: string; file: string };
 export type Manifest = {
@@ -308,13 +310,30 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
                 .filter((t) => t > 400);
               return [...new Set(tops)].sort((a, b) => a - b);
             });
-            // On the first page, also capture two sections by really scrolling to them, so their reveals play.
+            // On the first page, also capture four sections by really scrolling to them, so their reveals play.
+            // Each opens with the section's top just below any sticky header, and sections closer than 60% of a
+            // screen to the last one are skipped, so no two shots show the same content.
             if (pi === 0) {
-              for (const top of sections.filter((t) => t > vp.height * 0.9).slice(0, 2)) {
-                await scrollTo(mp, top);
+              const navH = await mp.evaluate(() => {
+                let h = 0;
+                for (const e of document.querySelectorAll("header, nav, [class*='header'], [class*='nav']")) {
+                  const cs = getComputedStyle(e);
+                  const r = e.getBoundingClientRect();
+                  if ((cs.position === "fixed" || cs.position === "sticky") && r.top <= 1 && r.height < 160) h = Math.max(h, r.bottom);
+                }
+                return Math.round(h);
+              });
+              const picked: number[] = [];
+              for (const t of sections.filter((t) => t > vp.height * 0.9)) {
+                if (picked.length && t - picked[picked.length - 1] < vp.height * 0.6) continue;
+                picked.push(t);
+                if (picked.length === 4) break;
+              }
+              for (const top of picked) {
+                await scrollTo(mp, Math.max(0, top - navH));
                 const sf = join(dir, `m${pi}-${tag}-y${top}.png`);
                 await mp.screenshot({ path: sf, type: "png", timeout: 120_000 });
-                mobile.push({ page: path, y: top, file: sf, topColor: await topPixelColor(mp), w: vp.width, scheme });
+                mobile.push({ page: path, y: top, file: sf, topColor: await topPixelColor(mp), w: vp.width, scheme, nav: navH });
               }
               await scrollTo(mp, 0);
             }
