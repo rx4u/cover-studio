@@ -43,6 +43,7 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 - Tall and full-page captures are stitched from real screens: the page is scrolled one screen at a time, each screen's reveals play, then the screens are joined. Pinned sections (GSAP pin spacers, large sticky sections) are laid out in normal flow first, fixed bars show on the first screen only, and blank screens (scroll spacers) are dropped.
 
 ## Global rules
+- No dead space: in every pattern the subject group spans the canvas. An empty quarter of ground is a failed gate.
 - The cover (first image of a set) carries no text and no logo unless `branding.onCover` is true.
 - The work is the largest thing in every image. Frames run off at least one edge.
 - Every image uses the same ground, radius and margins within one set.
@@ -124,10 +125,10 @@ Three pages layered diagonally, back to front. Measured from Zajno on Raja's ref
 - Views are three distinct parts of the stitched page: the top, then the section starts nearest a third and two thirds down. Section starts are recorded in the stitched image's own coordinates.
 
 ### floating
-Two screens floating, one in front. Measured from Zajno's Skymetrics shot, gated 21 Nov 2026.
-- Back: the desktop page's first screen, x 0.05W, from 0.165H, 0.55W wide, soft shadow.
-- Front: the phone screen of a later section, whole and in its own shape (cropped below the sticky header), right edge at 0.945W, centred vertically, lifted shadow. Without mobile captures, a second desktop view from a section start.
-- No browser chrome, radius 12.
+Two screens floating as one group. Measured from Zajno's Skymetrics shot, fixed for dead space 21 Nov 2026.
+- Front: the phone screen of a later section, whole in its own shape (below the sticky header), 0.84H tall, right edge at 0.945W, lifted shadow. Without mobile captures, a second desktop view from a section start.
+- Back: the desktop first screen, never cropped, tucked 0.1W under the front. It reaches from 0.05W, or grows to at least 0.62H tall and runs off the left edge when the canvas is tall (4:3), up to 0.8H. Soft shadow.
+- No browser chrome, radius 12. The group fills the canvas: no empty quarter.
 
 ### editorial
 The page cut like a magazine spread. Measured from One Week Wonders (Guraisu, Madefact), gated 21 Nov 2026.
