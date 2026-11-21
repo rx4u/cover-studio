@@ -180,7 +180,7 @@ const PATTERNS = [
   { id: "bento", site: "Haven", d: "Hero, phone, photos and a component on one grid" },
   { id: "floating", site: "Lune", d: "Phone and desktop as one overlapping group" },
   { id: "phone-trio", site: "Aequor", d: "Three phones, mixed models, real system UI" },
-  { id: "cascade", site: "Wheelhouse", d: "Three sections layered off the edge" },
+  { id: "cascade", site: "Haven", d: "Three sections layered off the edge" },
   { id: "overview-grid", site: "Lune", d: "The whole site as a staggered mosaic" },
   { id: "brand-split", site: "Aequor", d: "The page beside its own logo and photo" },
   { id: "editorial", site: "Haven", d: "A lead column and two sections, larger" },
