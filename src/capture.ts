@@ -289,7 +289,7 @@ async function saveImages(page: Page, dir: string): Promise<string[]> {
     const seen = new Map<string, number>();
     for (const img of document.querySelectorAll("img")) {
       const s = img.currentSrc || img.src;
-      if (!s || s.startsWith("data:") || /\.svg(\?|$)/i.test(s) || img.naturalWidth < 800 || img.naturalHeight < 500) continue;
+      if (!s || !/^https?:/.test(s) || /\.svg(\?|$)/i.test(s) || img.naturalWidth < 800 || img.naturalHeight < 500) continue;
       const area = img.naturalWidth * img.naturalHeight;
       if (!seen.has(s) || seen.get(s)! < area) seen.set(s, area);
     }
@@ -329,7 +329,7 @@ async function savePhoto(page: Page, c: Config, dir: string): Promise<string | n
           const bg = getComputedStyle(el).backgroundImage.match(/url\(["']?(.*?)["']?\)/);
           if (bg) s = new URL(bg[1], location.href).href;
         }
-        if (s && (!best || area > best.area)) best = { src: s, area };
+        if (s && /^https?:/.test(s) && (!best || area > best.area)) best = { src: s, area };
       }
       return best ? best.src : null;
     }, ref);
