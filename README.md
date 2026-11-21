@@ -8,9 +8,13 @@
 
 ## Why
 
-Every design project needs post images: a cover for Dribbble and Contra, a 16:9 version for slides and video, a 1.91:1 image for link previews, plus sets for the brand, the sections and the inner pages. Rebuilding those by hand, or prompting an AI for them, for every project is slow, costly and never quite consistent.
+Your site is done. Then you have to post it.
 
-cover-studio does it from the site itself. It visits your live pages like a person would, keeps the real screens, and lays them out in patterns measured from strong reference covers. No design session, no prompts, no AI tokens per cover, and the same result every time.
+- A raw screenshot doesn't sell the work. Next to designed posts, it looks unfinished.
+- Designing covers by hand takes hours: frames, devices, grounds and three sizes, again for every project.
+- Asking an AI costs tokens, never comes out the same twice, and invents details your site doesn't have.
+
+cover-studio closes the gap. Point it at the live site and it keeps the real screens and lays them out in patterns measured from strong reference covers. No design session, no prompts, the same result every time.
 
 ## What it saves
 

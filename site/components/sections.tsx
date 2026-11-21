@@ -37,9 +37,9 @@ function Head({ eyebrow, title, line }: { eyebrow: string; title: string; line?:
 /* 01 Why: drag to compare the raw screenshot with the cover ---------------- */
 
 const STORY = [
-  { c: "bg-lilac", n: "16", u: "images", t: "For every project", d: "Each concept I ship needs four sets of four post images at 1600 × 1200: the teaser, the brand, the sections and the inner page." },
-  { c: "bg-mint", n: "5", u: "rounds", t: "Rebuilt every time", d: "Every set was designed again from scratch in an AI session, prompt after prompt. One project took five rounds of covers before one held up." },
-  { c: "bg-sky", n: "1", u: "command", t: "Now, one command", d: "cover-studio captures the live site and renders every set from one config file. No design session, no prompts, no AI tokens per cover." },
+  { c: "bg-lilac", t: "A screenshot doesn't sell the work.", d: "Next to designed posts on Dribbble, Contra or X, a raw capture looks unfinished, however good the site is." },
+  { c: "bg-mint", t: "Designing covers by hand takes hours.", d: "Frames, devices, grounds and three sizes for every channel, built again for every project." },
+  { c: "bg-sky", t: "Asking an AI costs tokens and makes things up.", d: "Every round is another prompt, it never comes out the same twice, and it invents details your site doesn't have." },
 ];
 
 export function Why() {
@@ -63,26 +63,22 @@ export function Why() {
   return (
     <section id="why" ref={root} className="wrap pt-32 sm:pt-40">
       <div data-rise-group className="max-w-[880px]">
-        <p className="eyebrow rise">01 · Why I built it</p>
-        <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Sixteen images for every project. Rebuilt every time.</h2>
+        <p className="eyebrow rise">01 · Why it exists</p>
+        <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Your site is done. Then you have to post it.</h2>
       </div>
       <ol data-rise-group className="mt-14 grid gap-4 md:grid-cols-3">
         {STORY.map((p, i) => (
-          <li key={p.t} className={`rise ${p.c} flex min-h-[320px] flex-col justify-between rounded-[28px] p-8`}>
+          <li key={p.t} className={`rise ${p.c} flex min-h-[300px] flex-col justify-between rounded-[28px] p-8`}>
             <span className="font-mono text-[13px]">0{i + 1}</span>
             <div>
-              <p className="flex items-baseline gap-2">
-                <span data-count={p.n} className="display text-[88px] leading-none">{p.n}</span>
-                <span className="font-mono text-[14px] text-ink-2">{p.u}</span>
-              </p>
-              <h3 className="display mt-4 text-[28px] leading-[1.02]">{p.t}</h3>
-              <p className="mt-3 text-[15px] leading-[1.55] text-ink-2">{p.d}</p>
+              <h3 className="display text-[30px] leading-[1.02]">{p.t}</h3>
+              <p className="mt-4 text-[16px] leading-[1.55] text-ink-2">{p.d}</p>
             </div>
           </li>
         ))}
       </ol>
       <div data-rise-group className="mt-24 max-w-[760px]">
-        <h2 className="display split text-[40px] sm:text-[52px]">Same site. Drag to see the difference.</h2>
+        <h2 className="display split text-[40px] sm:text-[52px]">cover-studio closes the gap. Drag to see it.</h2>
       </div>
       <div data-clip className="cmp relative mt-12 aspect-[4/3] select-none overflow-hidden rounded-[28px] bg-night sm:aspect-[16/10]">
         <img src="/covers/why-after.webp" alt="The same site as a bento cover made by cover-studio" className="absolute inset-0 h-full w-full object-cover" />
