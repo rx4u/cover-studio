@@ -8,9 +8,9 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cover-studio-cli.vercel.app"),
-  title: "cover-studio: covers and mockups from your live design",
+  title: "cover-studio: cover and mockup generator for designers",
   description:
-    "Presentation covers and device mockups for designers who post their work. An open-source CLI: 18 tested patterns, every size, real device frames. Free.",
+    "Presentation covers and device mockups for designers who post their work. An open-source generator: 18 tested patterns, every size, real device frames.",
   openGraph: {
     title: "cover-studio",
     description: "Covers, done. Presentation covers and device mockups for designers who post their work.",

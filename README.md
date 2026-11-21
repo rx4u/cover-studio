@@ -1,6 +1,6 @@
 # cover-studio
 
-**Covers, done.** Presentation covers and device mockups for designers who post their work. An open-source CLI that captures your live design and renders it in 18 tested patterns, at every size a channel needs.
+**Covers, done.** Presentation covers and device mockups for designers who post their work. An open-source generator that captures your design (any page that opens in a browser: a live site, a local build, Framer, Webflow or Figma Sites) and renders it in 18 tested patterns, at every size a channel needs.
 
 [Website](https://cover-studio-cli.vercel.app) · [Patterns](docs/patterns.md) · [Config reference](docs/config.md) · [MIT licence](LICENSE)
 
@@ -14,7 +14,7 @@ Designers and creators who share their work on Dribbble, Contra, Behance, X, in 
 - Mockup kits look like everyone else's: the same stock devices and scenes, filled with placeholder content instead of your work.
 - AI tools burn tokens and drift: every revision is another prompt, no two results match, and details get invented.
 
-cover-studio makes the covers and mockups from your real work. Point it at your live design and it keeps the real screens, puts them in real device frames and lays them out in patterns measured from strong reference covers. No design session, no prompts, the same quality every time.
+cover-studio makes the covers and mockups from your real work. Point it at your design and it keeps the real screens, puts them in real device frames and lays them out in patterns measured from strong reference covers. No design session, no prompts, the same quality every time.
 
 ## What it saves
 
@@ -24,7 +24,7 @@ cover-studio makes the covers and mockups from your real work. Point it at your 
 | **About 1 second per cover** | After a one-time capture of one to four minutes, every pattern and size renders in about a second (measured). |
 | **18 tested patterns** | Each measured from a reference cover and checked on real sites: no empty space, no cut text, no cropped headline. |
 | **Consistent** | The same layouts and proportions on every project, so your posts read as one professional series. |
-| **Free** | MIT licensed. No account, no API key, no subscription, no watermark. |
+| **Open source** | MIT licensed. No account, no API key, no subscription, no watermark. |
 
 ## What it makes
 
@@ -58,7 +58,7 @@ Eleven ground types (flat colour, gradients, tints from your accent, your own ph
 - **Real devices.** Browser, MacBook Pro, iPad Pro, iPhone 17, iPhone 18 Pro, Pixel 10 and Galaxy S25, each with its own system UI.
 - **Grounds from your own colours.** Solid, gradients, tint, mesh, photo and more, with optional patterns.
 - **No text by default.** Covers carry no type or logo unless you turn branding on.
-- **Local and free.** Runs on your machine. No account, no API key, no server.
+- **Runs locally.** Runs on your machine. No account, no API key, no server.
 
 ## Quick start
 

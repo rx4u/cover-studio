@@ -146,7 +146,7 @@ export function Saves() {
 /* 03 How it works: a pinned three-step scene --------------------------------- */
 
 const STEPS = [
-  { k: "Capture", t: "It reads your live design.", d: "It scrolls every section, waits for the motion to finish and keeps the real screens: desktop, phones, components and your logo." },
+  { k: "Capture", t: "It reads your design.", d: "Any page that opens in a browser: a live site, a local build, Framer, Webflow or Figma Sites. It keeps the real screens: desktop, phones, components and your logo." },
   { k: "Choose", t: "One config file sets the look.", d: "Pick the patterns, a ground, a device frame and the phones." },
   { k: "Render", t: "Every pattern you picked, ready to post.", d: "Each one is laid out for its canvas, so nothing is cropped or squeezed." },
 ];
@@ -198,7 +198,7 @@ export function How() {
           </div>
           <div data-clip className="relative aspect-[4/3] overflow-hidden rounded-card bg-night lg:col-span-7">
             <div className="how-v0 absolute inset-0 overflow-hidden">
-              <img src="/covers/how-capture.webp" alt="The full capture of a live design, top to bottom" className="how-strip block w-full" />
+              <img src="/covers/how-capture.webp" alt="The full capture of a design, top to bottom" className="how-strip block w-full" />
             </div>
             <div className="how-v1 absolute inset-0 hidden flex-col justify-center px-10 font-mono text-[13px] leading-[2] whitespace-nowrap text-paper xl:px-14 xl:text-[14px]">
               <p className="how-line"><span className="text-white/50">export default</span> {"{"}</p>
@@ -457,7 +457,7 @@ export function OpenSource() {
     <section id="open-source" ref={root} className="wrap section">
       <div className="grid gap-x-8 gap-y-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <Head eyebrow="08 · Open source" title="Free and open source.">
+          <Head eyebrow="08 · Open source" title="Open source. Yours to run.">
             MIT licence, yours to change. It needs Node 20 and Chrome, nothing else. No account, no API key, no server.
           </Head>
           <div data-rise-group>
@@ -467,7 +467,7 @@ export function OpenSource() {
                 rx4u / cover-studio
                 <span aria-hidden="true" className="ml-auto transition-transform group-hover:translate-x-1">→</span>
               </span>
-              <span className="body mt-4 block">Presentation covers and device mockups from your live design.</span>
+              <span className="body mt-4 block">A cover and mockup generator for your design work.</span>
               <span className="mt-5 flex flex-wrap gap-2 font-mono text-[12px]">
                 {["MIT", "TypeScript", "Node 20", "Playwright"].map((t) => (
                   <span key={t} className="rounded-full bg-ink/5 px-3 py-1.5">{t}</span>
@@ -523,7 +523,7 @@ export function About() {
             I&apos;m a product designer with 18 years across enterprise AI, SaaS, fintech and logistics. I design and build new concepts most weeks, and each one needs covers before I can post it.
           </p>
           <p className="rise body mt-5 max-w-[560px]">
-            I kept rebuilding the same frames by hand, size after size. cover-studio is the tool I made to stop. It is free and open source.
+            I kept rebuilding the same frames by hand, size after size. cover-studio is the tool I made to stop. It is open source.
           </p>
           <p className="rise body mt-4 max-w-[560px]">
             Everything shown on this page is my own work: Aequor, Haven and Lune on the web, Ostler on the phone.
@@ -563,7 +563,7 @@ export function Closing() {
         <div data-rise-group className="lg:col-span-6">
           <h2 className="h2 split text-[clamp(44px,6.4vw,80px)]">Make your next cover.</h2>
           <p className="rise mt-6 max-w-[440px] text-[clamp(17px,1.4vw,19px)] leading-[1.55] text-white/90">
-            Clone it, point it at your live design and render. The first covers are a few minutes away.
+            Clone it, point it at your design and render. The first covers are a few minutes away.
           </p>
           <a href={REPO} className="rise mt-9 inline-flex items-center gap-2.5 rounded-full bg-white px-6 py-3.5 text-[16px] font-semibold text-ink transition-colors hover:bg-white/85">
             <GitHubMark size={18} />
