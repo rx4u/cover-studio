@@ -76,6 +76,10 @@ npm run cover -- render cover.config.ts     # captures, then renders
 
 Covers are written to `covers/<name>/` as `<name>-<n>-<pattern>-<size>.png`. Captures are cached in `.cover-cache/<name>/`; pass `--fresh` to capture again.
 
+## Use with an AI agent
+
+Claude Code, Codex, Cursor or any agent with a shell can run cover-studio for you. Point it at [AGENTS.md](AGENTS.md): it has the setup, a post-pack config, which pattern fits which job, and the rules.
+
 ## Commands
 
 | Command | What it does |
