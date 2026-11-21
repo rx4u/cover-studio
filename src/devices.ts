@@ -118,15 +118,23 @@ const ICONS = (ink: string) =>
 /** The screen contents: status bar band in the page's own top colour, the capture below it, and the home indicator over it. */
 export type Chrome = { bg: string; dot: string; border: string };
 
-/** Browser window bar inside a laptop or tablet screen: plain, three dots, no address text (frame defaults). */
-const TOOLBAR: Record<string, number> = { macos: 40, ipados: 40 };
+/**
+ * Browser window bar inside a laptop or tablet screen, in the same proportions as the plain browser frame
+ * (40px bar, 11px dots, 8px gap, 18px inset on a 1200px page): no address text.
+ */
+const BAR = { h: 40 / 1200, dot: 11 / 1200, gap: 8 / 1200, pad: 18 / 1200 };
 
 function screen(model: string, img: string, band: string, statusBar: boolean, offset: number, imgWidth: number | null, chrome: Chrome | null = null): string {
   const s = SPECS[model];
   const [, , sw, sh] = geometry(model).screen;
   const k = sw / s.pt;
-  const tb = chrome && TOOLBAR[s.os] ? TOOLBAR[s.os] * k : 0;
-  if (chrome && tb) band = chrome.bg;
+  const browser = !!chrome && (s.os === "macos" || s.os === "ipados");
+  // The iPad screen is narrower than a desktop page, so its bar is drawn a third larger to read at the same size.
+  const f = s.os === "ipados" ? 1.35 : 1;
+  const tb = browser ? BAR.h * sw * f : 0;
+  // A full-screen browser on a notched MacBook: the strip beside the notch is black, the window bar sits below it.
+  // On the iPad the status bar takes the bar colour, as Safari does.
+  if (browser) band = s.os === "macos" ? "#000" : chrome!.bg;
   const barH = s.status * k + tb;
   const ink = lum(band) > 150 ? "#000" : "#fff";
   const pad = s.os === "ios" ? [4, 34, 42] : s.os === "android" ? [0, 22, 24] : [0, 20, 20];
@@ -138,9 +146,9 @@ function screen(model: string, img: string, band: string, statusBar: boolean, of
     ? `<div style="position:absolute;left:50%;bottom:${8 * k}px;width:${s.home[0] * k}px;height:${s.home[1] * k}px;margin-left:${(-s.home[0] * k) / 2}px;border-radius:9px;background:rgba(255,255,255,.92);box-shadow:0 0 1px rgba(0,0,0,.35);z-index:3"></div>`
     : "";
   const w = imgWidth ?? sw;
-  const d = 12 * k;
+  const d = BAR.dot * sw * f;
   const toolbar = tb
-    ? `<div style="position:absolute;left:0;right:0;top:${s.status * k}px;height:${tb}px;display:flex;align-items:center;gap:${8 * k}px;padding:0 ${18 * k}px;background:${chrome!.bg};border-bottom:1px solid ${chrome!.border};box-sizing:border-box;z-index:3">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${chrome!.dot};display:block"></i>`.repeat(3)}</div>`
+    ? `<div style="position:absolute;left:0;right:0;top:${s.status * k}px;height:${tb}px;display:flex;align-items:center;gap:${BAR.gap * sw * f}px;padding:0 ${BAR.pad * sw * f}px;background:${chrome!.bg};border-bottom:1px solid ${chrome!.border};box-sizing:border-box;z-index:3">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${chrome!.dot};display:block"></i>`.repeat(3)}</div>`
     : "";
   return `<div style="position:relative;width:${sw}px;height:${sh}px;overflow:hidden;background:${band}">${bar}${toolbar}<div style="position:absolute;left:0;right:0;top:${barH}px;bottom:0;overflow:hidden"><img src="${url(img)}" style="display:block;width:${w}px;transform:translateY(-${Math.round(offset * (w / s.pt))}px)"></div>${home}</div>`;
 }
