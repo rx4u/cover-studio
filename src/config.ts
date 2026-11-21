@@ -30,6 +30,8 @@ export const schema = z
         mobile: z.boolean().default(true),
         colorScheme: z.enum(["light", "dark", "both"]).default("light"),
         elements: z.array(z.string()).default([]),
+        /** Selector of the site's own logo (the header lockup), captured with a transparent background for brand tiles. */
+        logo: z.string().nullable().default(null),
         before: z.string().url().nullable().default(null),
       })
       .strict(),

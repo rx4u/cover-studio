@@ -36,6 +36,9 @@ export type Manifest = {
   mobileTalls: Tall[];
   /** For each mobile tall capture: section start offsets in CSS px, so phone crops never open mid-sentence. */
   mobileSections: number[][];
+  /** The site's own logo, transparent, when source.logo is set, and the header colour it sits on. */
+  logo?: string | null;
+  logoBg?: string | null;
   /** The site's own photographs, largest first. */
   images?: string[];
   /** Component captures, one per source.elements selector that matched. */
@@ -413,6 +416,8 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   let photoAlt: string | null = null;
   let photo: string | null = null;
   let images: string[] = [];
+  let logo: string | null = null;
+  let logoBg: string | null = null;
   try {
     for (const [pi, path] of c.source.pages.entries()) {
       const url = new URL(path, c.source.url).href;
@@ -441,6 +446,46 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
       sections.push(await stitchPage(page, tall, fullFile, TALL_HEIGHT, FULL_HEIGHT));
       // After the stitch every lazy image has loaded.
       if (pi === 0) images = await saveImages(page, dir);
+      if (pi === 0 && c.source.logo) {
+        await scrollTo(page, 0);
+        const el = await page.$(c.source.logo);
+        if (el) {
+          logo = join(dir, "logo.png");
+          // The surface the logo was designed for: the header colour around it.
+          logoBg = await topPixelColor(page);
+          await page.addStyleTag({ content: "[data-cs-hide]{visibility:hidden!important}[data-cs-bg]::before,[data-cs-bg]::after{display:none!important}" });
+          // Transparent: clear the backgrounds of the logo's ancestors (a header bar, the page) for the shot only.
+          await el.evaluate((t) => {
+            // Everything outside the logo's own line of ancestors is hidden (header blur layers are often siblings).
+            for (const o of document.querySelectorAll<HTMLElement>("body *"))
+              if (!o.contains(t) && !t.contains(o) && o !== t) o.setAttribute("data-cs-hide", "");
+            document.documentElement.style.setProperty("background", "transparent", "important");
+            for (let e: HTMLElement | null = t as HTMLElement; e; e = e.parentElement) {
+              e.setAttribute("data-cs-bg", e.style.background);
+              e.style.setProperty("background", "transparent", "important");
+              e.style.setProperty("backdrop-filter", "none", "important");
+              e.style.setProperty("box-shadow", "none", "important");
+              // Headers often animate their background: without this the shot lands mid-transition.
+              e.style.setProperty("transition", "none", "important");
+            }
+          });
+          await page.waitForTimeout(150);
+          await el.screenshot({ path: logo, type: "png", omitBackground: true, timeout: 60_000 });
+          await el.evaluate((t) => {
+            for (let e: HTMLElement | null = t as HTMLElement; e; e = e.parentElement) {
+              e.style.removeProperty("background");
+              e.style.removeProperty("backdrop-filter");
+              e.style.removeProperty("box-shadow");
+              e.style.removeProperty("transition");
+              const old = e.getAttribute("data-cs-bg");
+              if (old) e.style.background = old;
+              e.removeAttribute("data-cs-bg");
+            }
+            document.documentElement.style.removeProperty("background");
+            document.querySelectorAll("[data-cs-hide]").forEach((o) => o.removeAttribute("data-cs-hide"));
+          });
+        } else console.warn(`  logo not found: ${c.source.logo}`);
+      }
       talls.push({ page: path, file: tall });
       full.push({ page: path, file: fullFile });
       if (pi === 0) {
@@ -551,7 +596,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   } finally {
     await browser.close();
   }
-  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, sections, images, elements, before, photo, photoAlt, capturedAt: new Date().toISOString() };
+  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, sections, images, logo, logoBg, elements, before, photo, photoAlt, capturedAt: new Date().toISOString() };
   await writeFile(manifestPath, JSON.stringify(m, null, 2));
   console.log(`capture: ${shots.length} shots${photo ? " + photo" : ""} in ${dir}`);
   return m;

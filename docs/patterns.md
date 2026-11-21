@@ -123,11 +123,25 @@ Three pages layered diagonally, back to front. Measured from Zajno on Raja's ref
 - Pages about 0.5W wide, steps of 0.13W right and 0.11H down, the group centred and fitted inside 0.88W by 0.86H. Front page lifted shadow, others soft.
 - Views are three distinct parts of the stitched page: the top, then the section starts nearest a third and two thirds down. Section starts are recorded in the stitched image's own coordinates.
 
+### floating
+Two screens floating, one in front. Measured from Zajno's Skymetrics shot, gated 21 Nov 2026.
+- Back: the desktop page's first screen, x 0.05W, from 0.165H, 0.55W wide, soft shadow.
+- Front: the phone screen of a later section, whole and in its own shape (cropped below the sticky header), right edge at 0.945W, centred vertically, lifted shadow. Without mobile captures, a second desktop view from a section start.
+- No browser chrome, radius 12.
+
+### editorial
+The page cut like a magazine spread. Measured from One Week Wonders (Guraisu, Madefact), gated 21 Nov 2026.
+- Margins 0.03W, gaps 0.012W, radius 8, no shadows or chrome.
+- Lead: the top of the page, 0.565W wide from 0.03H, running off the bottom.
+- Right: two different sections stacked, running off the right edge, 1.25x the lead's scale so their own type reads large; the upper runs off the top and ends at 0.4H, the lower fills to the bottom. Each opens 24 CSS px above its section start. No type is added.
+
+### brand-split
+The product beside its brand. Measured from Moyra's BartKolenda case study and Orbyta, gated 21 Nov 2026.
+- Margins 0.045W by 0.08H, gaps 0.01W, radius 14, no shadows.
+- Left, 0.46 of the width: the desktop page. Right top, half the height: the site's own logo (`source.logo`, captured transparent) on its own header colour, or `bento.logo` on the accent, at 0.4 of the panel width. Right bottom: a site photograph and the phone screen of a later section.
+
 ## Further patterns
-- `floating`: several screens loosely placed on neutral.
-- `brand-split`: brand pattern or type on one side, product on the other.
 - `strips-brand`: strips on the brand colour.
-- `editorial`: page fragments with large numerals and type.
 - `overview-grid`: six screens in an even 3x2 grid, for case study openers.
 - `before-after`: current site and new design, same section.
 - `tilt`: one frame in 3D tilt (rotateY about 18deg, rotateX about 8deg).

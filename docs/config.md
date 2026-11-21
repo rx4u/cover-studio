@@ -14,6 +14,7 @@ export default {
     photo: ".hero img",                // selector or URL for photo-ground
     waitFor: null,                     // optional readiness expression
     finishReveals: true,               // scroll once so reveals reach their end state
+    logo: null,                        // selector of the site's own logo (header lockup), for brand-split
     colorScheme: "light",              // light | dark | both; dark grounds use dark captures when there are any
     mobile: true,                      // also capture at 390 wide (page-phone, phone-trio)
     elements: [".pricing-card"],       // component selectors (macro, breakout, ui-bento, bento)
