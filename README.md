@@ -86,6 +86,7 @@ Motion loops and films, a contact sheet, a live preview UI.
 
 - Grounds: [paper-design/shaders](https://github.com/paper-design/shaders), Apache 2.0.
 - Device frames: [react-mockframe](https://github.com/mbdev3/react-mockframe) by Mohammed Banani, MIT. The CSS is vendored in `vendor/react-mockframe/` and its markup pre-rendered to `src/devices.generated.json`, so no React is needed.
+- Status bar glyphs: [device-bars](https://github.com/SimonGolms/device-bars) by Simon Golms, MIT. Its iOS glyphs are [Ionicons](https://github.com/ionic-team/ionicons) (MIT) and its Android glyphs are Google's [Material Icons](https://github.com/google/material-design-icons) (Apache 2.0).
 
 ## License
 

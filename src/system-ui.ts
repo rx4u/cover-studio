@@ -27,24 +27,26 @@ function pads(r: number, height: number, content: number, base: [number, number]
   return [Math.max(base[0], need), Math.max(base[1], need)];
 }
 
-const iosSignal = (ink: string) =>
-  `<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="${ink}"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="${ink}"/><rect x="10" y="3" width="3" height="9" rx="1" fill="${ink}"/><rect x="15" y="0" width="3" height="12" rx="1" fill="${ink}"/></svg>`;
+/*
+ * Glyphs come from device-bars (github.com/SimonGolms/device-bars, MIT): its iOS set is Ionicons (MIT) and its
+ * Android set is Google's Material Icons (Apache 2.0), the icons Android's own status bar uses. Paths are unchanged;
+ * only the viewBox is cropped to each glyph so they size cleanly.
+ */
+const svg = (vb: string, w: number, h: number, body: string) => `<svg width="${w}" height="${h}" viewBox="${vb}">${body}</svg>`;
+const iosSignal = (ink: string, w = 18) =>
+  svg("16 80 480 352", w, (w * 352) / 480, `<g fill="${ink}"><path d="M472,432H424a24,24,0,0,1-24-24V104a24,24,0,0,1,24-24h48a24,24,0,0,1,24,24V408A24,24,0,0,1,472,432Z"/><path d="M344,432H296a24,24,0,0,1-24-24V184a24,24,0,0,1,24-24h48a24,24,0,0,1,24,24V408A24,24,0,0,1,344,432Z"/><path d="M216,432H168a24,24,0,0,1-24-24V248a24,24,0,0,1,24-24h48a24,24,0,0,1,24,24V408A24,24,0,0,1,216,432Z"/><path d="M88,432H40a24,24,0,0,1-24-24V312a24,24,0,0,1,24-24H88a24,24,0,0,1,24,24v96A24,24,0,0,1,88,432Z"/></g>`);
 const appleWifi = (ink: string, w = 16) =>
-  `<svg width="${w}" height="${(w * 12) / 16}" viewBox="0 0 16 12"><path d="M8 11.5 10.4 9a3.4 3.4 0 0 0-4.8 0Z M3.2 6.6a6.8 6.8 0 0 1 9.6 0l1.6-1.6a9.1 9.1 0 0 0-12.8 0Z M0 3.4a11.3 11.3 0 0 1 16 0L14.4 5A9 9 0 0 0 1.6 5Z" fill="${ink}"/></svg>`;
+  svg("32 96 448 320", w, (w * 320) / 448, `<g fill="${ink}"><path d="M256,96c-83,0-166.1,35.8-224,93.7l37.3,39.6c24.3-24.3,52.5-43.3,83.9-56.6C185.8,159,220.3,152,256,152 s70.2,7,102.7,20.7c31.4,13.3,59.7,32.3,83.9,56.6l37.3-39.6C422.1,131.8,339,96,256,96L256,96z"/><path d="M256,209c-57.2,0-109,23.1-146.6,60.4L149,309c28.7-28.4,66.6-44,107-44c40.4,0,78.3,15.6,107,44l39.6-39.6 C365,232.1,313.2,209,256,209L256,209z"/><path d="M256,321c-25.9,0-48.9,12.3-63.6,31.4L256,416l63.6-63.6C304.9,333.3,281.9,321,256,321L256,321z"/></g>`);
 const appleBattery = (ink: string, w = 27) =>
-  `<svg width="${w}" height="${(w * 13) / 27}" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="${ink}" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="${ink}"/><path d="M25 4.5v4a2 2 0 0 0 0-4Z" fill="${ink}" opacity=".4"/></svg>`;
-/** macOS Control Centre: two stacked toggles. */
+  svg("16 144 480 224", w, (w * 224) / 480, `<g fill="${ink}"><path opacity=".5" d="M396,144H64c-26.4,0-48,21.6-48,48v128c0,26.4,21.6,48,48,48h332c26.4,0,48-21.6,48-48V192C444,165.6,422.4,144,396,144z M416,320c0,11-9,20-20,20H64c-11,0-20-9-20-20V192c0-11,9-20,20-20h332c11,0,20,9,20,20V320z"/><path opacity=".5" d="M464,204.6v102.8c16,0,32-27.7,32-51.4C496,232.3,480,204.6,464,204.6z"/><path d="M384,192H76c-6.6,0-12,5.4-12,12v104c0,6.6,5.4,12,12,12h308c6.6,0,12-5.4,12-12V204C396,197.4,390.6,192,384,192z"/></g>`);
+/** macOS Control Centre: two stacked toggles (no open glyph exists for it). */
 const macControl = (ink: string) =>
   `<svg width="15" height="13" viewBox="0 0 15 13"><rect x=".75" y=".75" width="13.5" height="4.5" rx="2.25" fill="none" stroke="${ink}" stroke-width="1.3"/><circle cx="3" cy="3" r="1.4" fill="${ink}"/><rect x=".75" y="7.75" width="13.5" height="4.5" rx="2.25" fill="none" stroke="${ink}" stroke-width="1.3"/><circle cx="12" cy="10" r="1.4" fill="${ink}"/></svg>`;
-/** Material wifi: a filled fan. */
 const androidWifi = (ink: string) =>
-  `<svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 21 0.5 7.5A17.5 17.5 0 0 1 23.5 7.5Z" fill="${ink}"/></svg>`;
-/** Material cellular: a filled right triangle. */
-const androidSignal = (ink: string) =>
-  `<svg width="15" height="15" viewBox="0 0 24 24"><path d="M2 22 22 2v20Z" fill="${ink}"/></svg>`;
-/** Material battery: an upright pill. */
+  svg("0 3 24 19", 17, 13.5, `<path fill="${ink}" d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"/>`);
+const androidSignal = (ink: string) => svg("2 2 20 20", 14, 14, `<path fill="${ink}" d="M2 22h20V2z"/>`);
 const androidBattery = (ink: string) =>
-  `<svg width="9" height="16" viewBox="0 0 9 16"><rect x="2.5" y="0" width="4" height="2" rx=".6" fill="${ink}"/><rect x="0" y="1.5" width="9" height="14.5" rx="1.8" fill="${ink}"/></svg>`;
+  svg("7 2 10 20", 8, 16, `<path fill="${ink}" d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>`);
 
 /** iPhone: time left of the island, signal, wifi and battery right of it. 62pt tall on Dynamic Island models. */
 export function iosStatus(width: number, height: number, ink: string, r: number): string {
@@ -55,7 +57,7 @@ export function iosStatus(width: number, height: number, ink: string, r: number)
 /** iPad (wifi model): time and date left, wifi and battery right. No cellular bars. 24pt tall. */
 export function ipadStatus(width: number, height: number, ink: string, r: number): string {
   const [l, rt] = pads(r, height, 14, [38, 34]);
-  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:0 ${rt}px 0 ${l}px;box-sizing:border-box;font:600 14px/1 ${APPLE_FONT};color:${ink}"><span>9:41<span style="font-weight:500;margin-left:7px">Sat 21 Nov</span></span><span style="display:flex;gap:6px;align-items:center">${appleWifi(ink, 15)}${appleBattery(ink, 25)}</span></div>`;
+  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:0 ${rt}px 0 ${l}px;box-sizing:border-box;font:600 14px/1 ${APPLE_FONT};color:${ink}"><span>9:41<span style="font-weight:500;margin-left:7px">Sat 21 Nov</span></span><span style="display:flex;gap:6px;align-items:center">${appleWifi(ink, 15)}<span style="font-weight:500">100%</span>${appleBattery(ink, 25)}</span></div>`;
 }
 
 /** Android (Pixel, Galaxy): time left, wifi, signal and battery right, Material shapes. */
