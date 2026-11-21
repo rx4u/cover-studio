@@ -110,15 +110,34 @@ export function branding(c: Config, w: number, h: number, isCover: boolean): { h
   return { html: side(b.left, "left") + side(b.right, "right"), top: Math.round(y + tallest + h * 0.04) };
 }
 
-/** Plain phone: black bezel, rounded, a small island. No status bar, tabs or badges. */
-export function phone(canvasW: number, img: string, box: { x: number; y: number; w: number }, offsetY = 0, extra = ""): string {
+/**
+ * A modern phone: thin black bezel with a metal edge, side buttons and an island.
+ * The page starts below a status bar band in the page's own top colour, so the island never covers content.
+ * `offset` is the crop start in CSS px of the 390-wide capture. No fake clock, battery or badges.
+ */
+export function phone(canvasW: number, img: string, box: { x: number; y: number; w: number }, offset = 0, band = "#ffffff", extra = ""): string {
   const k = canvasW / 1600;
-  const bezel = Math.max(6, Math.round(box.w * 0.035));
-  const screenW = box.w - bezel * 2;
-  const screenH = Math.round(screenW * (844 / 390));
-  const r = Math.round(box.w * 0.17);
-  const island = `<i style="position:absolute;top:${bezel + Math.round(screenW * 0.03)}px;left:50%;transform:translateX(-50%);width:${Math.round(screenW * 0.3)}px;height:${Math.round(screenW * 0.085)}px;border-radius:99px;background:#000;display:block;z-index:2"></i>`;
-  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;padding:${bezel}px;border-radius:${r}px;background:#111;box-shadow:0 ${Math.round(50 * k)}px ${Math.round(90 * k)}px -${Math.round(30 * k)}px rgba(0,0,0,.4);${extra}">${island}<div style="width:${screenW}px;height:${screenH}px;border-radius:${r - bezel}px;overflow:hidden;background:#fff"><img src="${url(img)}" style="display:block;width:100%;height:100%;object-fit:cover;object-position:50% ${offsetY}%"></div></div>`;
+  const W = box.w;
+  const bezel = Math.max(4, Math.round(W * 0.03));
+  const sw = W - bezel * 2;
+  const sh = Math.round(sw * 2.165);
+  const H = sh + bezel * 2;
+  const r = Math.round(W * 0.16);
+  const sr = r - bezel;
+  const barH = Math.round(sw * 0.13);
+  const scale = sw / 390;
+  const islandW = Math.round(sw * 0.31), islandH = Math.round(sw * 0.088);
+  const btn = (side: "left" | "right", top: number, h: number) =>
+    `<i style="position:absolute;${side}:-${Math.max(2, Math.round(W * 0.011))}px;top:${Math.round(H * top)}px;width:${Math.max(2, Math.round(W * 0.012))}px;height:${Math.round(H * h)}px;border-radius:2px;background:linear-gradient(${side === "left" ? 90 : 270}deg,#5a5a5f,#2a2a2d);display:block"></i>`;
+  const shadow = `0 ${Math.round(2 * k)}px ${Math.round(4 * k)}px rgba(0,0,0,.25), 0 ${Math.round(24 * k)}px ${Math.round(40 * k)}px -${Math.round(12 * k)}px rgba(0,0,0,.28), 0 ${Math.round(70 * k)}px ${Math.round(120 * k)}px -${Math.round(30 * k)}px rgba(0,0,0,.35)`;
+  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${W}px;height:${H}px;${extra}">
+${btn("left", 0.175, 0.035)}${btn("left", 0.245, 0.065)}${btn("left", 0.325, 0.065)}${btn("right", 0.27, 0.1)}
+<div style="position:relative;width:${W}px;height:${H}px;padding:${bezel}px;border-radius:${r}px;background:#0b0b0c;box-shadow:${shadow}, inset 0 0 0 ${Math.max(1, Math.round(1.5 * k))}px #4b4b50, inset 0 0 0 ${Math.max(2, Math.round(3 * k))}px #161618">
+<div style="position:relative;width:${sw}px;height:${sh}px;border-radius:${sr}px;overflow:hidden;background:${band}">
+<div style="height:${barH}px;background:${band}"></div>
+<div style="height:${sh - barH}px;overflow:hidden"><img src="${url(img)}" style="display:block;width:${sw}px;transform:translateY(-${Math.round(offset * scale)}px)"></div>
+<i style="position:absolute;top:${Math.round(sw * 0.032)}px;left:50%;transform:translateX(-50%);width:${islandW}px;height:${islandH}px;border-radius:99px;background:#000;display:block"></i>
+</div></div></div>`;
 }
 
 /** A borderless rounded image tile with a soft shadow, cover-fit inside its box. */

@@ -8,7 +8,7 @@ import type { Config } from "./config.ts";
 export const VIEWPORT = { width: 1440, height: 900 };
 export const SCALE = 2;
 
-export type Shot = { page: string; y: number; file: string };
+export type Shot = { page: string; y: number; file: string; /** Background colour at the top of the page, for the phone status bar band. */ topColor?: string };
 export type Tall = { page: string; file: string };
 export type Manifest = {
   key: string;
@@ -20,6 +20,8 @@ export type Manifest = {
   /** Mobile viewport shots (390 wide) and tall mobile captures. */
   mobile: Shot[];
   mobileTalls: Tall[];
+  /** For each mobile tall capture: section start offsets in CSS px, so phone crops never open mid-sentence. */
+  mobileSections: number[][];
   /** Component captures, one per source.elements selector that matched. */
   elements: string[];
   /** Capture of source.before, for before-after. */
@@ -121,13 +123,32 @@ async function savePhoto(page: Page, c: Config, dir: string): Promise<string | n
   return null;
 }
 
+/** Average colour of the top rows of the current viewport, read from real pixels. */
+async function topPixelColor(page: Page): Promise<string> {
+  const buf = await page.screenshot({ type: "png", clip: { x: 0, y: 0, width: page.viewportSize()!.width, height: 3 } });
+  return page.evaluate(async (b64) => {
+    const img = new Image();
+    img.src = "data:image/png;base64," + b64;
+    await img.decode();
+    const cv = document.createElement("canvas");
+    cv.width = img.width;
+    cv.height = img.height;
+    const g = cv.getContext("2d")!;
+    g.drawImage(img, 0, 0);
+    const d = g.getImageData(0, 0, img.width, img.height).data;
+    let r = 0, gr = 0, bl = 0, n = 0;
+    for (let i = 0; i < d.length; i += 4) { r += d[i]; gr += d[i + 1]; bl += d[i + 2]; n++; }
+    return `rgb(${Math.round(r / n)},${Math.round(gr / n)},${Math.round(bl / n)})`;
+  }, buf.toString("base64"));
+}
+
 export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const dir = cacheDir(c);
   const manifestPath = join(dir, "manifest.json");
   const key = cacheKey(c);
   if (!fresh && existsSync(manifestPath)) {
     const m = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest;
-    if (m.key === key && m.full && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
+    if (m.key === key && m.full && m.mobileSections && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
       console.log(`capture: using cache (${m.shots.length} shots). Pass --fresh to recapture.`);
       return m;
     }
@@ -143,6 +164,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const full: Tall[] = [];
   const mobile: Shot[] = [];
   const mobileTalls: Tall[] = [];
+  const mobileSections: number[][] = [];
   const elements: string[] = [];
   let before: string | null = null;
   let photo: string | null = null;
@@ -201,7 +223,25 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
         if (c.source.finishReveals) await finishReveals(mp);
         const file = join(dir, `m${pi}-y0.png`);
         await mp.screenshot({ path: file, type: "png" });
-        mobile.push({ page: path, y: 0, file });
+        const topColor = await topPixelColor(mp);
+        mobile.push({ page: path, y: 0, file, topColor });
+        const sections = await mp.evaluate(() => {
+          const tops = [...document.querySelectorAll("section, main > *, article, [class*='section']")]
+            .map((e) => Math.round(e.getBoundingClientRect().top + window.scrollY))
+            .filter((t) => t > 400);
+          return [...new Set(tops)].sort((a, b) => a - b);
+        });
+        mobileSections.push(sections);
+        // On the first page, also capture two sections by really scrolling to them, so their reveals play.
+        if (pi === 0) {
+          for (const top of sections.filter((t) => t > 844 * 0.9).slice(0, 2)) {
+            await scrollTo(mp, top);
+            const sf = join(dir, `m${pi}-y${top}.png`);
+            await mp.screenshot({ path: sf, type: "png" });
+            mobile.push({ page: path, y: top, file: sf, topColor: await topPixelColor(mp) });
+          }
+          await scrollTo(mp, 0);
+        }
         const h = await mp.evaluate(() => document.documentElement.scrollHeight);
         const tall = join(dir, `m${pi}-tall.png`);
         await mp.screenshot({ path: tall, type: "png", fullPage: true, clip: { x: 0, y: 0, width: MOBILE.width, height: Math.min(h, MOBILE.height * 4) } });
@@ -221,7 +261,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   } finally {
     await browser.close();
   }
-  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, elements, before, photo, capturedAt: new Date().toISOString() };
+  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, elements, before, photo, capturedAt: new Date().toISOString() };
   await writeFile(manifestPath, JSON.stringify(m, null, 2));
   console.log(`capture: ${shots.length} shots${photo ? " + photo" : ""} in ${dir}`);
   return m;

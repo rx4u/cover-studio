@@ -1,27 +1,35 @@
 import { phone } from "../look.ts";
-import type { Pattern } from "./types.ts";
+import type { Ctx, Pattern } from "./types.ts";
 
-/** Three phones, the middle one larger and raised. Uses mobile shots, then segments of the tall mobile capture. */
+type Screen = { file: string; offset: number; band: string };
+
+/** Three distinct screens: page tops first, then sections captured by scrolling to them. */
+function pick({ m }: Ctx): Screen[] {
+  const tops = m.mobile.filter((s) => s.y === 0);
+  const sections = m.mobile.filter((s) => s.y > 0);
+  const order = [tops[0], tops[1] ?? sections[0], sections[tops[1] ? 0 : 1] ?? sections[0], ...sections].filter(Boolean);
+  const out: Screen[] = [...new Set(order)].map((s) => ({ file: s.file, offset: 0, band: s.topColor ?? "#ffffff" }));
+  while (out.length < 3) out.push(out[out.length - 1]);
+  return out.slice(0, 3);
+}
+
+/** Three phones, the middle one larger and in front, slightly overlapping. Running off the bottom is fine. */
 export const phoneTrio: Pattern = {
   id: "phone-trio",
   unavailable: ({ m }) => (m.mobile?.length ? null : "no mobile capture; set source.mobile to true"),
-  render({ m, top }, w, h) {
-    const imgs: { file: string; off: number }[] = m.mobile.map((s) => ({ file: s.file, off: 0 }));
-    const t = m.mobileTalls[0];
-    for (const off of [40, 80]) if (imgs.length < 3 && t) imgs.push({ file: t.file, off });
-    while (imgs.length < 3) imgs.push(imgs[0]);
-    const pw = Math.round(Math.min(w * 0.22, (h - top) * 0.78 * (390 / 844)));
-    const gap = Math.round(w * 0.03);
-    const mid = Math.round(pw * 1.06);
-    const total = pw * 2 + mid + gap * 2;
+  render(ctx, w, h) {
+    const [a, b, c] = pick(ctx);
+    const pw = Math.round(Math.min(w * 0.25, h * 0.42));
+    const mid = Math.round(pw * 1.08);
+    const overlap = Math.round(pw * 0.06);
+    const total = pw * 2 + mid - overlap * 2;
     const x0 = Math.round((w - total) / 2);
-    const phoneH = (p: number) => p * (844 / 390);
-    const baseY = Math.max(top, Math.round((h - phoneH(pw)) / 2 + h * 0.03));
-    const midY = Math.max(top, baseY - Math.round(h * 0.05) - Math.round((phoneH(mid) - phoneH(pw)) / 2));
+    const sideY = Math.max(ctx.top, Math.round(h * 0.14));
+    const midY = Math.max(ctx.top, Math.round(h * 0.07));
     return (
-      phone(w, imgs[0].file, { x: x0, y: baseY, w: pw }, imgs[0].off) +
-      phone(w, imgs[2].file, { x: x0 + pw + gap + mid + gap, y: baseY, w: pw }, imgs[2].off) +
-      phone(w, imgs[1].file, { x: x0 + pw + gap, y: midY, w: mid }, imgs[1].off)
+      phone(w, a.file, { x: x0, y: sideY, w: pw }, a.offset, a.band) +
+      phone(w, c.file, { x: x0 + pw + mid - overlap * 2, y: sideY, w: pw }, c.offset, c.band) +
+      phone(w, b.file, { x: x0 + pw - overlap, y: midY, w: mid }, b.offset, b.band, "z-index:2")
     );
   },
 };
