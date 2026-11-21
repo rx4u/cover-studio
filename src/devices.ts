@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
 import type { Config } from "./config.ts";
 import { url } from "./look.ts";
+import { androidStatus, iosStatus, ipadStatus, macMenuBar } from "./system-ui.ts";
 
 /**
  * Device frames. The markup and CSS come from react-mockframe (MIT, vendor/react-mockframe), rendered once to static HTML
@@ -112,45 +113,54 @@ export function colourFor(c: Config, model: string, requested = c.phone.colour):
   return names.find((n) => tones[n] === "light") ?? names[0];
 }
 
-const ICONS = (ink: string) =>
-  `<svg width="78" height="13" viewBox="0 0 78 13"><rect x="0" y="8" width="3" height="4" rx="1" fill="${ink}"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="${ink}"/><rect x="10" y="3" width="3" height="9" rx="1" fill="${ink}"/><rect x="15" y="0" width="3" height="12" rx="1" fill="${ink}"/><path transform="translate(25 0)" d="M8 11.5 10.4 9a3.4 3.4 0 0 0-4.8 0Z M3.2 6.6a6.8 6.8 0 0 1 9.6 0l1.6-1.6a9.1 9.1 0 0 0-12.8 0Z M0 3.4a11.3 11.3 0 0 1 16 0L14.4 5A9 9 0 0 0 1.6 5Z" fill="${ink}"/><g transform="translate(48 0)"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="${ink}" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="${ink}"/><path d="M25 4.5v4a2 2 0 0 0 0-4Z" fill="${ink}" opacity=".4"/></g></svg>`;
+/** Chrome colours for browser bars and the macOS menu bar, from frame.theme. */
+export type Chrome = { bg: string; dot: string; border: string; menu: string; ink: string };
 
-/** The screen contents: status bar band in the page's own top colour, the capture below it, and the home indicator over it. */
-export type Chrome = { bg: string; dot: string; border: string };
+export const CHROME = {
+  light: { bg: "#F6F6F4", dot: "#D8D8D5", border: "rgba(0,0,0,.08)", menu: "#E8E8E6", ink: "#1D1D1F" },
+  dark: { bg: "#1B1C1C", dot: "#3B3C3C", border: "rgba(255,255,255,.08)", menu: "#111212", ink: "#F2F2F2" },
+} satisfies Record<string, Chrome>;
 
 /**
  * Browser window bar inside a laptop or tablet screen, in the same proportions as the plain browser frame
- * (40px bar, 11px dots, 8px gap, 18px inset on a 1200px page): no address text.
+ * (40px bar, 11px dots, 8px gap, 18px inset on a 1200px page). Grey dots are the inactive-window controls; no address text.
  */
 const BAR = { h: 40 / 1200, dot: 11 / 1200, gap: 8 / 1200, pad: 18 / 1200 };
 
-function screen(model: string, img: string, band: string, statusBar: boolean, offset: number, imgWidth: number | null, chrome: Chrome | null = null): string {
+/**
+ * The screen contents for one device: its platform's own system UI (system-ui.ts), the browser window bar when asked
+ * for, the capture below, and the home indicator on touch devices.
+ */
+function screen(model: string, img: string, pageTop: string, statusBar: boolean, offset: number, imgWidth: number | null, chrome: Chrome | null, browser: boolean): string {
   const s = SPECS[model];
   const [, , sw, sh] = geometry(model).screen;
   const k = sw / s.pt;
-  const browser = !!chrome && (s.os === "macos" || s.os === "ipados");
-  // The iPad screen is narrower than a desktop page, so its bar is drawn a third larger to read at the same size.
-  const f = s.os === "ipados" ? 1.35 : 1;
-  const tb = browser ? BAR.h * sw * f : 0;
-  // A full-screen browser on a notched MacBook: the strip beside the notch is black, the window bar sits below it.
-  // On the iPad the status bar takes the bar colour, as Safari does.
-  if (browser) band = s.os === "macos" ? "#000" : chrome!.bg;
-  const barH = s.status * k + tb;
+  const scaled = (html: string, h: number) => `<div style="position:absolute;left:0;top:0;width:${s.pt}px;height:${h}px;transform:scale(${k});transform-origin:0 0;z-index:3">${html}</div>`;
+  const c = chrome ?? CHROME.light;
+  const tablet = s.os === "ipados";
+  const laptop = s.os === "macos";
+  const hasBar = browser && (tablet || laptop);
+  // The band behind the system UI: the page's own top colour on phones; the browser bar colour on a tablet with a bar.
+  const band = hasBar && tablet ? c.bg : pageTop;
   const ink = lum(band) > 150 ? "#000" : "#fff";
-  const pad = s.os === "ios" ? [4, 34, 42] : s.os === "android" ? [0, 22, 24] : [0, 20, 20];
-  const font = s.os === "android" ? "500 15px Roboto,system-ui,sans-serif" : "600 17px -apple-system,'SF Pro Text',system-ui,sans-serif";
-  const bar = statusBar && s.os !== "macos"
-    ? `<div style="position:absolute;left:0;right:0;top:0;height:${s.status}px;width:${s.pt}px;transform:scale(${k});transform-origin:0 0;display:flex;align-items:center;justify-content:space-between;padding:${pad[0]}px ${pad[1]}px 0 ${pad[2]}px;box-sizing:border-box;font:${font};color:${ink};z-index:3"><span>9:41</span>${ICONS(ink)}</div>`
+  let system = "";
+  if (laptop) system = scaled(macMenuBar(s.pt, s.status, c.menu, c.ink), s.status);
+  else if (statusBar) {
+    const html = s.os === "ios" ? iosStatus(s.pt, s.status, ink) : s.os === "android" ? androidStatus(s.pt, s.status, ink) : ipadStatus(s.pt, s.status, ink);
+    system = scaled(html, s.status);
+  }
+  const f = tablet ? 1.35 : 1;
+  const tb = hasBar ? BAR.h * sw * f : 0;
+  const d = BAR.dot * sw * f;
+  const toolbar = tb
+    ? `<div style="position:absolute;left:0;right:0;top:${s.status * k}px;height:${tb}px;display:flex;align-items:center;gap:${BAR.gap * sw * f}px;padding:0 ${BAR.pad * sw * f}px;background:${c.bg};border-bottom:1px solid ${c.border};box-sizing:border-box;z-index:3">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${c.dot};display:block"></i>`.repeat(3)}</div>`
     : "";
   const home = s.home && statusBar
     ? `<div style="position:absolute;left:50%;bottom:${8 * k}px;width:${s.home[0] * k}px;height:${s.home[1] * k}px;margin-left:${(-s.home[0] * k) / 2}px;border-radius:9px;background:rgba(255,255,255,.92);box-shadow:0 0 1px rgba(0,0,0,.35);z-index:3"></div>`
     : "";
+  const top = s.status * k + tb;
   const w = imgWidth ?? sw;
-  const d = BAR.dot * sw * f;
-  const toolbar = tb
-    ? `<div style="position:absolute;left:0;right:0;top:${s.status * k}px;height:${tb}px;display:flex;align-items:center;gap:${BAR.gap * sw * f}px;padding:0 ${BAR.pad * sw * f}px;background:${chrome!.bg};border-bottom:1px solid ${chrome!.border};box-sizing:border-box;z-index:3">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${chrome!.dot};display:block"></i>`.repeat(3)}</div>`
-    : "";
-  return `<div style="position:relative;width:${sw}px;height:${sh}px;overflow:hidden;background:${band}">${bar}${toolbar}<div style="position:absolute;left:0;right:0;top:${barH}px;bottom:0;overflow:hidden"><img src="${url(img)}" style="display:block;width:${w}px;transform:translateY(-${Math.round(offset * (w / s.pt))}px)"></div>${home}</div>`;
+  return `<div style="position:relative;width:${sw}px;height:${sh}px;overflow:hidden;background:${band}">${system}${toolbar}<div style="position:absolute;left:0;right:0;top:${top}px;bottom:0;overflow:hidden"><img src="${url(img)}" style="display:block;width:${w}px;transform:translateY(-${Math.round(offset * (w / s.pt))}px)"></div>${home}</div>`;
 }
 
 export type DeviceOpts = {
@@ -163,8 +173,10 @@ export type DeviceOpts = {
   extra?: string;
   /** Laptops show a desktop capture fitted to the screen width. */
   desktop?: boolean;
-  /** Browser window bar inside a laptop or tablet screen. */
+  /** Colours for the browser bar and the macOS menu bar (frame.theme). */
   chrome?: Chrome | null;
+  /** Draw the browser window bar (frame.style "browser") on a laptop or tablet. */
+  browser?: boolean;
   /** No hardware: the screen alone with rounded corners and a hairline rim (Nixtio). */
   frameless?: boolean;
 };
@@ -182,7 +194,7 @@ export function device(canvasW: number, img: string, box: { x: number; y: number
   const [a1, a2] = tone === "dark" ? [0.2, 0.26] : [0.12, 0.16];
   const ink = tone === "dark" ? "0,0,0" : "20,30,45";
   const shadow = `drop-shadow(0 ${Math.round(3 * k)}px ${Math.round(5 * k)}px rgba(${ink},${a1})) drop-shadow(0 ${Math.round(40 * k)}px ${Math.round(60 * k)}px rgba(${ink},${a2}))`;
-  const scr = screen(o.model, img, o.band ?? "#ffffff", o.statusBar !== false, o.offset ?? 0, o.desktop ? g.geometry.screen[2] : null, o.chrome ?? null);
+  const scr = screen(o.model, img, o.band ?? "#ffffff", o.statusBar !== false, o.offset ?? 0, o.desktop ? g.geometry.screen[2] : null, o.chrome ?? null, !!o.browser);
   if (o.frameless) {
     const [, , sw, sh] = g.geometry.screen;
     const f = box.w / sw;
