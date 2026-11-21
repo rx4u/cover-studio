@@ -34,45 +34,70 @@ function Head({ eyebrow, title, line }: { eyebrow: string; title: string; line?:
   );
 }
 
-/* 01 Why ------------------------------------------------------------------ */
+/* 01 Why: drag to compare the raw screenshot with the cover ---------------- */
 
-const WHY = [
-  { bg: "bg-lilac", n: "01", t: "A screenshot is not a cover.", d: "A raw capture sits next to designed posts and looks unfinished. The work deserves a frame." },
-  { bg: "bg-mint", n: "02", t: "Every channel wants another size.", d: "4:3 for Dribbble, 16:9 for slides, 1.91:1 for link previews. Rebuilding each one by hand eats the afternoon." },
-  { bg: "bg-sky", n: "03", t: "Mockup tools make things up.", d: "Stock scenes, placeholder text, a device you do not ship on. cover-studio only uses what is on your site." },
+const POINTS = [
+  { c: "bg-lilac", t: "A screenshot is not a cover", d: "Next to designed posts, a raw capture looks unfinished." },
+  { c: "bg-mint", t: "Every channel wants a size", d: "4:3, 16:9 and 1.91:1, rebuilt by hand each time." },
+  { c: "bg-sky", t: "Mockups make things up", d: "Stock scenes and devices you do not ship on." },
 ];
 
 export function Why() {
   const root = useRef<HTMLElement>(null);
+  const [pos, setPos] = useState(50);
   useRise(root);
   useGSAP(
     () => {
       if (reduced()) return;
-      gsap.from(".why-card", {
-        y: 140,
-        rotate: (i) => [-4, 2, 5][i],
-        opacity: 0,
-        duration: 1.3,
-        ease: "expo.out",
-        stagger: 0.12,
-        scrollTrigger: { trigger: ".why-grid", start: "top 80%" },
+      const o = { v: 92 };
+      gsap.to(o, {
+        v: 50,
+        duration: 1.8,
+        ease: "expo.inOut",
+        onUpdate: () => setPos(o.v),
+        scrollTrigger: { trigger: ".cmp", start: "top 70%" },
       });
     },
     { scope: root },
   );
   return (
     <section id="why" ref={root} className="wrap pt-32 sm:pt-40">
-      <Head eyebrow="01 · Why it exists" title="Your work is finished. The post is not." />
-      <div className="why-grid mt-16 grid gap-4 md:grid-cols-3">
-        {WHY.map((w) => (
-          <article key={w.n} className={`why-card ${w.bg} flex min-h-[340px] flex-col justify-between rounded-[28px] p-8`}>
-            <span className="font-mono text-[13px]">{w.n}</span>
-            <div>
-              <h3 className="display text-[34px] leading-[0.98]">{w.t}</h3>
-              <p className="mt-4 text-[16px] leading-[1.55] text-ink-2">{w.d}</p>
-            </div>
-          </article>
-        ))}
+      <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
+        <div data-rise-group className="lg:col-span-5">
+          <p className="eyebrow rise">01 · Why it exists</p>
+          <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Same site. Drag to see the difference.</h2>
+        </div>
+        <ul data-rise-group className="grid gap-3 sm:grid-cols-3 lg:col-span-7">
+          {POINTS.map((p) => (
+            <li key={p.t} className={`rise ${p.c} rounded-2xl p-5`}>
+              <p className="text-[16px] font-semibold leading-tight">{p.t}</p>
+              <p className="mt-2 text-[14px] leading-[1.5] text-ink-2">{p.d}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="cmp relative mt-12 aspect-[4/3] select-none overflow-hidden rounded-[28px] bg-night sm:aspect-[16/10]">
+        <img src="/covers/why-after.webp" alt="The same site as a bento cover made by cover-studio" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
+          <img src="/covers/why-before.webp" alt="A raw screenshot of the site" className="absolute inset-0 h-full w-full object-cover object-top" />
+        </div>
+        <span className="pointer-events-none absolute top-5 left-5 rounded-full bg-white px-3 py-1.5 font-mono text-[12px]">Raw screenshot</span>
+        <span className="pointer-events-none absolute top-5 right-5 rounded-full bg-cobalt px-3 py-1.5 font-mono text-[12px] text-white">cover-studio</span>
+        <div className="pointer-events-none absolute inset-y-0 w-[2px] bg-white" style={{ left: `${pos}%` }}>
+          <span className="absolute top-1/2 left-1/2 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white shadow-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0f0f" strokeWidth="2" aria-hidden="true"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" /></svg>
+          </span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={0.5}
+          value={pos}
+          onChange={(e) => setPos(Number(e.target.value))}
+          aria-label="Compare the raw screenshot with the cover"
+          className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
+        />
       </div>
     </section>
   );
@@ -149,77 +174,73 @@ export function How() {
   );
 }
 
-/* 03 Patterns teaser -------------------------------------------------------- */
+/* 03 Patterns: a pinned horizontal run of real covers ------------------------ */
 
 const PATTERNS = [
-  { id: "bento", d: "Hero, phone, photos and a component on one grid" },
-  { id: "floating", d: "Phone and desktop as one overlapping group" },
-  { id: "phone-trio", d: "Three phones, mixed models, real system UI" },
-  { id: "cascade", d: "Three sections layered off the edge" },
-  { id: "overview-grid", d: "The whole site as a staggered mosaic" },
-  { id: "tilt", d: "The mosaic, turned and leaning back" },
+  { id: "bento", site: "Haven", d: "Hero, phone, photos and a component on one grid" },
+  { id: "floating", site: "Lune", d: "Phone and desktop as one overlapping group" },
+  { id: "phone-trio", site: "Aequor", d: "Three phones, mixed models, real system UI" },
+  { id: "cascade", site: "Wheelhouse", d: "Three sections layered off the edge" },
+  { id: "overview-grid", site: "Lune", d: "The whole site as a staggered mosaic" },
+  { id: "brand-split", site: "Aequor", d: "The page beside its own logo and photo" },
+  { id: "editorial", site: "Haven", d: "A lead column and two sections, larger" },
+  { id: "tilt", site: "Haven", d: "The mosaic, turned and leaning back" },
 ];
 
 export function Patterns() {
   const root = useRef<HTMLElement>(null);
-  const [on, setOn] = useState(0);
   useRise(root);
-  const show = (i: number) => {
-    if (i === on) return;
-    setOn(i);
-    if (reduced()) return;
-    gsap.fromTo(`.pat-img-${i}`, { opacity: 0, scale: 1.04, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "expo.out" });
-  };
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
+        const track = root.current!.querySelector<HTMLElement>(".pat-track")!;
+        const dist = () => track.scrollWidth - window.innerWidth + 64;
+        gsap.to(track, {
+          x: () => -dist(),
+          ease: "none",
+          scrollTrigger: { trigger: ".pat-pin", start: "top top", end: () => "+=" + dist(), pin: true, scrub: 0.6, invalidateOnRefresh: true },
+        });
+        gsap.from(".pat-card", { y: 80, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, scrollTrigger: { trigger: ".pat-pin", start: "top 75%" } });
+      });
+    },
+    { scope: root },
+  );
   return (
-    <section id="patterns" ref={root} className="wrap pt-32 sm:pt-40">
-      <Head eyebrow="03 · Patterns" title="Eighteen layouts, measured from the best." line="Each one is taken from a reference cover and built in proportions of the canvas. Here are six." />
-      <div className="mt-16 grid gap-10 lg:grid-cols-12 lg:items-center">
-        <ul data-rise-group className="lg:col-span-5">
+    <section id="patterns" ref={root} className="pt-32 sm:pt-40">
+      <div className="pat-pin flex flex-col justify-center overflow-hidden lg:h-screen">
+        <div className="wrap flex flex-wrap items-end justify-between gap-6">
+          <div data-rise-group>
+            <p className="eyebrow rise">03 · Patterns</p>
+            <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Eight of eighteen.</h2>
+          </div>
+          <a href={`${REPO}/blob/main/docs/patterns.md`} className="font-mono text-[14px] underline decoration-ink/30 underline-offset-4 hover:text-cobalt">
+            All 18, with their measurements
+          </a>
+        </div>
+        <ul className="pat-track mt-12 flex snap-x gap-5 overflow-x-auto px-8 pb-4 lg:w-max lg:overflow-visible lg:px-[max(32px,calc((100vw-1216px)/2+32px))]">
           {PATTERNS.map((p, i) => (
-            <li key={p.id} className="rise border-t border-line last:border-b">
-              <button
-                type="button"
-                onMouseEnter={() => show(i)}
-                onFocus={() => show(i)}
-                onClick={() => show(i)}
-                aria-pressed={on === i}
-                className="group flex w-full cursor-pointer items-baseline gap-5 py-5 text-left"
-              >
-                <span className={`font-mono text-[12px] transition-colors ${on === i ? "text-cobalt" : "text-mute"}`}>P{String(i + 1).padStart(2, "0")}</span>
-                <span className="flex-1">
-                  <span className={`display block text-[30px] transition-transform duration-500 ${on === i ? "translate-x-2" : ""}`}>{p.id}</span>
-                  <span className={`mt-1 block text-[15px] text-ink-2 transition-opacity ${on === i ? "opacity-100" : "opacity-60"}`}>{p.d}</span>
-                </span>
-                <span aria-hidden="true" className={`text-[22px] transition-all duration-500 ${on === i ? "translate-x-0 opacity-100" : "-translate-x-3 opacity-0"}`}>→</span>
-              </button>
+            <li key={p.id} className="pat-card w-[78vw] shrink-0 snap-start sm:w-[520px] lg:w-[600px]">
+              <img src={`/covers/p-${p.id}.webp`} alt={`${p.id} cover made by cover-studio from ${p.site}`} className="block aspect-[4/3] w-full rounded-[22px] object-cover" />
+              <div className="mt-4 flex items-baseline gap-4">
+                <span className="font-mono text-[12px] text-cobalt">P{String(i + 1).padStart(2, "0")}</span>
+                <span className="display text-[26px]">{p.id}</span>
+                <span className="ml-auto font-mono text-[12px] text-mute">{p.site}</span>
+              </div>
+              <p className="mt-1 text-[15px] text-ink-2">{p.d}</p>
             </li>
           ))}
-          <li className="rise pt-6">
-            <a href={`${REPO}/blob/main/docs/patterns.md`} className="font-mono text-[14px] underline decoration-ink/30 underline-offset-4 hover:text-cobalt">
-              And twelve more in the docs
-            </a>
-          </li>
         </ul>
-        <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] lg:col-span-7">
-          {PATTERNS.map((p, i) => (
-            <img
-              key={p.id}
-              src={`/covers/p-${p.id}.webp`}
-              alt={`${p.id} cover made by cover-studio`}
-              className={`pat-img-${i} absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${on === i ? "opacity-100" : "pointer-events-none opacity-0"}`}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
 }
 
-/* 04 Sizes ---------------------------------------------------------------- */
+/* 04 Sizes: three real outputs at their true shapes -------------------------- */
 
 const SIZES = [
-  { id: "4x3", r: 4 / 3, l: "1600 × 1200", u: "Dribbble, Contra" },
-  { id: "16x9", r: 16 / 9, l: "1600 × 900", u: "Slides, video" },
+  { id: "4x3", r: 1600 / 1200, l: "1600 × 1200", u: "Dribbble, Contra" },
+  { id: "16x9", r: 1600 / 900, l: "1600 × 900", u: "Slides, video" },
   { id: "og", r: 1200 / 630, l: "1200 × 630", u: "Link previews" },
 ];
 
@@ -228,120 +249,130 @@ export function Sizes() {
   useRise(root);
   useGSAP(
     () => {
-      const mm = gsap.matchMedia();
-      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
-        const box = root.current!.querySelector<HTMLElement>(".size-box")!;
-        const H = () => box.offsetWidth / (4 / 3);
-        const tl = gsap.timeline({ scrollTrigger: { trigger: ".size-pin", start: "top top", end: "+=1800", pin: true, scrub: 0.8, invalidateOnRefresh: true } });
-        tl.to(box, { height: () => box.offsetWidth / (16 / 9), duration: 1, ease: "power2.inOut" }, 0.3)
-          .to(".size-img-0", { opacity: 0, duration: 0.3 }, 0.6)
-          .to(".size-img-1", { opacity: 1, duration: 0.3 }, 0.6)
-          .to(".size-lab-0", { opacity: 0.3, duration: 0.2 }, 0.6)
-          .to(".size-lab-1", { opacity: 1, duration: 0.2 }, 0.6)
-          .to(box, { height: () => box.offsetWidth / (1200 / 630), duration: 1, ease: "power2.inOut" }, 1.6)
-          .to(".size-img-1", { opacity: 0, duration: 0.3 }, 1.9)
-          .to(".size-img-2", { opacity: 1, duration: 0.3 }, 1.9)
-          .to(".size-lab-1", { opacity: 0.3, duration: 0.2 }, 1.9)
-          .to(".size-lab-2", { opacity: 1, duration: 0.2 }, 1.9)
-          .to({}, { duration: 0.6 });
-        gsap.set(box, { height: H() });
+      if (reduced()) return;
+      gsap.from(".sz", { y: 100, opacity: 0, scale: 0.92, duration: 1.3, ease: "expo.out", stagger: 0.14, scrollTrigger: { trigger: ".sz-row", start: "top 80%" } });
+    },
+    { scope: root },
+  );
+  return (
+    <section ref={root} className="wrap pt-32 sm:pt-40">
+      <div data-rise-group className="max-w-[820px]">
+        <p className="eyebrow rise">04 · Every size</p>
+        <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Laid out again for each channel.</h2>
+        <p className="rise mt-6 max-w-[620px] text-[19px] leading-[1.55] text-ink-2">
+          One render, three canvases. Each size is composed for its own shape, so nothing is squeezed or cut off.
+        </p>
+      </div>
+      <div className="sz-row mt-14 grid gap-6 md:grid-cols-12 md:items-start">
+        {SIZES.map((s, i) => (
+          <figure key={s.id} className={`sz m-0 min-w-0 ${i === 0 ? "md:col-span-7 md:row-span-2" : "md:col-span-5"}`}>
+            <img src={`/covers/s-${s.id}.webp`} alt={`The same cover at ${s.l}`} className="block w-full rounded-[18px]" />
+            <figcaption className="mt-3 font-mono text-[13px]">
+              <span className="font-medium">{s.l}</span> <span className="text-mute">· {s.u}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* 05 Phones: Ostler ------------------------------------------------------------ */
+
+const SCREENS = ["driver-light-00", "driver-light-04", "driver-light-05", "manager-light-04"];
+
+export function Phones() {
+  const root = useRef<HTMLElement>(null);
+  useRise(root);
+  useGSAP(
+    () => {
+      if (reduced()) return;
+      gsap.from(".ph", { y: 220, rotate: (i) => [-6, -2, 3, 7][i], opacity: 0, duration: 1.4, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".ph-row", start: "top 85%" } });
+      gsap.utils.toArray<HTMLElement>(".ph").forEach((el, i) => {
+        gsap.to(el, { y: [-50, 30, -30, 50][i], ease: "none", scrollTrigger: { trigger: ".ph-row", start: "top bottom", end: "bottom top", scrub: true } });
       });
     },
     { scope: root },
   );
   return (
-    <section ref={root} className="pt-32 sm:pt-40">
+    <section ref={root} className="overflow-hidden bg-night pt-32 pb-40 text-paper sm:pt-40">
       <div className="wrap">
-        <Head eyebrow="04 · Every size" title="Laid out again, never cropped." line="The same cover, recomposed for each channel's canvas." />
-      </div>
-      <div className="size-pin">
-        <div className="wrap flex flex-col items-center gap-8 py-14 md:min-h-screen md:justify-center">
-          <div className="size-box relative aspect-[4/3] w-full max-w-[980px] overflow-hidden rounded-[22px] bg-night md:aspect-auto">
-            {SIZES.map((s, i) => (
-              <img key={s.id} src={`/covers/s-${s.id}.webp`} alt={`The floating cover at ${s.l}`} className={`size-img-${i} absolute inset-0 h-full w-full object-cover ${i === 0 ? "opacity-100" : "opacity-0"}`} />
-            ))}
-          </div>
-          <div className="flex flex-wrap justify-center gap-x-10 gap-y-3 font-mono text-[13px]">
-            {SIZES.map((s, i) => (
-              <p key={s.id} className={`size-lab-${i} ${i === 0 ? "" : "md:opacity-30"}`}>
-                <span className="font-medium">{s.l}</span> <span className="text-mute">· {s.u}</span>
-              </p>
-            ))}
-          </div>
+        <div data-rise-group className="max-w-[760px]">
+          <p className="eyebrow rise !text-white/55">05 · Mobile, too</p>
+          <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Phones at their real size, with their real screens.</h2>
+          <p className="rise mt-6 max-w-[600px] text-[19px] leading-[1.55] text-white/70">
+            Phone screens are captured at each device&apos;s true viewport, in light and dark. These are from Ostler, a fleet van rental app.
+          </p>
+        </div>
+        <div className="ph-row mt-20 grid grid-cols-2 gap-6 md:grid-cols-4">
+          {SCREENS.map((s, i) => (
+            <div key={s} className={`ph ${i % 2 ? "md:mt-24" : ""}`}>
+              <img src={`/ostler/${s}.webp`} alt={`Ostler app screen ${i + 1}`} className="block w-full drop-shadow-[0_40px_50px_rgba(0,0,0,0.5)]" />
+            </div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-/* 05 Phones (Ostler) -------------------------------------------------------- */
+/* Open source --------------------------------------------------------------------- */
 
-const SCREENS = {
-  light: ["driver-light-00", "driver-light-04", "driver-light-05", "manager-light-04"],
-  dark: ["driver-dark-00", "driver-dark-04", "driver-dark-05", "manager-dark-04"],
-};
+const BOX = [
+  ["18", "patterns, each measured from a reference cover"],
+  ["7", "frames: browser, MacBook Pro, iPad Pro and four phones"],
+  ["3", "sizes per render: 4:3, 16:9 and 1.91:1"],
+  ["2", "colour schemes captured, light and dark"],
+];
 
-export function Phones() {
+const DOCS = [
+  ["README", `${REPO}#readme`],
+  ["Config reference", `${REPO}/blob/main/docs/config.md`],
+  ["Pattern specs", `${REPO}/blob/main/docs/patterns.md`],
+  ["Licence (MIT)", `${REPO}/blob/main/LICENSE`],
+  ["Issues", `${REPO}/issues`],
+];
+
+export function OpenSource() {
   const root = useRef<HTMLElement>(null);
-  const [mode, setMode] = useState<"light" | "dark">("light");
   useRise(root);
-  useGSAP(
-    () => {
-      if (reduced()) return;
-      gsap.from(".ph", {
-        y: 200,
-        rotate: (i) => [-6, -2, 3, 7][i],
-        opacity: 0,
-        duration: 1.4,
-        ease: "expo.out",
-        stagger: 0.1,
-        scrollTrigger: { trigger: ".ph-row", start: "top 85%" },
-      });
-      gsap.utils.toArray<HTMLElement>(".ph").forEach((el, i) => {
-        gsap.to(el, { y: [-40, 30, -20, 40][i], ease: "none", scrollTrigger: { trigger: ".ph-row", start: "top bottom", end: "bottom top", scrub: true } });
-      });
-    },
-    { scope: root },
-  );
-  const flip = (m: "light" | "dark") => {
-    if (m === mode) return;
-    if (reduced()) return setMode(m);
-    gsap.to(".ph img", {
-      rotateY: 90,
-      duration: 0.25,
-      ease: "power2.in",
-      stagger: 0.05,
-      onComplete: () => {
-        setMode(m);
-        gsap.fromTo(".ph img", { rotateY: -90 }, { rotateY: 0, duration: 0.45, ease: "expo.out", stagger: 0.05 });
-      },
-    });
-  };
   return (
-    <section ref={root} className="bg-night pt-32 pb-36 text-paper sm:pt-40">
-      <div className="wrap">
-        <div data-rise-group className="flex flex-wrap items-end justify-between gap-8">
-          <div className="max-w-[760px]">
-            <p className="eyebrow rise !text-white/55">05 · Mobile, too</p>
-            <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Phones at their real size, with their real screens.</h2>
-            <p className="rise mt-6 max-w-[600px] text-[19px] leading-[1.55] text-white/70">
-              Phone screens are captured at each device&apos;s true viewport, light and dark. These are from Ostler, a fleet van rental app.
-            </p>
-          </div>
-          <div role="group" aria-label="Screen theme" className="rise flex gap-1 rounded-full p-1 ring-1 ring-white/20">
-            {(["light", "dark"] as const).map((m) => (
-              <button key={m} type="button" onClick={() => flip(m)} aria-pressed={mode === m} className={`cursor-pointer rounded-full px-5 py-2.5 text-[14px] font-medium capitalize ${mode === m ? "bg-paper text-ink" : "text-white/70 hover:text-white"}`}>
-                {m}
-              </button>
-            ))}
-          </div>
+    <section id="open-source" ref={root} className="wrap pt-32 sm:pt-40">
+      <div data-rise-group className="grid gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <p className="eyebrow rise">06 · Open source</p>
+          <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Free, MIT, and yours to change.</h2>
+          <a href={REPO} className="rise mt-10 block rounded-[22px] border border-line p-6 transition-colors hover:border-ink">
+            <span className="flex items-center gap-3 font-mono text-[14px]">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z" /></svg>
+              rx4u / cover-studio
+            </span>
+            <span className="mt-4 block text-[16px] leading-[1.5] text-ink-2">Turn any live website into presentation-ready covers in proven patterns, at every size a channel needs.</span>
+            <span className="mt-5 flex flex-wrap gap-2 font-mono text-[12px]">
+              {["MIT licence", "TypeScript", "Node 20+", "Playwright"].map((t) => (
+                <span key={t} className="rounded-full bg-ink/5 px-3 py-1.5">{t}</span>
+              ))}
+            </span>
+          </a>
         </div>
-        <div className="ph-row mt-20 grid grid-cols-2 gap-6 [perspective:1400px] md:grid-cols-4">
-          {SCREENS[mode].map((s, i) => (
-            <div key={i} className={`ph ${i % 2 ? "md:mt-24" : ""}`}>
-              <img src={`/ostler/${s}.webp`} alt={`Ostler app screen ${i + 1}`} className="block w-full drop-shadow-[0_40px_50px_rgba(0,0,0,0.5)]" />
-            </div>
-          ))}
+        <div className="lg:col-span-6 lg:col-start-7">
+          <ul className="grid grid-cols-2 gap-3">
+            {BOX.map(([n, t], i) => (
+              <li key={n + t} className={`rise rounded-[22px] p-6 ${["bg-lilac", "bg-mint", "bg-sky", "bg-ink/5"][i]}`}>
+                <span className="display block text-[56px]">{n}</span>
+                <span className="mt-2 block text-[15px] leading-[1.45] text-ink-2">{t}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="rise mt-8 text-[16px] leading-[1.6] text-ink-2">
+            It needs Node 20 or later and Chrome (or Playwright&apos;s Chromium), and nothing else: no account, no API key, no server. Covers render on
+            your machine from your own site. Device frames come from react-mockframe (MIT); status bar icons from Ionicons and Material Icons.
+          </p>
+          <ul className="rise mt-6 flex flex-wrap gap-x-6 gap-y-3 font-mono text-[14px]">
+            {DOCS.map(([l, h]) => (
+              <li key={l}><a href={h} className="underline decoration-ink/30 underline-offset-4 hover:text-cobalt">{l}</a></li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
@@ -357,7 +388,7 @@ export function About() {
     <section id="about" ref={root} className="wrap pt-32 sm:pt-40">
       <div data-rise-group className="grid gap-10 rounded-[32px] bg-lilac p-8 sm:p-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <p className="eyebrow rise !text-ink-2">06 · About</p>
+          <p className="eyebrow rise !text-ink-2">07 · About</p>
           <h2 className="display rise mt-5 text-[44px] sm:text-[56px]">Made by Raja.</h2>
         </div>
         <div className="lg:col-span-6 lg:col-start-7">

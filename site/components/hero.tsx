@@ -38,6 +38,7 @@ export function Hero() {
           <a href="#why" className="hidden hover:text-cobalt sm:inline">Why</a>
           <a href="#how" className="hidden hover:text-cobalt sm:inline">How it works</a>
           <a href="#patterns" className="hidden hover:text-cobalt sm:inline">Patterns</a>
+          <a href="#open-source" className="hidden hover:text-cobalt md:inline">Open source</a>
           <a href="#about" className="hidden hover:text-cobalt md:inline">About</a>
           <a href={REPO} className="rounded-full bg-ink px-4 py-2.5 font-medium text-paper hover:bg-cobalt">GitHub</a>
         </nav>
