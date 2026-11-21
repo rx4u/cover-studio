@@ -9,8 +9,7 @@ import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { PATTERNS } from "./patterns/index.ts";
 
-import { createRequire } from "node:module";
-const DEVICES_CSS = createRequire(import.meta.url).resolve("devices.css/dist/devices.min.css");
+import { DEVICE_CSS } from "./devices.ts";
 
 export function outDir(c: Config): string {
   return resolve(process.cwd(), "covers", c.name);
@@ -27,11 +26,7 @@ function page(c: Config, m: Manifest, patternId: string, w: number, h: number, i
       : c;
   const brand = branding(c, w, h, isCover);
   const inner = p.render({ c, m, top: brand.top }, w, h);
-  return `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${url(DEVICES_CSS)}"><style>
-.cs-graphite .device-btns,.cs-graphite .device-btns::before,.cs-graphite .device-btns::after,.cs-graphite .device-power{background:#2c2c2e}
-.cs-silver .device-btns,.cs-silver .device-btns::before,.cs-silver .device-btns::after,.cs-silver .device-power{background:#b9bbbd}
-.cs-white .device-btns,.cs-white .device-btns::before,.cs-white .device-btns::after,.cs-white .device-power{background:#cfcfd4}
-.cs-white .device-stripe::after,.cs-white .device-stripe::before{border-color:rgba(0,0,0,.08)}
+  return `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${url(DEVICE_CSS)}"><style>
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:${w}px;height:${h}px;overflow:hidden}

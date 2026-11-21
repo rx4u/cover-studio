@@ -1,0 +1,162 @@
+{
+ "iphone-17": {
+  "name": "iPhone 17",
+  "colours": {
+   "black": "<div class=\"mockframe iphone17 black\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "white": "<div class=\"mockframe iphone17 white\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "mist-blue": "<div class=\"mockframe iphone17 mist-blue\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "sage": "<div class=\"mockframe iphone17 sage\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "lavender": "<div class=\"mockframe iphone17 lavender\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "deep-blue": "<div class=\"mockframe iphone17 deep-blue\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>"
+  },
+  "geometry": {
+   "box": [
+    -3,
+    0,
+    436.96875,
+    902.65625
+   ],
+   "root": [
+    431.3125,
+    902.65625
+   ],
+   "screen": [
+    14.65625,
+    14.328125,
+    402,
+    874
+   ]
+  }
+ },
+ "iphone-18-pro": {
+  "name": "iPhone 18 Pro",
+  "colours": {
+   "silver": "<div class=\"mockframe iphone18pro silver\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "glacier": "<div class=\"mockframe iphone18pro glacier\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "black": "<div class=\"mockframe iphone18pro black\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "burgundy": "<div class=\"mockframe iphone18pro burgundy\"><div class=\"inner\"></div><div class=\"dynamic-island\"><div class=\"camera\"></div></div><div class=\"action\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>"
+  },
+  "geometry": {
+   "box": [
+    -3,
+    0,
+    439.3125,
+    905.3125
+   ],
+   "root": [
+    433.65625,
+    905.3125
+   ],
+   "screen": [
+    15.828125,
+    15.65625,
+    402,
+    874
+   ]
+  }
+ },
+ "pixel-10": {
+  "name": "Pixel 10",
+  "colours": {
+   "obsidian": "<div class=\"mockframe pixel10 obsidian\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "frost": "<div class=\"mockframe pixel10 frost\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "indigo": "<div class=\"mockframe pixel10 indigo\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>"
+  },
+  "geometry": {
+   "box": [
+    0,
+    0,
+    458,
+    967
+   ],
+   "root": [
+    455,
+    967
+   ],
+   "screen": [
+    21.5,
+    21.5,
+    412,
+    924
+   ]
+  }
+ },
+ "galaxy-s25": {
+  "name": "Galaxy S25",
+  "colours": {
+   "icy-blue": "<div class=\"mockframe galaxy-s25 icy-blue\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "silver-shadow": "<div class=\"mockframe galaxy-s25 silver-shadow\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "navy": "<div class=\"mockframe galaxy-s25 navy\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "mint": "<div class=\"mockframe galaxy-s25 mint\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "blue-black": "<div class=\"mockframe galaxy-s25 blue-black\"><div class=\"inner\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>"
+  },
+  "geometry": {
+   "box": [
+    0,
+    0,
+    387.5,
+    805
+   ],
+   "root": [
+    385,
+    805
+   ],
+   "screen": [
+    12.5,
+    12.5,
+    360,
+    780
+   ]
+  }
+ },
+ "ipad-pro": {
+  "name": "iPad Pro",
+  "colours": {
+   "space-black": "<div class=\"mockframe ipad-pro space-black\"><div class=\"inner\"></div><div class=\"volume-up\"></div><div class=\"volume-down\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "silver": "<div class=\"mockframe ipad-pro silver\"><div class=\"inner\"></div><div class=\"volume-up\"></div><div class=\"volume-down\"></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>"
+  },
+  "geometry": {
+   "box": [
+    0,
+    -1.5,
+    558.15625,
+    729.15625
+   ],
+   "root": [
+    556.65625,
+    727.65625
+   ],
+   "screen": [
+    22.328125,
+    22.328125,
+    512,
+    683
+   ]
+  }
+ },
+ "macbook-pro": {
+  "name": "MacBook Pro",
+  "colours": {
+   "space-black": "<div class=\"mockframe macbook-pro space-black\"><div class=\"inner\"></div><div class=\"notch\"><div class=\"camera\"></div></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>",
+   "silver": "<div class=\"mockframe macbook-pro silver\"><div class=\"inner\"></div><div class=\"notch\"><div class=\"camera\"></div></div><div class=\"top-bar\"></div><div class=\"sleep\"></div><div class=\"bottom-bar\"></div><div class=\"volume\"></div><div class=\"camera\"></div><div class=\"sensor\"></div><div class=\"speaker\"></div><div class=\"sensors\"></div><div class=\"more-sensors\"></div><div class=\"inner-shadow\"></div><div class=\"screen\"><div id=\"cs-screen\">__SCREEN__</div></div><div class=\"home\"></div></div>"
+  },
+  "geometry": {
+   "box": [
+    -106,
+    0,
+    1207.1875,
+    728.390625
+   ],
+   "root": [
+    995.1875,
+    686.890625
+   ],
+   "screen": [
+    17.59375,
+    17.5,
+    960,
+    624
+   ]
+  }
+ }
+}

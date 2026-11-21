@@ -85,7 +85,7 @@ Motion loops and films, a contact sheet, a live preview UI.
 ## Credits
 
 - Grounds: [paper-design/shaders](https://github.com/paper-design/shaders), Apache 2.0.
-- Phone frames: [picturepan2/devices.css](https://github.com/picturepan2/devices.css), MIT.
+- Device frames: [react-mockframe](https://github.com/mbdev3/react-mockframe) by Mohammed Banani, MIT. The CSS is vendored in `vendor/react-mockframe/` and its markup pre-rendered to `src/devices.generated.json`, so no React is needed.
 
 ## License
 

@@ -28,6 +28,7 @@ export const schema = z
         waitFor: z.string().nullable().default(null),
         finishReveals: z.boolean().default(true),
         mobile: z.boolean().default(true),
+        colorScheme: z.enum(["light", "dark", "both"]).default("light"),
         elements: z.array(z.string()).default([]),
         before: z.string().url().nullable().default(null),
       })
@@ -64,6 +65,8 @@ export const schema = z
     frame: z
       .object({
         style: z.enum(["browser", "none"]).default("browser"),
+        device: z.enum(["browser", "macbook-pro", "ipad-pro"]).default("browser"),
+        colour: z.string().default("auto"),
         theme: z.enum(["light", "dark"]).default("light"),
         radius: z.number().min(0).max(48).default(16),
         shadow: z.enum(["none", "soft", "lifted"]).default("soft"),
@@ -72,8 +75,11 @@ export const schema = z
       .default({}),
     phone: z
       .object({
-        style: z.enum(["bezel", "frameless"]).default("bezel"),
-        finish: z.enum(["auto", "graphite", "silver", "white"]).default("auto"),
+        style: z.enum(["device", "frameless"]).default("device"),
+        model: z.enum(["iphone-17", "iphone-18-pro", "pixel-10", "galaxy-s25"]).default("iphone-17"),
+        colour: z.string().default("auto"),
+        mix: z.boolean().default(false),
+        mixWith: z.array(z.enum(["iphone-17", "iphone-18-pro", "pixel-10", "galaxy-s25"])).length(2).default(["pixel-10", "iphone-18-pro"]),
         statusBar: z.boolean().default(true),
         trio: z.enum(["level", "raised"]).default("raised"),
       })

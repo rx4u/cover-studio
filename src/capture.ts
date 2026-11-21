@@ -3,12 +3,22 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join, resolve } from "node:path";
+import { captureViewports } from "./devices.ts";
 import type { Config } from "./config.ts";
 
 export const VIEWPORT = { width: 1440, height: 900 };
 export const SCALE = 2;
 
-export type Shot = { page: string; y: number; file: string; /** Background colour at the top of the page, for the phone status bar band. */ topColor?: string };
+export type Shot = {
+  page: string;
+  y: number;
+  file: string;
+  /** Background colour at the top of the page, for the status bar band. */
+  topColor?: string;
+  /** Mobile shots: the viewport width they were captured at, and the colour scheme. */
+  w?: number;
+  scheme?: "light" | "dark";
+};
 export type Tall = { page: string; file: string };
 export type Manifest = {
   key: string;
@@ -42,7 +52,7 @@ export function cacheDir(c: Config): string {
 }
 
 function cacheKey(c: Config): string {
-  return createHash("sha1").update(JSON.stringify(c.source)).digest("hex").slice(0, 12);
+  return createHash("sha1").update(JSON.stringify([c.source, c.source.mobile ? captureViewports(c) : []])).digest("hex").slice(0, 12);
 }
 
 export async function launch(): Promise<Browser> {
@@ -249,40 +259,49 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
     }
 
     if (c.source.mobile) {
-      const mctx = await browser.newContext({ viewport: MOBILE, deviceScaleFactor: SCALE, isMobile: true, hasTouch: true });
-      await mctx.addInitScript("window.__name = (f) => f;");
-      const mp = await mctx.newPage();
-      for (const [pi, path] of c.source.pages.entries()) {
-        const url = new URL(path, c.source.url).href;
-        const res = await mp.goto(url, { waitUntil: "load", timeout: 90_000 });
-        if (res && res.status() >= 400) continue;
-        await settle(mp, c);
-        if (c.source.finishReveals) await finishReveals(mp);
-        const file = join(dir, `m${pi}-y0.png`);
-        await mp.screenshot({ path: file, type: "png", timeout: 120_000 });
-        const topColor = await topPixelColor(mp);
-        mobile.push({ page: path, y: 0, file, topColor });
-        const sections = await mp.evaluate(() => {
-          const tops = [...document.querySelectorAll("section, main > *, article, [class*='section']")]
-            .map((e) => Math.round(e.getBoundingClientRect().top + window.scrollY))
-            .filter((t) => t > 400);
-          return [...new Set(tops)].sort((a, b) => a - b);
-        });
-        mobileSections.push(sections);
-        // On the first page, also capture two sections by really scrolling to them, so their reveals play.
-        if (pi === 0) {
-          for (const top of sections.filter((t) => t > 844 * 0.9).slice(0, 2)) {
-            await scrollTo(mp, top);
-            const sf = join(dir, `m${pi}-y${top}.png`);
-            await mp.screenshot({ path: sf, type: "png", timeout: 120_000 });
-            mobile.push({ page: path, y: top, file: sf, topColor: await topPixelColor(mp) });
+      // One pass per device viewport (real screen width, height below the status bar) and per colour scheme.
+      const schemes: ("light" | "dark")[] = c.source.colorScheme === "both" ? ["light", "dark"] : [c.source.colorScheme];
+      for (const [vi, vp] of captureViewports(c).entries()) {
+        for (const scheme of schemes) {
+          const mctx = await browser.newContext({ viewport: vp, deviceScaleFactor: SCALE, isMobile: vp.width < 800, hasTouch: true, colorScheme: scheme });
+          await mctx.addInitScript("window.__name = (f) => f;");
+          const mp = await mctx.newPage();
+          const tag = `w${vp.width}-${scheme}`;
+          for (const [pi, path] of c.source.pages.entries()) {
+            const url = new URL(path, c.source.url).href;
+            const res = await mp.goto(url, { waitUntil: "load", timeout: 90_000 });
+            if (res && res.status() >= 400) continue;
+            await settle(mp, c);
+            if (c.source.finishReveals) await finishReveals(mp);
+            const file = join(dir, `m${pi}-${tag}-y0.png`);
+            await mp.screenshot({ path: file, type: "png", timeout: 120_000 });
+            mobile.push({ page: path, y: 0, file, topColor: await topPixelColor(mp), w: vp.width, scheme });
+            const sections = await mp.evaluate(() => {
+              const tops = [...document.querySelectorAll("section, main > *, article, [class*='section']")]
+                .map((e) => Math.round(e.getBoundingClientRect().top + window.scrollY))
+                .filter((t) => t > 400);
+              return [...new Set(tops)].sort((a, b) => a - b);
+            });
+            // On the first page, also capture two sections by really scrolling to them, so their reveals play.
+            if (pi === 0) {
+              for (const top of sections.filter((t) => t > vp.height * 0.9).slice(0, 2)) {
+                await scrollTo(mp, top);
+                const sf = join(dir, `m${pi}-${tag}-y${top}.png`);
+                await mp.screenshot({ path: sf, type: "png", timeout: 120_000 });
+                mobile.push({ page: path, y: top, file: sf, topColor: await topPixelColor(mp), w: vp.width, scheme });
+              }
+              await scrollTo(mp, 0);
+            }
+            if (vi === 0 && scheme === schemes[0]) {
+              mobileSections.push(sections);
+              const h = await mp.evaluate(() => document.documentElement.scrollHeight);
+              const tall = join(dir, `m${pi}-tall.png`);
+              await mp.screenshot({ path: tall, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: vp.width, height: Math.min(h, vp.height * 4) } });
+              mobileTalls.push({ page: path, file: tall });
+            }
           }
-          await scrollTo(mp, 0);
+          await mctx.close();
         }
-        const h = await mp.evaluate(() => document.documentElement.scrollHeight);
-        const tall = join(dir, `m${pi}-tall.png`);
-        await mp.screenshot({ path: tall, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: MOBILE.width, height: Math.min(h, MOBILE.height * 4) } });
-        mobileTalls.push({ page: path, file: tall });
       }
       console.log(`capture: ${mobile.length} mobile shots`);
     }

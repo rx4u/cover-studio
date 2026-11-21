@@ -17,20 +17,22 @@ All 18 patterns below are built. Each lists what it needs; a pattern missing its
 
 3D objects in some references (Clearbit's fan, Gleb's glass blocks) are models and are not reproduced.
 
-## Phone (measured from references, gated 21 Nov 2026)
+## Devices (measured from references, gated 21 Nov 2026)
 References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phenomenon Growly.
 
 | Setting | Measure |
 |---|---|
-| Bezel | devices.css iPhone 14 Pro frame, thin, side buttons |
-| Finish | graphite (black glass, dark edge), silver (black glass, bright edge), white (white glass, light edge). Auto: dark ground graphite; photo, brand gradient, silk and image silver; mesh, clear photo and light grounds white |
-| Frameless | Rounded screen, radius 0.16 of width, hairline light rim, no hardware (Nixtio) |
-| Status bar | 9:41, signal, wifi, battery, 47px band in the page's sampled top colour; ink black or white by luminance |
-| Shadow | Contact 3/5px at .18 plus ambient 40/60px at .22 (bezel) or .30 (frameless), scaled to canvas |
-| Trio, level | 0.25W each, gap 0.016W, group centred vertically, equal height (Afterglow) |
+| Frames | react-mockframe (MIT): iPhone 17, iPhone 18 Pro, Pixel 10, Galaxy S25, iPad Pro, MacBook Pro |
+| Finishes | iPhone 17: black, white, mist-blue, sage, lavender, deep-blue. iPhone 18 Pro: silver, glacier, black, burgundy. Pixel 10: obsidian, frost, indigo. Galaxy S25: icy-blue, silver-shadow, navy, mint, blue-black. iPad Pro and MacBook Pro: space-black, silver. No gold, orange, coral or yellow finishes |
+| Auto finish | Dark grounds take the dark finish. Light grounds take the tinted finish closest to the accent hue (within 45 degrees), else the light finish |
+| Screen | Status bar in the page's sampled top colour: iOS 62pt, Android 36 to 40pt, iPad 24pt, MacBook 37pt notch band. The page starts below it. Home indicator 134x5pt (iOS), 108x4pt (Android), 8pt from the bottom |
+| Captures | Each model's real viewport: iPhone 402pt, Pixel 412pt, Galaxy 360pt, iPad 1032pt, height below the status bar. Dark scheme captured when `source.colorScheme` asks for it |
+| Shadow | Contact 3/5px plus ambient 40/60px: .20/.26 black for dark finishes, .12/.16 cool grey for light and tinted ones, scaled to canvas |
+| Trio, level | 0.78W for the group, gap 0.016W, centred, equal screen heights across mixed models (Afterglow) |
 | Trio, raised | Middle phone 0.07H higher and in front, all three lean 6 degrees (Nixtio) |
-| Page plus phone | Phone 0.2W, right edge at 0.93W, bottom at 0.92H, overlapping the page frame's right edge (ZeBeyond, Growly) |
-| Fit | Every phone stays whole on every size; on 16:9 phones shrink rather than run off |
+| Page plus phone | Phone about 0.2W, bottom at 0.92H, overlapping the page device. Browser 0.75W from 0.07W; MacBook 0.8W, whole; iPad 0.5W from 0.16W, whole (ZeBeyond, Growly) |
+| Frameless | Screen only, radius 0.155 of its width, hairline rim |
+| Fit | Every device stays whole on every size |
 
 ## Global rules
 - The cover (first image of a set) carries no text and no logo unless `branding.onCover` is true.

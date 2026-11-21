@@ -1,20 +1,29 @@
-import { frame, phone, phoneFinish } from "../look.ts";
 import type { Pattern } from "./types.ts";
+import { pageFrame, phoneAt, phoneHeight, phoneScreens } from "./shared.ts";
 
-/** The page in a browser frame with the same page on a phone overlapping its lower right. */
+/** The page in its frame (browser, MacBook or iPad) with the same page on a phone overlapping its lower right (ZeBeyond, Growly). */
 export const pagePhone: Pattern = {
   id: "page-phone",
   unavailable: ({ m }) => (m.mobile?.length ? null : "no mobile capture; set source.mobile to true"),
-  render({ c, m, top }, w, h) {
-    const bw = Math.round(w * 0.75);
-    const by = Math.max(Math.round(h * 0.1), top);
-    // ZeBeyond, Growly: phone about 0.2W, overlapping the page frame's right edge.
-    // The whole phone stays on canvas: its bottom sits at 0.92H on every size.
-    const ratio = c.phone.style === "frameless" ? 844 / 390 : 868 / 428;
+  render(ctx, w, h) {
+    const { c, top } = ctx;
+    const laptop = c.frame.device === "macbook-pro";
+    const tablet = c.frame.device === "ipad-pro";
+    const by = Math.max(Math.round(h * (laptop || tablet ? 0.12 : 0.1)), top);
+    // Devices stay whole; the browser frame keeps running off the bottom edge.
+    let bw = Math.round(w * (laptop ? 0.8 : tablet ? 0.5 : 0.75));
+    if (laptop) bw = Math.min(bw, Math.round(((h * 0.8 - by + h * 0.12) / 728.4) * 1207.2));
+    if (tablet) bw = Math.min(bw, Math.round(((h * 0.86 - by) / 729.2) * 558.2));
+    const bx = laptop ? Math.round((w - bw) / 2 - w * 0.06) : tablet ? Math.round(w * 0.16) : Math.round(w * 0.07);
+    const page = pageFrame(ctx, w, { x: bx, y: by, w: bw });
+    const model = c.phone.model;
+    const shot = phoneScreens(ctx, model)[0];
+    // Phone bottom at 0.92H on every size; about 0.2W wide, right edge at 0.93W.
     const floor = h * 0.92;
-    const pw = Math.round(Math.min(w * 0.2, (floor - by - h * 0.06) / ratio));
-    const px = Math.round(w * 0.93 - pw);
-    const py = Math.round(floor - pw * ratio);
-    return frame(c, w, m.talls[0].file, { x: Math.round(w * 0.07), y: by, w: bw }) + phone(w, m.mobile[0].file, { x: px, y: py, w: pw }, { band: m.mobile[0].topColor, style: c.phone.style, statusBar: c.phone.statusBar, finish: phoneFinish(c) });
+    const unit = phoneHeight(ctx, model, 1000) / 1000;
+    const pw = Math.round(Math.min(w * 0.2, (floor - by - h * 0.06) / unit));
+    const px = Math.round(Math.min(w * 0.93, bx + bw + w * 0.08) - pw);
+    const py = Math.round(floor - pw * unit);
+    return page.html + phoneAt(ctx, w, model, shot, px, py, pw, "z-index:2");
   },
 };

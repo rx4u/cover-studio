@@ -14,6 +14,7 @@ export default {
     photo: ".hero img",                // selector or URL for photo-ground
     waitFor: null,                     // optional readiness expression
     finishReveals: true,               // scroll once so reveals reach their end state
+    colorScheme: "light",              // light | dark | both; dark grounds use dark captures when there are any
     mobile: true,                      // also capture at 390 wide (page-phone, phone-trio)
     elements: [".pricing-card"],       // component selectors (macro, breakout, ui-bento, bento)
     before: null                       // current site URL, for before-after
@@ -47,14 +48,19 @@ export default {
 
   frame: {
     style: "browser",                  // browser | none
+    device: "browser",                 // browser | macbook-pro | ipad-pro (page-phone)
+    colour: "auto",                    // finish for the MacBook or iPad
     theme: "light",                    // light | dark bar
     radius: 16,
     shadow: "soft"                     // none | soft | lifted
   },
 
   phone: {
-    style: "bezel",                    // bezel (iPhone 14 Pro, devices.css) | frameless
-    finish: "auto",                    // auto (follows the ground) | graphite | silver | white
+    style: "device",                   // device (a real phone frame) | frameless (screen only)
+    model: "iphone-17",                // iphone-17 | iphone-18-pro | pixel-10 | galaxy-s25
+    colour: "auto",                    // auto (follows the ground) or a finish of the model, see docs/patterns.md
+    mix: false,                        // phone-trio: main model in the middle, mixWith on the sides
+    mixWith: ["pixel-10", "iphone-18-pro"],
     statusBar: true,                   // 9:41 status bar in the page's own top colour
     trio: "raised"                     // raised (middle phone up, leaning) | level
   },
