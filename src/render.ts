@@ -9,6 +9,9 @@ import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { PATTERNS } from "./patterns/index.ts";
 
+import { createRequire } from "node:module";
+const DEVICES_CSS = createRequire(import.meta.url).resolve("devices.css/dist/devices.min.css");
+
 export function outDir(c: Config): string {
   return resolve(process.cwd(), "covers", c.name);
 }
@@ -24,7 +27,7 @@ function page(c: Config, m: Manifest, patternId: string, w: number, h: number, i
       : c;
   const brand = branding(c, w, h, isCover);
   const inner = p.render({ c, m, top: brand.top }, w, h);
-  return `<!doctype html><html><head><meta charset="utf-8"><style>
+  return `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${url(DEVICES_CSS)}"><style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:${w}px;height:${h}px;overflow:hidden}
 body{position:relative}

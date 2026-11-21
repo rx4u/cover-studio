@@ -163,34 +163,56 @@ export function branding(c: Config, w: number, h: number, isCover: boolean): { h
   return { html: side(b.left, "left") + side(b.right, "right"), top: Math.round(y + tallest + h * 0.04) };
 }
 
+export type PhoneOpts = {
+  /** Crop start in CSS px of the 390-wide capture. */
+  offset?: number;
+  /** Status bar band colour (the page's own top colour). */
+  band?: string;
+  /** "bezel": iPhone 14 Pro frame from devices.css (MIT). "frameless": a rounded screen with a thin rim (Nixtio). */
+  style?: "bezel" | "frameless";
+  statusBar?: boolean;
+  extra?: string;
+};
+
+function isLight(color: string): boolean {
+  const m = color.match(/\d+/g);
+  if (!m) return true;
+  const [r, g, b] = m.map(Number);
+  return 0.299 * r + 0.587 * g + 0.114 * b > 150;
+}
+
+/** iOS-style status bar: 9:41, signal, wifi, battery. The standard marketing status bar used in the references. */
+function statusBar(band: string): string {
+  const ink = isLight(band) ? "#000" : "#fff";
+  return `<div style="position:absolute;left:0;right:0;top:0;height:47px;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 16px/1 -apple-system,'SF Pro Text',system-ui,sans-serif;color:${ink};z-index:3">
+<span>9:41</span><span style="display:flex;gap:6px;align-items:center">
+<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="${ink}"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="${ink}"/><rect x="10" y="3" width="3" height="9" rx="1" fill="${ink}"/><rect x="15" y="0" width="3" height="12" rx="1" fill="${ink}"/></svg>
+<svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.5 10.4 9a3.4 3.4 0 0 0-4.8 0Z M3.2 6.6a6.8 6.8 0 0 1 9.6 0l1.6-1.6a9.1 9.1 0 0 0-12.8 0Z M0 3.4a11.3 11.3 0 0 1 16 0L14.4 5A9 9 0 0 0 1.6 5Z" fill="${ink}"/></svg>
+<svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="${ink}" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="${ink}"/><path d="M25 4.5v4a2 2 0 0 0 0-4Z" fill="${ink}" opacity=".4"/></svg>
+</span></div>`;
+}
+
 /**
- * A modern phone: thin black bezel with a metal edge, side buttons and an island.
- * The page starts below a status bar band in the page's own top colour, so the island never covers content.
- * `offset` is the crop start in CSS px of the 390-wide capture. No fake clock, battery or badges.
+ * A phone at width `box.w`, built on devices.css (picturepan2/devices.css, MIT) or frameless.
+ * Content starts below a status bar band in the page's own top colour, so the island never covers the page.
  */
-export function phone(canvasW: number, img: string, box: { x: number; y: number; w: number }, offset = 0, band = "#ffffff", extra = ""): string {
+export function phone(canvasW: number, img: string, box: { x: number; y: number; w: number }, o: PhoneOpts = {}): string {
   const k = canvasW / 1600;
-  const W = box.w;
-  const bezel = Math.max(4, Math.round(W * 0.03));
-  const sw = W - bezel * 2;
-  const sh = Math.round(sw * 2.165);
-  const H = sh + bezel * 2;
-  const r = Math.round(W * 0.16);
-  const sr = r - bezel;
-  const barH = Math.round(sw * 0.13);
-  const scale = sw / 390;
-  const islandW = Math.round(sw * 0.31), islandH = Math.round(sw * 0.088);
-  const btn = (side: "left" | "right", top: number, h: number) =>
-    `<i style="position:absolute;${side}:-${Math.max(2, Math.round(W * 0.011))}px;top:${Math.round(H * top)}px;width:${Math.max(2, Math.round(W * 0.012))}px;height:${Math.round(H * h)}px;border-radius:2px;background:linear-gradient(${side === "left" ? 90 : 270}deg,#5a5a5f,#2a2a2d);display:block"></i>`;
-  const shadow = `0 ${Math.round(2 * k)}px ${Math.round(4 * k)}px rgba(0,0,0,.25), 0 ${Math.round(24 * k)}px ${Math.round(40 * k)}px -${Math.round(12 * k)}px rgba(0,0,0,.28), 0 ${Math.round(70 * k)}px ${Math.round(120 * k)}px -${Math.round(30 * k)}px rgba(0,0,0,.35)`;
-  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${W}px;height:${H}px;${extra}">
-${btn("left", 0.175, 0.035)}${btn("left", 0.245, 0.065)}${btn("left", 0.325, 0.065)}${btn("right", 0.27, 0.1)}
-<div style="position:relative;width:${W}px;height:${H}px;padding:${bezel}px;border-radius:${r}px;background:#0b0b0c;box-shadow:${shadow}, inset 0 0 0 ${Math.max(1, Math.round(1.5 * k))}px #4b4b50, inset 0 0 0 ${Math.max(2, Math.round(3 * k))}px #161618">
-<div style="position:relative;width:${sw}px;height:${sh}px;border-radius:${sr}px;overflow:hidden;background:${band}">
-<div style="height:${barH}px;background:${band}"></div>
-<div style="height:${sh - barH}px;overflow:hidden"><img src="${url(img)}" style="display:block;width:${sw}px;transform:translateY(-${Math.round(offset * scale)}px)"></div>
-<i style="position:absolute;top:${Math.round(sw * 0.032)}px;left:50%;transform:translateX(-50%);width:${islandW}px;height:${islandH}px;border-radius:99px;background:#000;display:block"></i>
-</div></div></div>`;
+  const band = o.band ?? "#ffffff";
+  const offset = o.offset ?? 0;
+  const style = o.style ?? "bezel";
+  const bar = o.statusBar !== false ? statusBar(band) : "";
+  const screen = (w: number, h: number, r: number) =>
+    `<div class="device-screen" style="position:relative;width:${w}px;height:${h}px;border-radius:${r}px;overflow:hidden;background:${band}">${bar}<div style="position:absolute;top:47px;left:0;right:0;bottom:0;overflow:hidden"><img src="${url(img)}" style="display:block;width:${w}px;transform:translateY(-${Math.round(offset)}px)"></div></div>`;
+  const deep = style === "frameless" ? 0.3 : 0.22;
+  const shadow = `drop-shadow(0 ${Math.round(3 * k)}px ${Math.round(5 * k)}px rgba(0,0,0,.18)) drop-shadow(0 ${Math.round(40 * k)}px ${Math.round(60 * k)}px rgba(0,0,0,${deep}))`;
+  if (style === "frameless") {
+    // Nixtio: no hardware, a rounded screen with a hairline light rim.
+    const s = box.w / 390;
+    return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;height:${Math.round(844 * s)}px;filter:${shadow};${o.extra ?? ""}"><div style="transform:scale(${s});transform-origin:0 0;width:390px;height:844px;border-radius:62px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.08),inset 0 0 0 1.5px rgba(255,255,255,.55)">${screen(390, 844, 62).replace('class="device-screen" ', "")}</div></div>`;
+  }
+  const s = box.w / 428;
+  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;height:${Math.round(868 * s)}px;filter:${shadow};${o.extra ?? ""}"><div style="transform:scale(${s});transform-origin:0 0;width:428px;height:868px"><div class="device device-iphone-14-pro"><div class="device-frame" style="background:#0b0b0c;border-color:#1c1c1e;box-shadow:inset 0 0 4px 2px #9a9a9f,inset 0 0 0 6px #2c2c2e">${screen(390, 830, 49)}</div><div class="device-stripe"></div><div class="device-header"></div><div class="device-sensors"></div><div class="device-btns"></div><div class="device-power"></div><div class="device-home"></div></div></div></div>`;
 }
 
 /** A borderless rounded image tile with a soft shadow, cover-fit inside its box. */

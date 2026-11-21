@@ -52,6 +52,12 @@ export default {
     shadow: "soft"                     // none | soft | lifted
   },
 
+  phone: {
+    style: "bezel",                    // bezel (iPhone 14 Pro, devices.css) | frameless
+    statusBar: true,                   // 9:41 status bar in the page's own top colour
+    trio: "raised"                     // raised (middle phone up, leaning) | level
+  },
+
   branding: {
     enabled: false,
     left: null,                        // { logo: "./logo.svg", height: 40 }

@@ -17,6 +17,20 @@ All 18 patterns below are built. Each lists what it needs; a pattern missing its
 
 3D objects in some references (Clearbit's fan, Gleb's glass blocks) are models and are not reproduced.
 
+## Phone (measured from references, gated 21 Nov 2026)
+References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phenomenon Growly.
+
+| Setting | Measure |
+|---|---|
+| Bezel | devices.css iPhone 14 Pro frame, neutral graphite (#0B0B0C body, #2C2C2E inner ring), thin, side buttons |
+| Frameless | Rounded screen, radius 0.16 of width, hairline light rim, no hardware (Nixtio) |
+| Status bar | 9:41, signal, wifi, battery, 47px band in the page's sampled top colour; ink black or white by luminance |
+| Shadow | Contact 3/5px at .18 plus ambient 40/60px at .22 (bezel) or .30 (frameless), scaled to canvas |
+| Trio, level | 0.25W each, gap 0.016W, group centred vertically, equal height (Afterglow) |
+| Trio, raised | Middle phone 0.07H higher and in front, all three lean 6 degrees (Nixtio) |
+| Page plus phone | Phone 0.2W, right edge at 0.93W, bottom at 0.92H, overlapping the page frame's right edge (ZeBeyond, Growly) |
+| Fit | Every phone stays whole on every size; on 16:9 phones shrink rather than run off |
+
 ## Global rules
 - The cover (first image of a set) carries no text and no logo unless `branding.onCover` is true.
 - The work is the largest thing in every image. Frames run off at least one edge.

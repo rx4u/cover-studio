@@ -70,6 +70,14 @@ export const schema = z
       })
       .strict()
       .default({}),
+    phone: z
+      .object({
+        style: z.enum(["bezel", "frameless"]).default("bezel"),
+        statusBar: z.boolean().default(true),
+        trio: z.enum(["level", "raised"]).default("raised"),
+      })
+      .strict()
+      .default({}),
     branding: z
       .object({
         enabled: z.boolean().default(false),

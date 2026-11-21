@@ -82,6 +82,11 @@ A preset is a JSON file with any part of the config. Put one in `presets/` or ne
 
 Motion loops and films, a contact sheet, a live preview UI.
 
+## Credits
+
+- Grounds: [paper-design/shaders](https://github.com/paper-design/shaders), Apache 2.0.
+- Phone frames: [picturepan2/devices.css](https://github.com/picturepan2/devices.css), MIT.
+
 ## License
 
 MIT
