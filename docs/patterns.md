@@ -50,7 +50,7 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 ### full-bleed
 The page large on the canvas. Measured from Roobinium (Sentry), Nixtio (TRQ) and Skatenerd on Dribbble, gated 21 Nov 2026.
 - Needs: the tall desktop capture of `pages[0]`.
-- Whole (default): x 0.055W, y 0.07H, 0.89W wide, ending at 0.92H; the tall capture cropped from the top, `focus` moves it.
+- Whole (default): x 0.055W, 0.89W wide, from 0.07H to 0.92H at most, capped at the first screen plus 5% and centred vertically, so pinned scroll space below a hero never shows as an empty band; the tall capture cropped from the top, `focus` moves it.
 - `layout.bleed: "bottom"`: x 0.035W, y 0.047H, 0.93W wide, running off the bottom edge.
 - No browser chrome. Radius 10, lifted shadow. The ground shows on every side that does not bleed.
 

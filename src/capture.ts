@@ -208,7 +208,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const key = cacheKey(c);
   if (!fresh && existsSync(manifestPath)) {
     const m = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest;
-    if (m.key === key && m.full && "photoAlt" in m && m.sections && m.mobileSections && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
+    if (m.key === key && m.full && "photoAlt" in m && m.mobileSections && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
       console.log(`capture: using cache (${m.shots.length} shots). Pass --fresh to recapture.`);
       return m;
     }
