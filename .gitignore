@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.cover-cache/
+covers/
+*.log
+.DS_Store
