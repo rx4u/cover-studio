@@ -37,9 +37,9 @@ function Head({ eyebrow, title, line }: { eyebrow: string; title: string; line?:
 /* 01 Why: drag to compare the raw screenshot with the cover ---------------- */
 
 const STORY = [
-  { c: "bg-lilac", t: "A screenshot doesn't sell the work.", d: "Next to designed posts on Dribbble, Contra or X, a raw capture looks unfinished, however good the site is." },
-  { c: "bg-mint", t: "Designing covers by hand takes hours.", d: "Frames, devices, grounds and three sizes for every channel, built again for every project." },
-  { c: "bg-sky", t: "Asking an AI costs tokens and makes things up.", d: "Every round is another prompt, it never comes out the same twice, and it invents details your site doesn't have." },
+  { c: "bg-lilac", t: "Mockups take hours.", d: "Frames, devices, backgrounds and three sizes, rebuilt by hand for every shot you post." },
+  { c: "bg-mint", t: "Mockup kits look like everyone else's.", d: "The same stock devices and scenes on every feed, filled with placeholder content instead of your work." },
+  { c: "bg-sky", t: "AI tools burn tokens and drift.", d: "Every revision is another prompt, no two results match, and details get invented." },
 ];
 
 export function Why() {
@@ -63,8 +63,9 @@ export function Why() {
   return (
     <section id="why" ref={root} className="wrap pt-32 sm:pt-40">
       <div data-rise-group className="max-w-[880px]">
-        <p className="eyebrow rise">01 · Why it exists</p>
-        <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Your site is done. Then you have to post it.</h2>
+        <p className="eyebrow rise">01 · Who it&apos;s for</p>
+        <h2 className="display split mt-5 text-[48px] sm:text-[64px]">Every shot you post needs a cover and mockups.</h2>
+        <p className="rise mt-6 max-w-[640px] text-[19px] leading-[1.55] text-ink-2">cover-studio is for designers and creators who share their work on Dribbble, Contra, Behance, X, in portfolios and in pitches.</p>
       </div>
       <ol data-rise-group className="mt-14 grid gap-4 md:grid-cols-3">
         {STORY.map((p, i) => (
@@ -78,12 +79,12 @@ export function Why() {
         ))}
       </ol>
       <div data-rise-group className="mt-24 max-w-[760px]">
-        <h2 className="display split text-[40px] sm:text-[52px]">cover-studio closes the gap. Drag to see it.</h2>
+        <h2 className="display split text-[40px] sm:text-[52px]">cover-studio makes them from your real work. Drag to see.</h2>
       </div>
       <div data-clip className="cmp relative mt-12 aspect-[4/3] select-none overflow-hidden rounded-[28px] bg-night sm:aspect-[16/10]">
         <img src="/covers/why-after.webp" alt="The same site as a bento cover made by cover-studio" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
-          <img src="/covers/why-before.webp" alt="A raw screenshot of the site" className="absolute inset-0 h-full w-full object-cover object-top" />
+          <img src="/covers/why-before.webp" alt="A raw screenshot of the design" className="absolute inset-0 h-full w-full object-cover object-top" />
         </div>
         <span className="pointer-events-none absolute top-5 left-5 rounded-full bg-white px-3 py-1.5 font-mono text-[12px]">Raw screenshot</span>
         <span className="pointer-events-none absolute top-5 right-5 rounded-full bg-cobalt px-3 py-1.5 font-mono text-[12px] text-white">cover-studio</span>

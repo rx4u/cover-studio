@@ -1,20 +1,20 @@
 # cover-studio
 
-**Live site in. Covers out.** An open-source CLI that captures a real website and renders presentation covers in 18 proven patterns, at every size a channel needs.
+**Live site in. Covers out.** Presentation covers and device mockups for designers who post their work. An open-source CLI that captures your live design and renders it in 18 tested patterns, at every size a channel needs.
 
 [Website](https://cover-studio-cli.vercel.app) · [Patterns](docs/patterns.md) · [Config reference](docs/config.md) · [MIT licence](LICENSE)
 
 ![The cover-studio website](docs/images/site.webp)
 
-## Why
+## Who it's for
 
-Your site is done. Then you have to post it.
+Designers and creators who share their work on Dribbble, Contra, Behance, X, in portfolios and in pitches. Every shot you post needs a cover and mockups:
 
-- A raw screenshot doesn't sell the work. Next to designed posts, it looks unfinished.
-- Designing covers by hand takes hours: frames, devices, grounds and three sizes, again for every project.
-- Asking an AI costs tokens, never comes out the same twice, and invents details your site doesn't have.
+- Mockups take hours: frames, devices, backgrounds and three sizes, rebuilt by hand for every shot.
+- Mockup kits look like everyone else's: the same stock devices and scenes, filled with placeholder content instead of your work.
+- AI tools burn tokens and drift: every revision is another prompt, no two results match, and details get invented.
 
-cover-studio closes the gap. Point it at the live site and it keeps the real screens and lays them out in patterns measured from strong reference covers. No design session, no prompts, the same result every time.
+cover-studio makes the covers and mockups from your real work. Point it at your live design and it keeps the real screens, puts them in real device frames and lays them out in patterns measured from strong reference covers. No design session, no prompts, the same quality every time.
 
 ## What it saves
 

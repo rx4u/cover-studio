@@ -95,14 +95,14 @@ export function Hero() {
 
       <section id="top" className="wrap relative flex min-h-[100svh] flex-col justify-center pt-28 pb-24 max-lg:min-h-0 max-lg:pb-[560px]">
         <div className="max-w-[600px]">
-          <p className="eyebrow h-fade !text-white/70">Open-source CLI · MIT</p>
+          <p className="eyebrow h-fade !text-white/70">Covers and mockups · Open source · Free</p>
           <h1 className="display mt-7 whitespace-nowrap text-[clamp(54px,7.2vw,104px)]">
             <span className="h-line block overflow-hidden pb-[0.06em]"><span className="block">Live site in.</span></span>
             <span className="h-line block overflow-hidden pb-[0.06em]"><span className="block">Covers out.</span></span>
           </h1>
           <p className="h-fade mt-8 max-w-[470px] text-[19px] leading-[1.55] text-white/85">
-            cover-studio captures your real website and turns it into presentation covers, in 18 patterns and every size a channel needs.
-            Nothing mocked up, nothing invented.
+            Presentation covers and device mockups for designers who post their work. Point it at your live design and get 18 tested
+            patterns at every size a channel needs. Nothing invented.
           </p>
           <div className="h-fade mt-10 max-w-[470px]">
             <Command cmd="npm run cover -- render site.config.ts" />
