@@ -31,9 +31,9 @@ type Spec = {
 export const SPECS: Record<string, Spec> = {
   "iphone-17": { os: "ios", pt: 402, status: 62, home: [134, 5], radius: 63.5, tones: { black: "dark", white: "light", "mist-blue": "tint", sage: "tint", lavender: "tint", "deep-blue": "dark" } },
   "iphone-18-pro": { os: "ios", pt: 402, status: 62, home: [134, 5], radius: 63.6, tones: { silver: "light", glacier: "tint", black: "dark", burgundy: "dark" } },
-  "pixel-10": { os: "android", pt: 412, status: 40, home: [108, 4], radius: 50, tones: { obsidian: "dark", frost: "light", indigo: "tint" } },
-  "galaxy-s25": { os: "android", pt: 360, status: 36, home: [100, 4], radius: 36, tones: { "icy-blue": "tint", "silver-shadow": "light", navy: "dark", mint: "tint", "blue-black": "dark" } },
-  "ipad-pro": { os: "ipados", pt: 1032, status: 24, home: [320, 5], radius: 29, tones: { "space-black": "dark", silver: "light" } },
+  "pixel-10": { os: "android", pt: 412, status: 48, home: [108, 4], radius: 50, tones: { obsidian: "dark", frost: "light", indigo: "tint" } },
+  "galaxy-s25": { os: "android", pt: 360, status: 42, home: [100, 4], radius: 36, tones: { "icy-blue": "tint", "silver-shadow": "light", navy: "dark", mint: "tint", "blue-black": "dark" } },
+  "ipad-pro": { os: "ipados", pt: 1032, status: 32, home: [320, 5], radius: 29, tones: { "space-black": "dark", silver: "light" } },
   "macbook-pro": { os: "macos", pt: 1512, status: 37, home: null, radius: 18.7, tones: { "space-black": "dark", silver: "light" } },
 };
 
@@ -155,7 +155,7 @@ function screen(model: string, img: string, pageTop: string, statusBar: boolean,
   const tb = hasBar ? BAR.h * sw * f : 0;
   const d = BAR.dot * sw * f;
   const toolbar = tb
-    ? `<div style="position:absolute;left:0;right:0;top:${s.status * k}px;height:${tb}px;display:flex;align-items:center;gap:${BAR.gap * sw * f}px;padding:0 ${BAR.pad * sw * f}px;background:${c.bg};border-bottom:1px solid ${c.border};box-sizing:border-box;z-index:3">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${c.dot};display:block"></i>`.repeat(3)}</div>`
+    ? `<div style="position:absolute;left:0;right:0;top:${s.status * k}px;height:${tb}px;display:flex;align-items:center;gap:${BAR.gap * sw * f}px;padding:0 ${tablet ? 38 * k : BAR.pad * sw * f}px;background:${c.bg};border-bottom:1px solid ${c.border};box-sizing:border-box;z-index:3">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${c.dot};display:block"></i>`.repeat(3)}</div>`
     : "";
   const home = s.home && statusBar
     ? `<div style="position:absolute;left:50%;bottom:${8 * k}px;width:${s.home[0] * k}px;height:${s.home[1] * k}px;margin-left:${(-s.home[0] * k) / 2}px;border-radius:9px;background:rgba(255,255,255,.92);box-shadow:0 0 1px rgba(0,0,0,.35);z-index:3"></div>`

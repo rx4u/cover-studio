@@ -11,9 +11,12 @@ export type Os = "ios" | "ipados" | "android" | "macos";
 
 /**
  * Horizontal inset that keeps content clear of a rounded screen corner of radius `r`, for content whose top edge sits
- * `yTop` points below the top of the screen, plus a margin. Content never meets the curve.
+ * `yTop` points below the top of the screen, plus a comfortable margin (12pt or a quarter of the radius), so content
+ * keeps clear of the curve the way real status bars do, not just outside it.
  */
-export function cornerInset(r: number, yTop: number, margin = 6): number {
+export const cornerMargin = (r: number) => Math.max(12, r * 0.25);
+
+export function cornerInset(r: number, yTop: number, margin = cornerMargin(r)): number {
   if (yTop >= r) return margin;
   return r - Math.sqrt(r * r - (r - yTop) ** 2) + margin;
 }
@@ -51,8 +54,8 @@ export function iosStatus(width: number, height: number, ink: string, r: number)
 
 /** iPad (wifi model): time and date left, wifi and battery right. No cellular bars. 24pt tall. */
 export function ipadStatus(width: number, height: number, ink: string, r: number): string {
-  const [l, rt] = pads(r, height, 13, [22, 22]);
-  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:0 ${rt}px 0 ${l}px;box-sizing:border-box;font:600 13px/1 ${APPLE_FONT};color:${ink}"><span>9:41<span style="font-weight:500;margin-left:7px">Sat 21 Nov</span></span><span style="display:flex;gap:6px;align-items:center">${appleWifi(ink, 15)}${appleBattery(ink, 25)}</span></div>`;
+  const [l, rt] = pads(r, height, 14, [38, 34]);
+  return `<div style="position:absolute;left:0;top:0;width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:space-between;padding:0 ${rt}px 0 ${l}px;box-sizing:border-box;font:600 14px/1 ${APPLE_FONT};color:${ink}"><span>9:41<span style="font-weight:500;margin-left:7px">Sat 21 Nov</span></span><span style="display:flex;gap:6px;align-items:center">${appleWifi(ink, 15)}${appleBattery(ink, 25)}</span></div>`;
 }
 
 /** Android (Pixel, Galaxy): time left, wifi, signal and battery right, Material shapes. */
