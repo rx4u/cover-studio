@@ -6,13 +6,18 @@
   "license": "MIT",
   "author": "Rajaraman Arumugam",
   "repository": "github:rx4u/cover-studio",
-  "bin": { "cover-studio": "src/cover.ts" },
+  "bin": {
+    "cover-studio": "src/cover.ts"
+  },
   "scripts": {
     "cover": "tsx src/cover.ts",
     "typecheck": "tsc --noEmit"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
+    "@paper-design/shaders": "^0.0.82",
     "playwright": "^1.65.1",
     "tsx": "^4.20.0",
     "zod": "^3.25.0"

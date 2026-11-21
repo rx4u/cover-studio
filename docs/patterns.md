@@ -4,6 +4,19 @@ Every pattern renders on any canvas size. Numbers are proportions of the canvas 
 
 All 18 patterns below are built. Each lists what it needs; a pattern missing its inputs is skipped with a message.
 
+## Grounds (measured from references, gated 21 Nov 2026)
+
+| Type | Reference | Spec |
+|---|---|---|
+| `photo` (atmospheric) | Phenomenon Aesthetica, VITA | Largest photo in the first screen (or the hero screenshot when there is none), blur 48 px at 1600 wide, brightness 0.5, saturate 1.15, darkening towards the bottom. Edge luminance 30 to 70 |
+| `photo-clear` | Phenomenon Growly | Sharp photo from further down the page, so it never duplicates the hero |
+| `brand-gradient` | Ramotion Borea | 155 deg: accent tint 35% to accent to accent shade 70% to near black |
+| `dark` | Zajno | Flat accent shaded 80% (navy accent gives about #09161C) |
+| `mesh` | Afterglow, Clearbit | paper-design static mesh: pastels of the accent hue (HSL, never tints towards grey) plus a neighbouring hue and white |
+| `silk` | BL/S, Gleb Kuznetsov | paper-design mesh, distortion 1, swirl 0.85, wide tonal range; dark accents get lifted highlights |
+
+3D objects in some references (Clearbit's fan, Gleb's glass blocks) are models and are not reproduced.
+
 ## Global rules
 - The cover (first image of a set) carries no text and no logo unless `branding.onCover` is true.
 - The work is the largest thing in every image. Frames run off at least one edge.

@@ -36,7 +36,11 @@ export const schema = z
     focus: z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }).strict().default({ x: 0, y: 0 }),
     ground: z
       .object({
-        type: z.enum(["solid", "linear", "radial", "image", "photo"]).default("solid"),
+        type: z.enum(["solid", "linear", "radial", "image", "photo", "photo-clear", "brand-gradient", "dark", "mesh", "silk"]).default("solid"),
+        accent: hex.nullable().default(null),
+        blur: z.number().min(0).max(120).default(48),
+        brightness: z.number().min(0.1).max(1).default(0.5),
+        seed: z.number().int().min(0).max(100).default(1),
         stops: z.array(hex).min(1).default(["#E4E4E2"]),
         angle: z.number().default(135),
         origin: z.enum(["top-left", "top-right", "bottom-left", "bottom-right", "center"]).default("top-right"),
@@ -98,7 +102,7 @@ export const schema = z
   .superRefine((c, ctx) => {
     if (c.ground.type === "image" && !c.ground.image) ctx.addIssue({ code: "custom", path: ["ground", "image"], message: "required when ground.type is image" });
     if (c.pattern.type === "svg" && !c.pattern.svg) ctx.addIssue({ code: "custom", path: ["pattern", "svg"], message: "required when pattern.type is svg" });
-    if (c.ground.type === "photo" && !c.source.photo) ctx.addIssue({ code: "custom", path: ["source", "photo"], message: "required when ground.type is photo" });
+    if ((c.ground.type === "photo" || c.ground.type === "photo-clear") && !c.source.photo) ctx.addIssue({ code: "custom", path: ["source", "photo"], message: "required when ground.type is photo" });
   });
 
 export type Config = z.infer<typeof schema> & { configDir: string };

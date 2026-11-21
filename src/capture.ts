@@ -27,6 +27,8 @@ export type Manifest = {
   /** Capture of source.before, for before-after. */
   before: string | null;
   photo: string | null;
+  /** Largest image below the first screen, for the clear photo ground (so it differs from the hero). */
+  photoAlt: string | null;
   capturedAt: string;
 };
 
@@ -87,20 +89,51 @@ async function settle(page: Page, c: Config): Promise<void> {
   await page.waitForTimeout(1200);
 }
 
+async function saveAltPhoto(page: Page, dir: string): Promise<string | null> {
+  const src = await page.evaluate(() => {
+    let best: { src: string; area: number } | null = null;
+    for (const img of document.images) {
+      const r = img.getBoundingClientRect();
+      const top = r.top + window.scrollY;
+      if (top < window.innerHeight * 1.1 || r.width < 500) continue;
+      const area = r.width * r.height;
+      const s = img.currentSrc || img.src;
+      if (s && (!best || area > best.area)) best = { src: s, area };
+    }
+    return best ? best.src : null;
+  });
+  if (!src) return null;
+  const res = await page.request.get(src);
+  if (!res.ok()) return null;
+  const file = join(dir, "photo-alt.img");
+  await writeFile(file, await res.body());
+  return file;
+}
+
 async function savePhoto(page: Page, c: Config, dir: string): Promise<string | null> {
   const ref = c.source.photo;
   if (!ref) return null;
   let src: string | null = null;
   if (/^https?:\/\//.test(ref)) src = ref;
   else {
+    // Largest matching image in the first 1.5 screens: the first <img> is often a logo or a product cut-out.
     src = await page.evaluate((sel) => {
-      const el = document.querySelector(sel);
-      if (!el) return null;
-      if (el instanceof HTMLImageElement) return el.currentSrc || el.src;
-      const img = el.querySelector("img");
-      if (img) return img.currentSrc || img.src;
-      const bg = getComputedStyle(el).backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-      return bg ? new URL(bg[1], location.href).href : null;
+      let best: { src: string; area: number } | null = null;
+      for (const el of document.querySelectorAll(sel)) {
+        const img = el instanceof HTMLImageElement ? el : el.querySelector("img");
+        const target = img ?? el;
+        const r = target.getBoundingClientRect();
+        if (r.top > window.innerHeight * 1.5 || r.width < 300) continue;
+        const area = r.width * r.height;
+        let s: string | null = null;
+        if (img) s = img.currentSrc || img.src;
+        else {
+          const bg = getComputedStyle(el).backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+          if (bg) s = new URL(bg[1], location.href).href;
+        }
+        if (s && (!best || area > best.area)) best = { src: s, area };
+      }
+      return best ? best.src : null;
     }, ref);
   }
   if (src) {
@@ -115,7 +148,7 @@ async function savePhoto(page: Page, c: Config, dir: string): Promise<string | n
     const el = await page.$(ref);
     if (el) {
       const file = join(dir, "photo.img");
-      await el.screenshot({ path: file, type: "png" });
+      await el.screenshot({ path: file, type: "png", timeout: 120_000 });
       return file;
     }
   }
@@ -148,7 +181,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const key = cacheKey(c);
   if (!fresh && existsSync(manifestPath)) {
     const m = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest;
-    if (m.key === key && m.full && m.mobileSections && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
+    if (m.key === key && m.full && "photoAlt" in m && m.mobileSections && [...m.shots, ...m.talls, ...m.full, ...m.mobile, ...m.mobileTalls].every((s) => existsSync(s.file))) {
       console.log(`capture: using cache (${m.shots.length} shots). Pass --fresh to recapture.`);
       return m;
     }
@@ -167,6 +200,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   const mobileSections: number[][] = [];
   const elements: string[] = [];
   let before: string | null = null;
+  let photoAlt: string | null = null;
   let photo: string | null = null;
   try {
     for (const [pi, path] of c.source.pages.entries()) {
@@ -179,20 +213,23 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
       }
       await settle(page, c);
       if (c.source.finishReveals) await finishReveals(page);
-      if (pi === 0) photo = await savePhoto(page, c, dir);
+      if (pi === 0) {
+        photo = await savePhoto(page, c, dir);
+        photoAlt = await saveAltPhoto(page, dir);
+      }
       for (const y of c.source.scrollPositions) {
         await scrollTo(page, y);
         const file = join(dir, `p${pi}-y${y}.png`);
-        await page.screenshot({ path: file, type: "png" });
+        await page.screenshot({ path: file, type: "png", timeout: 120_000 });
         shots.push({ page: path, y, file });
       }
       await scrollTo(page, 0);
       const height = await page.evaluate(() => document.documentElement.scrollHeight);
       const tall = join(dir, `p${pi}-tall.png`);
-      await page.screenshot({ path: tall, type: "png", fullPage: true, clip: { x: 0, y: 0, width: VIEWPORT.width, height: Math.min(height, TALL_HEIGHT) } });
+      await page.screenshot({ path: tall, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: VIEWPORT.width, height: Math.min(height, TALL_HEIGHT) } });
       talls.push({ page: path, file: tall });
       const fullFile = join(dir, `p${pi}-full.png`);
-      await page.screenshot({ path: fullFile, type: "png", fullPage: true, clip: { x: 0, y: 0, width: VIEWPORT.width, height: Math.min(height, FULL_HEIGHT) } });
+      await page.screenshot({ path: fullFile, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: VIEWPORT.width, height: Math.min(height, FULL_HEIGHT) } });
       full.push({ page: path, file: fullFile });
       if (pi === 0) {
         for (const [ei, sel] of c.source.elements.entries()) {
@@ -204,7 +241,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
           await el.scrollIntoViewIfNeeded();
           await page.waitForTimeout(600);
           const file = join(dir, `el${ei}.png`);
-          await el.screenshot({ path: file, type: "png" });
+          await el.screenshot({ path: file, type: "png", timeout: 120_000 });
           elements.push(file);
         }
         await scrollTo(page, 0);
@@ -222,7 +259,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
         await settle(mp, c);
         if (c.source.finishReveals) await finishReveals(mp);
         const file = join(dir, `m${pi}-y0.png`);
-        await mp.screenshot({ path: file, type: "png" });
+        await mp.screenshot({ path: file, type: "png", timeout: 120_000 });
         const topColor = await topPixelColor(mp);
         mobile.push({ page: path, y: 0, file, topColor });
         const sections = await mp.evaluate(() => {
@@ -237,14 +274,14 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
           for (const top of sections.filter((t) => t > 844 * 0.9).slice(0, 2)) {
             await scrollTo(mp, top);
             const sf = join(dir, `m${pi}-y${top}.png`);
-            await mp.screenshot({ path: sf, type: "png" });
+            await mp.screenshot({ path: sf, type: "png", timeout: 120_000 });
             mobile.push({ page: path, y: top, file: sf, topColor: await topPixelColor(mp) });
           }
           await scrollTo(mp, 0);
         }
         const h = await mp.evaluate(() => document.documentElement.scrollHeight);
         const tall = join(dir, `m${pi}-tall.png`);
-        await mp.screenshot({ path: tall, type: "png", fullPage: true, clip: { x: 0, y: 0, width: MOBILE.width, height: Math.min(h, MOBILE.height * 4) } });
+        await mp.screenshot({ path: tall, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: MOBILE.width, height: Math.min(h, MOBILE.height * 4) } });
         mobileTalls.push({ page: path, file: tall });
       }
       console.log(`capture: ${mobile.length} mobile shots`);
@@ -255,13 +292,13 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
       if (res && res.status() < 400) {
         await settle(page, c);
         before = join(dir, "before.png");
-        await page.screenshot({ path: before, type: "png" });
+        await page.screenshot({ path: before, type: "png", timeout: 120_000 });
       } else console.warn(`  before: ${c.source.before} did not load`);
     }
   } finally {
     await browser.close();
   }
-  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, elements, before, photo, capturedAt: new Date().toISOString() };
+  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, elements, before, photo, photoAlt, capturedAt: new Date().toISOString() };
   await writeFile(manifestPath, JSON.stringify(m, null, 2));
   console.log(`capture: ${shots.length} shots${photo ? " + photo" : ""} in ${dir}`);
   return m;

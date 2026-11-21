@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import type { Config } from "./config.ts";
 import { fromConfig } from "./config.ts";
+import { pastel, shade, tint, type ShaderSpec } from "./grounds.ts";
 
 export const url = (file: string) => pathToFileURL(file).href;
 
@@ -13,23 +14,75 @@ const ORIGIN: Record<string, string> = {
   center: "50% 50%",
 };
 
-/** CSS for the canvas background. `photo` is the cached hero photo, if any. */
-export function groundCSS(c: Config, photo: string | null): string {
+/** The brand accent for derived grounds: ground.accent, else bento.accent, else the first stop. */
+export function groundAccent(c: Config): string {
+  return c.ground.accent ?? c.bento.accent ?? c.ground.stops[0];
+}
+
+/**
+ * The ground as an HTML layer covering the canvas. Specs measured from reference shots (docs/patterns.md, Grounds).
+ * `photo` is the cached hero photo; `shaderFile` is the pre-rendered still for mesh and silk.
+ */
+export function groundLayer(c: Config, photo: string | null, shaderFile: string | null, w: number, heroShot: string | null = null, photoAlt: string | null = null): string {
   const g = c.ground;
+  const k = w / 1600;
+  const layer = (css: string) => `<div style="position:absolute;inset:0;${css}"></div>`;
   const stops = g.stops.length === 1 ? [g.stops[0], g.stops[0]] : g.stops;
-  const dim = g.dim > 0 ? `linear-gradient(rgba(0,0,0,${g.dim}), rgba(0,0,0,${g.dim})), ` : "";
+  const acc = groundAccent(c);
   switch (g.type) {
     case "solid":
-      return `background: ${g.stops[0]};`;
+      return layer(`background:${g.stops[0]}`);
     case "linear":
-      return `background: linear-gradient(${g.angle}deg, ${stops.join(", ")});`;
+      return layer(`background:linear-gradient(${g.angle}deg, ${stops.join(", ")})`);
     case "radial":
-      return `background: radial-gradient(ellipse 130% 110% at ${ORIGIN[g.origin]}, ${stops.join(", ")});`;
+      return layer(`background:radial-gradient(ellipse 130% 110% at ${ORIGIN[g.origin]}, ${stops.join(", ")})`);
     case "image":
-      return `background: ${dim}url("${url(fromConfig(c, g.image!))}") center / cover no-repeat;`;
-    case "photo":
-      return photo ? `background: ${dim}url("${url(photo)}") center / cover no-repeat;` : `background: ${g.stops[0]};`;
+    case "photo-clear": {
+      // Clear photo prefers an image from further down the page, so the ground never duplicates the hero (Growly ref).
+      const src = g.type === "image" ? fromConfig(c, g.image!) : (photoAlt ?? photo);
+      if (!src) return layer(`background:${g.stops[0]}`);
+      const dim = g.dim > 0 ? layer(`background:rgba(0,0,0,${g.dim})`) : "";
+      return layer(`background:url('${url(src)}') center / cover no-repeat`) + dim;
+    }
+    case "photo": {
+      // Atmospheric: the site photo blurred and darkened, darker towards the bottom (Phenomenon refs: edge luminance 30 to 70).
+      // Sites without a usable photo use their own hero screenshot, which is always on-brand.
+      const src = photo ?? heroShot;
+      if (!src) return layer(`background:${shade(acc, 0.78)}`);
+      return (
+        `<div style="position:absolute;inset:-8%;background:url('${url(src)}') center / cover no-repeat;filter:blur(${Math.round(g.blur * k)}px) brightness(${g.brightness}) saturate(1.15)"></div>` +
+        layer("background:linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(0,0,0,.5) 100%)")
+      );
+    }
+    case "brand-gradient":
+      // Ramotion Borea: light accent into deep accent into near black, on the diagonal.
+      return layer(`background:linear-gradient(155deg, ${tint(acc, 0.35)} 0%, ${acc} 34%, ${shade(acc, 0.7)} 70%, #0A0A0B 100%)`);
+    case "dark":
+      // Zajno: a flat, deep, tinted dark (measured #09161C for a navy accent).
+      return layer(`background:${shade(acc, 0.8)}`);
+    case "mesh":
+    case "silk":
+      return shaderFile ? layer(`background:url('${url(shaderFile)}') center / cover no-repeat`) : layer(`background:${tint(acc, 0.85)}`);
   }
+}
+
+/** Shader settings for mesh and silk grounds, tuned against Afterglow, Clearbit and BL/S references. */
+export function shaderSpec(c: Config): ShaderSpec | null {
+  const g = c.ground;
+  const acc = groundAccent(c);
+  if (g.type === "mesh") {
+    // Afterglow and Clearbit: clean pastels of the brand hue plus a neighbouring hue, with white, never grey.
+    const colors = g.stops.length >= 3 ? g.stops : [pastel(acc, 0.55, 0.93), pastel(acc, 0.6, 0.8), "#FFFFFF", pastel(acc, 0.5, 0.88, 40), pastel(acc, 0.65, 0.72), pastel(acc, 0.45, 0.95, -30)];
+    return { kind: "static-mesh", colors, seed: g.seed, params: { mixing: 0.8, waveX: 0.55, waveXShift: 0.5, waveY: 0.45, waveYShift: 0.3 } };
+  }
+  if (g.type === "silk") {
+    // BL/S silk: folds need a wide tonal range. Dark brand colours get lighter highlights so the folds still read.
+    const lum = (() => { const n = parseInt(acc.slice(1, 7), 16); return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255); })();
+    const lift = lum < 70 ? 0.25 : 0;
+    const colors = g.stops.length >= 3 ? g.stops : [shade(acc, 0.6), tint(acc, 0.15 + lift), tint(acc, 0.55 + lift), shade(acc, 0.8), tint(acc, Math.min(0.92, 0.72 + lift))];
+    return { kind: "mesh", colors, seed: g.seed, params: { distortion: 1, swirl: 0.85 } };
+  }
+  return null;
 }
 
 /** Full-canvas SVG pattern layer with a fade mask. Empty string when pattern.type is none. */

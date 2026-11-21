@@ -3,19 +3,22 @@ import { join, resolve } from "node:path";
 import type { Browser } from "playwright";
 import { parseSize, type Config } from "./config.ts";
 import { cacheDir, launch, type Manifest } from "./capture.ts";
-import { accent, branding, groundCSS, patternLayer, url } from "./look.ts";
+import { accent, branding, groundLayer, patternLayer, shaderSpec, url } from "./look.ts";
+import { renderShader } from "./grounds.ts";
+import { existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { PATTERNS } from "./patterns/index.ts";
 
 export function outDir(c: Config): string {
   return resolve(process.cwd(), "covers", c.name);
 }
 
-function page(c: Config, m: Manifest, patternId: string, w: number, h: number, isCover: boolean): string {
+function page(c: Config, m: Manifest, patternId: string, w: number, h: number, isCover: boolean, shaderFile: string | null): string {
   const p = PATTERNS[patternId];
   const onPhoto = patternId === "photo-ground";
   const onBrand = patternId === "strips-brand";
   const look: Config = onPhoto
-    ? { ...c, ground: { ...c.ground, type: "photo", dim: c.ground.dim || 0.08 } }
+    ? { ...c, ground: { ...c.ground, type: c.ground.type === "photo-clear" ? "photo-clear" : "photo" } }
     : onBrand
       ? { ...c, ground: { ...c.ground, type: "solid", stops: [accent(c)] } }
       : c;
@@ -24,8 +27,8 @@ function page(c: Config, m: Manifest, patternId: string, w: number, h: number, i
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{position:relative;${groundCSS(look, m.photo)}}
-</style></head><body>${onPhoto ? "" : patternLayer(c, w, h)}${inner}${brand.html}</body></html>`;
+body{position:relative}
+</style></head><body>${groundLayer(look, m.photo, onPhoto || onBrand ? null : shaderFile, w, m.shots[0]?.file ?? null, m.photoAlt ?? null)}${onPhoto ? "" : patternLayer(c, w, h)}${inner}${brand.html}</body></html>`;
 }
 
 async function shoot(browser: Browser, html: string, w: number, h: number, workDir: string, out: string): Promise<void> {
@@ -37,6 +40,16 @@ async function shoot(browser: Browser, html: string, w: number, h: number, workD
   await pg.evaluate(() => Promise.all([...document.images].map((i) => (i.complete ? null : i.decode().catch(() => null)))));
   await pg.screenshot({ path: out, type: "png" });
   await ctx.close();
+}
+
+/** Render the shader ground for this size once and cache it. */
+async function groundStill(browser: Browser, c: Config, w: number, h: number): Promise<string | null> {
+  const spec = shaderSpec(c);
+  if (!spec) return null;
+  const key = createHash("sha1").update(JSON.stringify(spec)).digest("hex").slice(0, 10);
+  const file = join(cacheDir(c), `ground-${key}-${w}x${h}.png`);
+  if (!existsSync(file)) await renderShader(browser, spec, w, h, file);
+  return file;
 }
 
 export async function render(c: Config, m: Manifest, only?: string): Promise<string[]> {
@@ -58,7 +71,7 @@ export async function render(c: Config, m: Manifest, only?: string): Promise<str
       for (const size of c.export.sizes) {
         const [w, h] = parseSize(size);
         const out = join(dir, `${c.name}-${c.patterns.indexOf(id as (typeof c.patterns)[number]) + 1}-${id}-${size}.png`);
-        await shoot(browser, page(c, m, id, w, h, isCover), w, h, cacheDir(c), out);
+        await shoot(browser, page(c, m, id, w, h, isCover, await groundStill(browser, c, w, h)), w, h, cacheDir(c), out);
         written.push(out);
         console.log(`render: ${out.split("/").pop()}`);
       }

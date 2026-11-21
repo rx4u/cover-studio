@@ -23,7 +23,11 @@ export default {
   focus: { x: 0, y: 0 },               // crop anchor for full-bleed, 0..1
 
   ground: {
-    type: "solid",                     // solid | linear | radial | image | photo
+    type: "solid",                     // solid | linear | radial | image | photo | photo-clear | brand-gradient | dark | mesh | silk
+    accent: null,                      // brand colour for derived grounds (falls back to bento.accent, then stops[0])
+    blur: 48,                          // photo: blur at 1600 wide
+    brightness: 0.5,                   // photo: 0.1 to 1
+    seed: 1,                           // mesh and silk: change for a different arrangement
     stops: ["#E4E4E2"],                // one colour for solid, two or more for gradients
     angle: 135,                        // linear only
     origin: "top-right",               // radial only
