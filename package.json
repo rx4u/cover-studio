@@ -1,0 +1,24 @@
+{
+  "name": "cover-studio",
+  "version": "0.1.0",
+  "description": "Turn any live website into presentation-ready covers in proven patterns, at every size a channel needs.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Rajaraman Arumugam",
+  "repository": "github:rx4u/cover-studio",
+  "bin": { "cover-studio": "src/cover.ts" },
+  "scripts": {
+    "cover": "tsx src/cover.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "playwright": "^1.65.1",
+    "tsx": "^4.20.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0"
+  }
+}

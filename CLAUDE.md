@@ -17,12 +17,15 @@ Open-source CLI that turns a live website into presentation-ready covers in prov
   - Tall full-page images were rejected. Every output is a fixed canvas.
   - Device mockups with tabs, pills and badges looked childish. Frames stay plain.
   - Grain and noise overlays rejected. There is no noise option.
+  - Image decode waits on lazy images never resolve. Every wait is capped.
+  - tsx wraps named functions in __name(), which breaks page.evaluate(). The page gets a __name shim.
+  - Full-bleed from the viewport capture cut the nav at the sides on 4:3. It uses the tall capture fitted to width.
   - An earlier 8-phase plan (18 patterns, film, presets UI) was too big. Do not grow V1 scope.
 - What must not change: no text or logo on the cover unless `branding.onCover` is true; every pixel of product comes from a real capture; nothing invented.
 
 ## Current Status
-- [ ] V1 build (see plan.md)
-- [ ] Proof run on one real site
+- [x] V1 build (see plan.md)
+- [x] Proof run on one real site (Aequor, 21 Nov 2026)
 Update after each step.
 
 ## Commands

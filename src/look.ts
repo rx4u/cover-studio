@@ -1,0 +1,110 @@
+import { pathToFileURL } from "node:url";
+import type { Config } from "./config.ts";
+import { fromConfig } from "./config.ts";
+
+export const url = (file: string) => pathToFileURL(file).href;
+
+const ORIGIN: Record<string, string> = {
+  "top-left": "0% 0%",
+  "top-right": "100% 0%",
+  "bottom-left": "0% 100%",
+  "bottom-right": "100% 100%",
+  center: "50% 50%",
+};
+
+/** CSS for the canvas background. `photo` is the cached hero photo, if any. */
+export function groundCSS(c: Config, photo: string | null): string {
+  const g = c.ground;
+  const stops = g.stops.length === 1 ? [g.stops[0], g.stops[0]] : g.stops;
+  const dim = g.dim > 0 ? `linear-gradient(rgba(0,0,0,${g.dim}), rgba(0,0,0,${g.dim})), ` : "";
+  switch (g.type) {
+    case "solid":
+      return `background: ${g.stops[0]};`;
+    case "linear":
+      return `background: linear-gradient(${g.angle}deg, ${stops.join(", ")});`;
+    case "radial":
+      return `background: radial-gradient(ellipse 130% 110% at ${ORIGIN[g.origin]}, ${stops.join(", ")});`;
+    case "image":
+      return `background: ${dim}url("${url(fromConfig(c, g.image!))}") center / cover no-repeat;`;
+    case "photo":
+      return photo ? `background: ${dim}url("${url(photo)}") center / cover no-repeat;` : `background: ${g.stops[0]};`;
+  }
+}
+
+/** Full-canvas SVG pattern layer with a fade mask. Empty string when pattern.type is none. */
+export function patternLayer(c: Config, w: number, h: number): string {
+  const p = c.pattern;
+  if (p.type === "none") return "";
+  const k = w / 1600;
+  const s = (n: number) => +(n * p.scale * k).toFixed(2);
+  const stroke = `stroke="${p.color}" stroke-width="${Math.max(1, s(1))}" fill="none"`;
+  let defs = "";
+  let body = `<rect width="100%" height="100%" fill="url(#pt)"/>`;
+  const rot = p.angle ? ` patternTransform="rotate(${p.angle})"` : "";
+  switch (p.type) {
+    case "grid":
+      defs = `<pattern id="pt" width="${s(48)}" height="${s(48)}" patternUnits="userSpaceOnUse"${rot}><path d="M ${s(48)} 0 L 0 0 0 ${s(48)}" ${stroke}/></pattern>`;
+      break;
+    case "dots":
+      defs = `<pattern id="pt" width="${s(24)}" height="${s(24)}" patternUnits="userSpaceOnUse"${rot}><circle cx="${s(12)}" cy="${s(12)}" r="${s(1.6)}" fill="${p.color}"/></pattern>`;
+      break;
+    case "lines":
+      defs = `<pattern id="pt" width="${s(18)}" height="${s(18)}" patternUnits="userSpaceOnUse" patternTransform="rotate(${p.angle || 45})"><line x1="0" y1="0" x2="0" y2="${s(18)}" ${stroke}/></pattern>`;
+      break;
+    case "rings": {
+      const [ox, oy] = (ORIGIN[p.fade === "none" ? "top-right" : p.fade] ?? "100% 0%").split(" ").map((v) => parseFloat(v) / 100);
+      const cx = ox * w, cy = oy * h, step = s(56);
+      const max = Math.hypot(w, h);
+      body = "";
+      for (let r = step; r < max; r += step) body += `<circle cx="${cx}" cy="${cy}" r="${r.toFixed(1)}" ${stroke}/>`;
+      break;
+    }
+    case "svg":
+      defs = `<pattern id="pt" width="${s(200)}" height="${s(200)}" patternUnits="userSpaceOnUse"${rot}><image href="${url(fromConfig(c, p.svg!))}" width="${s(200)}" height="${s(200)}"/></pattern>`;
+      break;
+  }
+  const mask = p.fade === "none" ? "" : `-webkit-mask-image: radial-gradient(ellipse 75% 65% at ${ORIGIN[p.fade]}, #000 15%, transparent 72%); mask-image: radial-gradient(ellipse 75% 65% at ${ORIGIN[p.fade]}, #000 15%, transparent 72%);`;
+  return `<svg class="pattern" width="${w}" height="${h}" style="position:absolute;inset:0;opacity:${p.opacity};${mask}"><defs>${defs}</defs>${body}</svg>`;
+}
+
+const SHADOW: Record<string, string> = {
+  none: "none",
+  soft: "0 40px 80px -30px rgba(0,0,0,.28), 0 12px 28px -14px rgba(0,0,0,.18)",
+  lifted: "0 60px 120px -30px rgba(0,0,0,.45), 0 20px 40px -18px rgba(0,0,0,.3)",
+};
+
+export type Box = { x: number; y: number; w: number; h?: number };
+
+/**
+ * A browser frame (or a bare rounded image) positioned on the canvas.
+ * When `box.h` is omitted, the frame is as tall as the image and may run off the canvas.
+ * `focus` anchors object-position for cropped images.
+ */
+export function frame(c: Config, canvasW: number, img: string, box: Box, focus = "0% 0%"): string {
+  const k = canvasW / 1600;
+  const f = c.frame;
+  const r = f.radius * k;
+  const bar = f.style === "browser" ? Math.round(40 * k) : 0;
+  const dark = f.theme === "dark";
+  const barBg = dark ? "#1B1C1C" : "#F6F6F4";
+  const dot = dark ? "#3B3C3C" : "#D8D8D5";
+  const border = dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.08)";
+  const d = Math.round(11 * k);
+  const dots = bar ? `<div style="height:${bar}px;background:${barBg};display:flex;align-items:center;gap:${Math.round(8 * k)}px;padding:0 ${Math.round(18 * k)}px;border-bottom:1px solid ${border}">${`<i style="width:${d}px;height:${d}px;border-radius:50%;background:${dot};display:block"></i>`.repeat(3)}</div>` : "";
+  const imgCss = box.h
+    ? `display:block;width:100%;height:${box.h - bar}px;object-fit:cover;object-position:${focus}`
+    : `display:block;width:100%;height:auto`;
+  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;border-radius:${r}px;overflow:hidden;border:1px solid ${border};box-shadow:${SHADOW[f.shadow]};background:${barBg}">${dots}<img src="${url(img)}" style="${imgCss}"></div>`;
+}
+
+/** Branding header. Returns the html and the height it reserves at the top of the canvas. */
+export function branding(c: Config, w: number, h: number, isCover: boolean): { html: string; top: number } {
+  const b = c.branding;
+  if (!b.enabled || (isCover && !b.onCover) || (!b.left && !b.right)) return { html: "", top: 0 };
+  const k = w / 1600;
+  const y = Math.round(h * 0.05);
+  const side = (slot: typeof b.left, align: "left" | "right") =>
+    slot ? `<img src="${url(fromConfig(c, slot.logo))}" style="position:absolute;top:${y}px;${align}:${Math.round(w * 0.065)}px;height:${Math.round(slot.height * k)}px">` : "";
+  const tallest = Math.max(b.left?.height ?? 0, b.right?.height ?? 0) * k;
+  return { html: side(b.left, "left") + side(b.right, "right"), top: Math.round(y + tallest + h * 0.04) };
+}

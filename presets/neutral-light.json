@@ -1,0 +1,5 @@
+{
+  "ground": { "type": "solid", "stops": ["#E4E4E2"] },
+  "pattern": { "type": "none" },
+  "frame": { "style": "browser", "theme": "light", "radius": 16, "shadow": "soft" }
+}
