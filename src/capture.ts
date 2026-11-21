@@ -242,7 +242,7 @@ async function scrollTo(page: Page, y: number): Promise<void> {
   await page.evaluate((top) => {
     const w = window as unknown as { lenis?: { scrollTo: (y: number, o: object) => void }; __lenis?: { scrollTo: (y: number, o: object) => void } };
     const lenis = w.lenis ?? w.__lenis;
-    if (lenis) lenis.scrollTo(top, { immediate: true, force: true });
+    if (lenis && typeof lenis.scrollTo === "function") lenis.scrollTo(top, { immediate: true, force: true });
     window.scrollTo(0, top);
   }, y);
   await page.waitForTimeout(900);
