@@ -36,6 +36,8 @@ export type Manifest = {
   mobileTalls: Tall[];
   /** For each mobile tall capture: section start offsets in CSS px, so phone crops never open mid-sentence. */
   mobileSections: number[][];
+  /** The site's own photographs, largest first. */
+  images?: string[];
   /** Component captures, one per source.elements selector that matched. */
   elements: string[];
   /** Capture of source.before, for before-after. */
@@ -273,6 +275,35 @@ async function saveAltPhoto(page: Page, dir: string): Promise<string | null> {
   return file;
 }
 
+/**
+ * The site's own photographs, for tiles that show imagery rather than page fragments: every <img> on the page with a
+ * natural width of at least 800 px, distinct by source, largest first, up to 8. Logos, icons and small thumbnails are
+ * left out by size. Downloaded at their original resolution.
+ */
+async function saveImages(page: Page, dir: string): Promise<string[]> {
+  const srcs = await page.evaluate(() => {
+    const seen = new Map<string, number>();
+    for (const img of document.querySelectorAll("img")) {
+      const s = img.currentSrc || img.src;
+      if (!s || s.startsWith("data:") || /\.svg(\?|$)/i.test(s) || img.naturalWidth < 800 || img.naturalHeight < 500) continue;
+      const area = img.naturalWidth * img.naturalHeight;
+      if (!seen.has(s) || seen.get(s)! < area) seen.set(s, area);
+    }
+    return [...seen.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([s]) => s);
+  });
+  const out: string[] = [];
+  for (const [i, src] of srcs.entries()) {
+    try {
+      const res = await page.request.get(src, { timeout: 30_000 });
+      if (!res.ok()) continue;
+      const file = join(dir, `img${i}.img`);
+      await writeFile(file, await res.body());
+      out.push(file);
+    } catch {}
+  }
+  return out;
+}
+
 async function savePhoto(page: Page, c: Config, dir: string): Promise<string | null> {
   const ref = c.source.photo;
   if (!ref) return null;
@@ -381,6 +412,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   let before: string | null = null;
   let photoAlt: string | null = null;
   let photo: string | null = null;
+  let images: string[] = [];
   try {
     for (const [pi, path] of c.source.pages.entries()) {
       const url = new URL(path, c.source.url).href;
@@ -407,6 +439,8 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
       const tall = join(dir, `p${pi}-tall.png`);
       const fullFile = join(dir, `p${pi}-full.png`);
       sections.push(await stitchPage(page, tall, fullFile, TALL_HEIGHT, FULL_HEIGHT));
+      // After the stitch every lazy image has loaded.
+      if (pi === 0) images = await saveImages(page, dir);
       talls.push({ page: path, file: tall });
       full.push({ page: path, file: fullFile });
       if (pi === 0) {
@@ -517,7 +551,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
   } finally {
     await browser.close();
   }
-  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, sections, elements, before, photo, photoAlt, capturedAt: new Date().toISOString() };
+  const m: Manifest = { key, url: c.source.url, shots, talls, full, mobile, mobileTalls, mobileSections, sections, images, elements, before, photo, photoAlt, capturedAt: new Date().toISOString() };
   await writeFile(manifestPath, JSON.stringify(m, null, 2));
   console.log(`capture: ${shots.length} shots${photo ? " + photo" : ""} in ${dir}`);
   return m;

@@ -39,6 +39,7 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 | Fit | Phones stay whole on every size; page devices bleed as above |
 
 ## Capture
+- The site's own photographs (natural width 800 px or more, distinct, largest first, up to 8) are saved for photo tiles.
 - Tall and full-page captures are stitched from real screens: the page is scrolled one screen at a time, each screen's reveals play, then the screens are joined. Pinned sections (GSAP pin spacers, large sticky sections) are laid out in normal flow first, fixed bars show on the first screen only, and blank screens (scroll spacers) are dropped.
 
 ## Global rules
@@ -98,13 +99,11 @@ Three phones, middle one raised.
 - Use for mobile apps and responsive proof.
 
 ### bento
-A mosaic of real tiles. Measured from Clyra, Raya Reserve and a dark product bento on Dribbble, gated 21 Nov 2026.
-- Margins 0.05W by 0.06H, gaps 0.014W, radius 14, no shadows. 4 columns by 3 rows.
-- The desktop hero over 3 columns and 2 rows, the tall capture fitted to the tile's width so the page is never cut at the sides.
-- A phone screen down the 4th column: 2 rows on 4:3, all 3 on wide canvases.
-- Small tiles along the bottom (four on 4:3, three on wide), in order, only from real inputs: components (`source.elements`), the hero photo, phone screens captured at their sections, other pages' phone screens, the brand logo, `bento.stat`, `bento.colours`, more desktop screens.
-- Phone section shots are captured by scrolling each section to just below any sticky header (recorded at capture), skipping sections closer than 0.6 of a screen to the last, so every tile opens on its own heading and none repeat.
-- Never an empty tile: with fewer inputs than slots, the remaining tiles span the gap.
+A mosaic of whole tiles. Measured from Clyra, Raya Reserve and a dark product bento on Dribbble, cleaned up 21 Nov 2026.
+- Margins 0.05W by 0.06H, gaps 0.014W, radius 14, no shadows. 4 columns by 3 rows on every canvas.
+- Desktop hero over 3 columns and 2 rows, the tall capture fitted to width.
+- 4th column, 2 rows: the phone screen of a later section (not the hero again).
+- Four small tiles, whole things only, never page fragments: the site's own photographs (captured at capture, largest first, the hero's own photo skipped when there are enough), one real component on its own surface when its shape suits the tile, then brand tiles from config. Fewer inputs: the remaining tiles span the row.
 
 ### breakout
 The page with its own components pulled forward. Measured from HALO LAB, Outcrowd and Phenomenon on Raja's reference board, gated 21 Nov 2026.
@@ -114,9 +113,10 @@ The page with its own components pulled forward. Measured from HALO LAB, Outcrow
 - Components whole, on their own surface, up to 2x page size, with a deeper shadow than the page. Neither covers the headline or its buttons.
 
 ### ui-bento
-A bento made only of real components. Measured from Outcrowd and Ramotion on Raja's reference board, gated 21 Nov 2026.
-- Margins 0.05W by 0.06H, gaps 0.014W, radius 16, no shadows. Each tile is the component's own page surface, the component whole and centred at up to 2x.
-- 2: two columns. 3: a tall tile at 0.58W and two stacked, or, when one is wide (over 1.8:1), a full-width row for it and two below. 4: 2x2. 5 or 6: a wide first tile, then the rest.
+A bento made only of real components, every tile exactly its component. Measured from Outcrowd and Ramotion, cleaned up 21 Nov 2026.
+- Gaps 0.014W, radius 16, no shadows, margins at least 0.05W by 0.06H.
+- Each tile is the component capture whole, with 32 px of its own page surface, so no tile holds empty space.
+- Justified rows: every split of the components into up to three rows is tried, each row scaled so its tiles fill the width, and the split that best fills the canvas without passing 2x page size wins. The block is centred.
 
 ### cascade
 Three pages layered diagonally, back to front. Measured from Zajno on Raja's reference board, gated 21 Nov 2026.
