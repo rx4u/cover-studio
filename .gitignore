@@ -4,3 +4,4 @@ dist/
 covers/
 *.log
 .DS_Store
+.refs/
