@@ -10,7 +10,7 @@ export function screens(m: Manifest): string[] {
 export const k = (w: number) => w / 1600;
 
 import { CHROME, colourFor, device, drawnHeight, geometry, shotsFor, widthForScreenHeight } from "../devices.ts";
-import { frame } from "../look.ts";
+import { frame, pngSize, url } from "../look.ts";
 import type { Ctx } from "./types.ts";
 
 /** Phone screens for a model: page tops first, then sections captured by scrolling to them. */
@@ -52,4 +52,19 @@ export function pageFrame(ctx: Ctx, cw: number, box: { x: number; y: number; w: 
   if (d === "macbook-pro") return { html: device(cw, m.talls[0].file, box, { model: d, colour, band: m.mobile[0]?.topColor, desktop: true, chrome, browser }), h: drawnHeight(d, box.w, false) };
   const shot = shotsFor(c, m.mobile, "ipad-pro")[0] ?? m.mobile[0];
   return { html: device(cw, shot.file, box, { model: d, colour, band: shot.topColor, statusBar: c.phone.statusBar, chrome, browser }), h: drawnHeight(d, box.w, false) };
+}
+
+/** A real component card: the capture whole, on its own page surface (the capture's corner colour), never cropped. */
+export function componentCard(cw: number, file: string, box: { x: number; y: number; w: number; h: number }, o: { shadow?: string; radius?: number; extra?: string } = {}): string {
+  const r = (o.radius ?? 16) * (cw / 1600);
+  const surface = `url('${url(file)}') 0 0 / 40000% 40000% no-repeat`;
+  return `<div style="position:absolute;left:${Math.round(box.x)}px;top:${Math.round(box.y)}px;width:${Math.round(box.w)}px;height:${Math.round(box.h)}px;border-radius:${r}px;overflow:hidden;background:${surface};box-shadow:${o.shadow ?? "none"};display:flex;align-items:center;justify-content:center;${o.extra ?? ""}"><img src="${url(file)}" style="display:block;max-width:100%;max-height:100%;width:auto;height:auto"></div>`;
+}
+
+/** Size of a component shown at scale `s` of its CSS size, fitted into maxW by maxH. */
+export function componentSize(file: string, maxW: number, maxH: number, maxScale: number): { w: number; h: number } {
+  const [iw, ih] = pngSize(file);
+  const cssW = iw / 2, cssH = ih / 2;
+  const s = Math.min(maxW / cssW, maxH / cssH, maxScale);
+  return { w: cssW * s, h: cssH * s };
 }

@@ -124,7 +124,7 @@ async function forceRevealed(page: Page): Promise<number> {
  * reveals only run in view (or re-hide out of view) come out blank below the hero. Fixed and sticky bars (under 30%
  * of the screen tall) show on the first screen only. Writes `tallFile` (the first `tallH` CSS px at 2x) and `fullFile` (up to `fullH` at 1x).
  */
-async function stitchPage(page: Page, tallFile: string, fullFile: string, tallH: number, fullH: number): Promise<void> {
+async function stitchPage(page: Page, tallFile: string, fullFile: string, tallH: number, fullH: number): Promise<number[]> {
   const vh = VIEWPORT.height;
   // Pinned sections would repeat in every screen they stay pinned for, so lay them out in normal flow: GSAP pins
   // (a .pin-spacer around the pinned element, re-applied on every scroll, so a stylesheet rule with !important beats
@@ -142,6 +142,13 @@ async function stitchPage(page: Page, tallFile: string, fullFile: string, tallH:
   await page.evaluate(() => window.dispatchEvent(new Event("resize")));
   await page.waitForTimeout(700);
   const height = Math.min(await page.evaluate(() => document.documentElement.scrollHeight), fullH);
+  // Section starts in the unpinned layout; mapped below onto the joined image, which drops blank screens.
+  const rawSections = await page.evaluate(() => {
+    const tops = [...document.querySelectorAll("section, main > *, article, footer, [class*='section']")]
+      .map((e) => Math.round(e.getBoundingClientRect().top + window.scrollY))
+      .filter((t) => t > 200);
+    return [...new Set(tops)].sort((a, b) => a - b);
+  });
   const frames: { y: number; data: string }[] = [];
   for (let y = 0; ; y += vh) {
     const top = Math.min(y, Math.max(0, height - vh));
@@ -181,6 +188,7 @@ async function stitchPage(page: Page, tallFile: string, fullFile: string, tallH:
         probe.height = 30;
         const pg = probe.getContext("2d", { willReadFrequently: true })!;
         let at = 0;
+        const map: [number, number, number][] = [];
         for (const [i, f] of frames.entries()) {
           if (f.y >= h) break;
           const img = new Image();
@@ -197,6 +205,7 @@ async function stitchPage(page: Page, tallFile: string, fullFile: string, tallH:
           const prevEnd = i > 0 ? frames[i - 1].y + vh : 0;
           const skip = i > 0 && f.y < prevEnd ? prevEnd - f.y : 0;
           g.drawImage(img, 0, skip * (img.height / vh), img.width, (vh - skip) * (img.height / vh), 0, at * scale, w * scale, (vh - skip) * scale);
+          map.push([f.y + skip, at, vh - skip]);
           at += vh - skip;
           if (at >= h) break;
         }
@@ -204,13 +213,22 @@ async function stitchPage(page: Page, tallFile: string, fullFile: string, tallH:
         out.width = w * scale;
         out.height = Math.min(at, h) * scale;
         out.getContext("2d")!.drawImage(cv, 0, 0);
-        return out.toDataURL("image/png").split(",")[1];
+        return { data: out.toDataURL("image/png").split(",")[1], map };
       },
       { frames, w: VIEWPORT.width, h, vh, scale },
     );
-  writeFileSync(tallFile, Buffer.from(await join(Math.min(height, tallH), SCALE), "base64"));
-  writeFileSync(fullFile, Buffer.from(await join(height, 1), "base64"));
+  writeFileSync(tallFile, Buffer.from((await join(Math.min(height, tallH), SCALE)).data, "base64"));
+  const full = await join(height, 1);
+  writeFileSync(fullFile, Buffer.from(full.data, "base64"));
   await joiner.close();
+  const mapped: number[] = [];
+  for (const t of rawSections) {
+    const seg = full.map.find(([src, , len]) => t >= src && t < src + len) ?? full.map.find(([src]) => src >= t);
+    if (!seg) continue;
+    const y = t >= seg[0] ? seg[1] + (t - seg[0]) : seg[1];
+    if (!mapped.includes(y)) mapped.push(y);
+  }
+  return mapped;
 }
 
 async function scrollTo(page: Page, y: number): Promise<void> {
@@ -385,17 +403,10 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
         shots.push({ page: path, y, file });
       }
       await scrollTo(page, 0);
-      sections.push(
-        await page.evaluate(() => {
-          const tops = [...document.querySelectorAll("section, main > *, article, footer, [class*='section']")]
-            .map((e) => Math.round(e.getBoundingClientRect().top + window.scrollY))
-            .filter((t) => t > 200);
-          return [...new Set(tops)].sort((a, b) => a - b);
-        }),
-      );
+
       const tall = join(dir, `p${pi}-tall.png`);
       const fullFile = join(dir, `p${pi}-full.png`);
-      await stitchPage(page, tall, fullFile, TALL_HEIGHT, FULL_HEIGHT);
+      sections.push(await stitchPage(page, tall, fullFile, TALL_HEIGHT, FULL_HEIGHT));
       talls.push({ page: path, file: tall });
       full.push({ page: path, file: fullFile });
       if (pi === 0) {

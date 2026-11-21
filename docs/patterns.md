@@ -106,11 +106,25 @@ A mosaic of real tiles. Measured from Clyra, Raya Reserve and a dark product ben
 - Phone section shots are captured by scrolling each section to just below any sticky header (recorded at capture), skipping sections closer than 0.6 of a screen to the last, so every tile opens on its own heading and none repeat.
 - Never an empty tile: with fewer inputs than slots, the remaining tiles span the gap.
 
+### breakout
+The page with its own components pulled forward. Measured from HALO LAB, Outcrowd and Phenomenon on Raja's reference board, gated 21 Nov 2026.
+- Page at 0.2W, from 0.08H, 0.7W wide, running off the bottom.
+- First component over the page's right edge: right side at 0.96W, up to 0.3W wide, centred near 0.56H, never above 0.4H.
+- Second component at the left: up to 0.22W wide, right edge at 0.25W so it overlaps only the page's margin, bottom at 0.9H.
+- Components whole, on their own surface, up to 2x page size, with a deeper shadow than the page. Neither covers the headline or its buttons.
+
+### ui-bento
+A bento made only of real components. Measured from Outcrowd and Ramotion on Raja's reference board, gated 21 Nov 2026.
+- Margins 0.05W by 0.06H, gaps 0.014W, radius 16, no shadows. Each tile is the component's own page surface, the component whole and centred at up to 2x.
+- 2: two columns. 3: a tall tile at 0.58W and two stacked, or, when one is wide (over 1.8:1), a full-width row for it and two below. 4: 2x2. 5 or 6: a wide first tile, then the rest.
+
+### cascade
+Three pages layered diagonally, back to front. Measured from Zajno on Raja's reference board, gated 21 Nov 2026.
+- Pages about 0.5W wide, steps of 0.13W right and 0.11H down, the group centred and fitted inside 0.88W by 0.86H. Front page lifted shadow, others soft.
+- Views are three distinct parts of the stitched page: the top, then the section starts nearest a third and two thirds down. Section starts are recorded in the stitched image's own coordinates.
+
 ## Further patterns
-- `cascade`: 3 or 4 pages layered diagonally.
 - `floating`: several screens loosely placed on neutral.
-- `breakout`: main screen with 2 or 3 real cards pushed past its edge.
-- `ui-bento`: bento made only of product components.
 - `brand-split`: brand pattern or type on one side, product on the other.
 - `strips-brand`: strips on the brand colour.
 - `editorial`: page fragments with large numerals and type.
