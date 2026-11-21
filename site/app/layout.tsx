@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Presentation covers and device mockups for designers who post their work. An open-source CLI: 18 tested patterns, every size, real device frames. Free.",
   openGraph: {
     title: "cover-studio",
-    description: "Live site in. Covers out. Presentation covers and device mockups for designers who post their work.",
+    description: "Covers, done. Presentation covers and device mockups for designers who post their work.",
     images: ["/covers/s-og.webp"],
   },
 };

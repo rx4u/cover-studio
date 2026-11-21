@@ -97,11 +97,11 @@ export function Hero() {
         <div className="max-w-[600px]">
           <p className="eyebrow h-fade text-white/85">Open-source CLI · Free · MIT</p>
           <h1 className="display mt-6 whitespace-nowrap text-[clamp(52px,7.2vw,104px)]">
-            <span className="h-line block overflow-hidden pb-[0.08em]"><span className="block">Live site in.</span></span>
-            <span className="h-line -mt-[0.08em] block overflow-hidden pb-[0.08em]"><span className="block">Covers out.</span></span>
+            <span className="h-line block overflow-hidden pb-[0.08em]"><span className="block">Covers,</span></span>
+            <span className="h-line -mt-[0.08em] block overflow-hidden pb-[0.08em]"><span className="block">done.</span></span>
           </h1>
           <p className="h-fade mt-7 max-w-[460px] text-[clamp(17px,1.4vw,19px)] leading-[1.55] text-white/90">
-            Presentation covers and device mockups for designers who post their work. Made from your live design, in 18 tested patterns, at every size.
+            Covers and device mockups for the work you post. 18 tested patterns, every size, free.
           </p>
           <div className="h-fade mt-9 max-w-[460px]">
             <Command cmd="npm run cover -- render cover.config.ts" />

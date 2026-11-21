@@ -1,6 +1,6 @@
 # cover-studio
 
-**Live site in. Covers out.** Presentation covers and device mockups for designers who post their work. An open-source CLI that captures your live design and renders it in 18 tested patterns, at every size a channel needs.
+**Covers, done.** Presentation covers and device mockups for designers who post their work. An open-source CLI that captures your live design and renders it in 18 tested patterns, at every size a channel needs.
 
 [Website](https://cover-studio-cli.vercel.app) · [Patterns](docs/patterns.md) · [Config reference](docs/config.md) · [MIT licence](LICENSE)
 

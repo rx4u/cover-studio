@@ -148,7 +148,7 @@ export function Saves() {
 const STEPS = [
   { k: "Capture", t: "It reads your live design.", d: "It scrolls every section, waits for the motion to finish and keeps the real screens: desktop, phones, components and your logo." },
   { k: "Choose", t: "One config file sets the look.", d: "Pick the patterns, a ground, a device frame and the phones." },
-  { k: "Render", t: "Covers come out at every size.", d: "Each pattern is laid out again for each canvas. Nothing is cropped or squeezed." },
+  { k: "Render", t: "Every pattern you picked, ready to post.", d: "Each one is laid out for its canvas, so nothing is cropped or squeezed." },
 ];
 
 export function How() {
@@ -185,7 +185,7 @@ export function How() {
       <div className="how-pin">
         <div className="wrap grid gap-x-8 gap-y-12 lg:min-h-screen lg:grid-cols-12 lg:items-center lg:pt-[72px]">
           <div className="lg:col-span-5">
-          <Head eyebrow="03 · How it works" title="One URL. Every cover." />
+          <Head eyebrow="03 · How it works" title="Capture. Choose. Render." />
           <ol className="mt-10 flex flex-col gap-7 lg:mt-12">
             {STEPS.map((s, i) => (
               <li key={s.k} className={`how-step-${i}`}>
@@ -200,30 +200,22 @@ export function How() {
             <div className="how-v0 absolute inset-0 overflow-hidden">
               <img src="/covers/how-capture.webp" alt="The full capture of a live design, top to bottom" className="how-strip block w-full" />
             </div>
-            <div className="how-v1 absolute inset-0 hidden flex-col justify-center px-10 font-mono text-[14px] leading-[2] whitespace-nowrap text-paper xl:px-14 xl:text-[15px]">
+            <div className="how-v1 absolute inset-0 hidden flex-col justify-center px-10 font-mono text-[13px] leading-[2] whitespace-nowrap text-paper xl:px-14 xl:text-[14px]">
               <p className="how-line"><span className="text-white/50">export default</span> {"{"}</p>
               <p className="how-line pl-6">source: {"{"} url: <span className="text-mint">&quot;https://your.design&quot;</span>, mobile: <span className="text-sky">true</span> {"}"},</p>
-              <p className="how-line pl-6">patterns: [<span className="text-mint">&quot;bento&quot;</span>, <span className="text-mint">&quot;floating&quot;</span>],</p>
+              <p className="how-line pl-6">patterns: [<span className="text-mint">&quot;bento&quot;</span>, <span className="text-mint">&quot;editorial&quot;</span>, <span className="text-mint">&quot;floating&quot;</span>, <span className="text-mint">&quot;brand-split&quot;</span>],</p>
               <p className="how-line pl-6">ground: {"{"} type: <span className="text-mint">&quot;tint&quot;</span> {"}"},</p>
               <p className="how-line pl-6">frame: {"{"} device: <span className="text-mint">&quot;macbook-pro&quot;</span> {"}"},</p>
               <p className="how-line pl-6">export: {"{"} sizes: [<span className="text-mint">&quot;1600x1200&quot;</span>, <span className="text-mint">&quot;1200x630&quot;</span>] {"}"},</p>
               <p className="how-line">{"}"}</p>
             </div>
-            <div className="how-v2 absolute inset-0 hidden grid-cols-12 content-center gap-4 p-8">
-              <figure className="col-span-7 m-0 self-center">
-                <img src="/covers/how-r-4x3.webp" alt="Bento cover at 1600 by 1200" className="block w-full rounded-inner" />
-                <figcaption className="mt-2 font-mono text-[12px] text-white/70">1600 × 1200</figcaption>
-              </figure>
-              <div className="col-span-5 flex flex-col justify-center gap-4">
-                <figure className="m-0">
-                  <img src="/covers/how-r-16x9.webp" alt="Bento cover at 1600 by 900" className="block w-full rounded-inner" />
-                  <figcaption className="mt-2 font-mono text-[12px] text-white/70">1600 × 900</figcaption>
+            <div className="how-v2 absolute inset-0 hidden grid-cols-2 grid-rows-2 gap-3 p-3">
+              {["bento", "editorial", "floating", "brand-split"].map((id) => (
+                <figure key={id} className="relative m-0 min-h-0 overflow-hidden rounded-inner">
+                  <img src={`/covers/p-${id}.webp`} alt={`The ${id.replace("-", " ")} pattern`} className="block h-full w-full object-cover" />
+                  <figcaption className="absolute bottom-2.5 left-2.5 rounded-full bg-night/80 px-2.5 py-1 font-mono text-[11px] leading-none text-white backdrop-blur-sm">{id}</figcaption>
                 </figure>
-                <figure className="m-0">
-                  <img src="/covers/how-r-og.webp" alt="Bento cover at 1200 by 630" className="block w-full rounded-inner" />
-                  <figcaption className="mt-2 font-mono text-[12px] text-white/70">1200 × 630</figcaption>
-                </figure>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -360,9 +352,19 @@ export function Grounds() {
   useRise(root);
   const pick = (i: number) => {
     if (i === on) return;
+    const prev = on;
     setOn(i);
-    if (reduced()) return;
-    gsap.fromTo(`.gr-${i}`, { opacity: 0, scale: 1.03 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" });
+    const scope = root.current;
+    if (!scope) return;
+    const imgs = gsap.utils.toArray<HTMLElement>(".gr", scope);
+    gsap.killTweensOf(imgs);
+    // Every image is reset on each pick, so the stack never ends up stuck on one ground.
+    imgs.forEach((el, k) => gsap.set(el, { zIndex: k === i ? 2 : k === prev ? 1 : 0, opacity: k === i || k === prev ? 1 : 0, scale: 1 }));
+    if (reduced()) {
+      gsap.set(imgs[prev], { opacity: 0 });
+      return;
+    }
+    gsap.fromTo(imgs[i], { opacity: 0, scale: 1.03 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out", onComplete: () => { gsap.set(imgs[prev], { opacity: 0 }); } });
   };
   return (
     <section ref={root} className="wrap section">
@@ -373,7 +375,8 @@ export function Grounds() {
         <div data-clip className="relative aspect-[4/3] overflow-hidden rounded-card bg-ink/5 lg:col-span-8">
           {GROUNDS.map((g, i) => (
             <img key={g.id} src={`/grounds/${g.id}.webp`} alt={`The same cover on the ${g.l.toLowerCase()} ground`}
-              className={`gr-${i} absolute inset-0 h-full w-full object-cover ${on === i ? "opacity-100" : "pointer-events-none opacity-0"}`} />
+              style={{ opacity: i === 0 ? 1 : 0 }} aria-hidden={on !== i}
+              className="gr pointer-events-none absolute inset-0 h-full w-full object-cover" />
           ))}
         </div>
         <div className="max-lg:order-first lg:col-span-4">
