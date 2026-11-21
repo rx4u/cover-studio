@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import type { Config } from "./config.ts";
 import { fromConfig } from "./config.ts";
@@ -80,7 +81,7 @@ export type Box = { x: number; y: number; w: number; h?: number };
  * When `box.h` is omitted, the frame is as tall as the image and may run off the canvas.
  * `focus` anchors object-position for cropped images.
  */
-export function frame(c: Config, canvasW: number, img: string, box: Box, focus = "0% 0%"): string {
+export function frame(c: Config, canvasW: number, img: string, box: Box, focus = "0% 0%", extra = ""): string {
   const k = canvasW / 1600;
   const f = c.frame;
   const r = f.radius * k;
@@ -94,7 +95,7 @@ export function frame(c: Config, canvasW: number, img: string, box: Box, focus =
   const imgCss = box.h
     ? `display:block;width:100%;height:${box.h - bar}px;object-fit:cover;object-position:${focus}`
     : `display:block;width:100%;height:auto`;
-  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;border-radius:${r}px;overflow:hidden;border:1px solid ${border};box-shadow:${SHADOW[f.shadow]};background:${barBg}">${dots}<img src="${url(img)}" style="${imgCss}"></div>`;
+  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;border-radius:${r}px;overflow:hidden;border:1px solid ${border};box-shadow:${SHADOW[f.shadow]};background:${barBg};${extra}">${dots}<img src="${url(img)}" style="${imgCss}"></div>`;
 }
 
 /** Branding header. Returns the html and the height it reserves at the top of the canvas. */
@@ -107,4 +108,47 @@ export function branding(c: Config, w: number, h: number, isCover: boolean): { h
     slot ? `<img src="${url(fromConfig(c, slot.logo))}" style="position:absolute;top:${y}px;${align}:${Math.round(w * 0.065)}px;height:${Math.round(slot.height * k)}px">` : "";
   const tallest = Math.max(b.left?.height ?? 0, b.right?.height ?? 0) * k;
   return { html: side(b.left, "left") + side(b.right, "right"), top: Math.round(y + tallest + h * 0.04) };
+}
+
+/** Plain phone: black bezel, rounded, a small island. No status bar, tabs or badges. */
+export function phone(canvasW: number, img: string, box: { x: number; y: number; w: number }, offsetY = 0, extra = ""): string {
+  const k = canvasW / 1600;
+  const bezel = Math.max(6, Math.round(box.w * 0.035));
+  const screenW = box.w - bezel * 2;
+  const screenH = Math.round(screenW * (844 / 390));
+  const r = Math.round(box.w * 0.17);
+  const island = `<i style="position:absolute;top:${bezel + Math.round(screenW * 0.03)}px;left:50%;transform:translateX(-50%);width:${Math.round(screenW * 0.3)}px;height:${Math.round(screenW * 0.085)}px;border-radius:99px;background:#000;display:block;z-index:2"></i>`;
+  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;padding:${bezel}px;border-radius:${r}px;background:#111;box-shadow:0 ${Math.round(50 * k)}px ${Math.round(90 * k)}px -${Math.round(30 * k)}px rgba(0,0,0,.4);${extra}">${island}<div style="width:${screenW}px;height:${screenH}px;border-radius:${r - bezel}px;overflow:hidden;background:#fff"><img src="${url(img)}" style="display:block;width:100%;height:100%;object-fit:cover;object-position:50% ${offsetY}%"></div></div>`;
+}
+
+/** A borderless rounded image tile with a soft shadow, cover-fit inside its box. */
+export function tile(canvasW: number, img: string, box: { x: number; y: number; w: number; h: number }, opts: { fit?: "cover" | "contain"; pos?: string; bg?: string; radius?: number; shadow?: boolean; pad?: number } = {}): string {
+  const k = canvasW / 1600;
+  const r = (opts.radius ?? 12) * k;
+  const pad = (opts.pad ?? 0) * k;
+  const sh = opts.shadow === false ? "none" : SHADOW.soft;
+  return `<div style="position:absolute;left:${box.x}px;top:${box.y}px;width:${box.w}px;height:${box.h}px;border-radius:${r}px;overflow:hidden;background:${opts.bg ?? "transparent"};box-shadow:${sh};padding:${pad}px"><img src="${url(img)}" style="display:block;width:100%;height:100%;object-fit:${opts.fit ?? "cover"};object-position:${opts.pos ?? "50% 0%"}"></div>`;
+}
+
+/** The accent colour for brand tiles: bento.accent, else the darkest ground stop. */
+export function accent(c: Config): string {
+  if (c.bento.accent) return c.bento.accent;
+  const lum = (h: string) => {
+    const n = parseInt(h.slice(1, 7).padEnd(6, "0"), 16);
+    return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+  };
+  const darkest = [...c.ground.stops].sort((a, b) => lum(a) - lum(b))[0];
+  return lum(darkest) < 90 ? darkest : "#1F2A2C";
+}
+
+/** The logo used inside brand tiles: bento.logo, else branding.left. */
+export function brandLogo(c: Config): string | null {
+  const p = c.bento.logo ?? c.branding.left?.logo ?? null;
+  return p ? fromConfig(c, p) : null;
+}
+
+/** Width and height of a PNG from its header (all captures are PNG). */
+export function pngSize(file: string): [number, number] {
+  const b = readFileSync(file);
+  return [b.readUInt32BE(16), b.readUInt32BE(20)];
 }

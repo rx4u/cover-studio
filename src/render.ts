@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 import type { Browser } from "playwright";
 import { parseSize, type Config } from "./config.ts";
 import { cacheDir, launch, type Manifest } from "./capture.ts";
-import { branding, groundCSS, patternLayer, url } from "./look.ts";
+import { accent, branding, groundCSS, patternLayer, url } from "./look.ts";
 import { PATTERNS } from "./patterns/index.ts";
 
 export function outDir(c: Config): string {
@@ -13,7 +13,12 @@ export function outDir(c: Config): string {
 function page(c: Config, m: Manifest, patternId: string, w: number, h: number, isCover: boolean): string {
   const p = PATTERNS[patternId];
   const onPhoto = patternId === "photo-ground";
-  const look: Config = onPhoto ? { ...c, ground: { ...c.ground, type: "photo", dim: c.ground.dim || 0.08 } } : c;
+  const onBrand = patternId === "strips-brand";
+  const look: Config = onPhoto
+    ? { ...c, ground: { ...c.ground, type: "photo", dim: c.ground.dim || 0.08 } }
+    : onBrand
+      ? { ...c, ground: { ...c.ground, type: "solid", stops: [accent(c)] } }
+      : c;
   const brand = branding(c, w, h, isCover);
   const inner = p.render({ c, m, top: brand.top }, w, h);
   return `<!doctype html><html><head><meta charset="utf-8"><style>

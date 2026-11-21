@@ -1,4 +1,4 @@
-# Config reference (V1)
+# Config reference
 
 A project is one `cover.config.ts`. Everything has a default; the minimum is `source.url`.
 
@@ -13,10 +13,13 @@ export default {
     scrollPositions: [0, 900],         // extra viewport captures per page (px)
     photo: ".hero img",                // selector or URL for photo-ground
     waitFor: null,                     // optional readiness expression
-    finishReveals: true                // scroll once so reveals reach their end state
+    finishReveals: true,               // scroll once so reveals reach their end state
+    mobile: true,                      // also capture at 390 wide (page-phone, phone-trio)
+    elements: [".pricing-card"],       // component selectors (macro, breakout, ui-bento, bento)
+    before: null                       // current site URL, for before-after
   },
 
-  patterns: ["full-bleed", "lead-peek", "photo-ground"],
+  patterns: ["full-bleed", "lead-peek", "photo-ground"],   // any of the 18 ids below; the first is the cover
   focus: { x: 0, y: 0 },               // crop anchor for full-bleed, 0..1
 
   ground: {
@@ -52,6 +55,19 @@ export default {
     onCover: false                     // keep the cover clean
   },
 
+  layout: {
+    columns: 3,                        // strips and strips-brand: 2 to 4
+    bleed: "right",                    // macro: right | bottom
+    tilt: 18                           // tilt: degrees, 0 to 35
+  },
+
+  bento: {
+    logo: null,                        // logo for bento, brand-split (falls back to branding.left)
+    accent: null,                      // brand colour for logo, stat and strips-brand tiles
+    stat: null,                        // { value: "40 ac", label: "of headland" }; real figures only
+    colours: []                        // [{ name: "Sea", hex: "#2F5D62" }], up to 6
+  },
+
   export: {
     sizes: ["1600x1200", "1600x900", "1200x630"]
   }
@@ -63,3 +79,8 @@ JSON files in `presets/` with any subset of the fields above. `extends` merges a
 
 ## Validation
 Errors print the field path and the allowed values. Unknown keys are errors.
+
+## Pattern ids
+full-bleed, lead-peek, photo-ground, strips, strips-brand, macro, page-phone, phone-trio, bento, cascade, floating, breakout, ui-bento, brand-split, editorial, overview-grid, before-after, tilt.
+
+A pattern that is missing its inputs is skipped with a message saying what to add (for example, macro without `source.elements`).

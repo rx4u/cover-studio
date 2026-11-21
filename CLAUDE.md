@@ -9,7 +9,7 @@ Open-source CLI that turns a live website into presentation-ready covers in prov
 - Every template is resolution-aware: it receives (width, height) and lays out for that canvas. Other sizes are recomposed, never cropped.
 - Config: `cover.config.ts` validated by Zod. Presets are JSON in `presets/`, merged with `extends`.
 - Captures cached in `.cover-cache/<name>/`; output in `covers/<name>/`.
-- Locked: 3 patterns in V1 (full-bleed, lead-peek, photo-ground). Branding off by default. No film in V1.
+- 18 patterns built (see docs/patterns.md). Branding off by default. No film yet.
 - Constraints: public MIT repo. Free tools only. Runs on macOS, Linux and cloud sandboxes with system Chrome (`CHROME_PATH`).
 - What was tried and failed (from the pipeline this generalises):
   - Captures taken before scroll reveals finish show blank sections. Scroll the page once, return, settle, then capture.
@@ -20,12 +20,14 @@ Open-source CLI that turns a live website into presentation-ready covers in prov
   - Image decode waits on lazy images never resolve. Every wait is capped.
   - tsx wraps named functions in __name(), which breaks page.evaluate(). The page gets a __name shim.
   - Full-bleed from the viewport capture cut the nav at the sides on 4:3. It uses the tall capture fitted to width.
+  - CSS url("...") inside a double-quoted style attribute breaks the whole style. Use url('...') in inline styles.
   - An earlier 8-phase plan (18 patterns, film, presets UI) was too big. Do not grow V1 scope.
 - What must not change: no text or logo on the cover unless `branding.onCover` is true; every pixel of product comes from a real capture; nothing invented.
 
 ## Current Status
 - [x] V1 build (see plan.md)
 - [x] Proof run on one real site (Aequor, 21 Nov 2026)
+- [x] Remaining 15 patterns, mobile, component, full-page and before captures (21 Nov 2026)
 Update after each step.
 
 ## Commands

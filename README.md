@@ -2,8 +2,8 @@
 
 Turn any live website into presentation-ready covers for Dribbble, Contra, X, portfolios, case studies and template listings. One config file, one command, every size.
 
-- Captures the real pages at 2x, with scroll reveals played through first.
-- Composes them into proven cover patterns: **full-bleed** hero, **lead-peek** (lead page plus the next page cropped at the edge) and **photo-ground** (the page on its own hero photo).
+- Captures the real pages at 2x (desktop and mobile), plus components and a full-page capture, with scroll reveals played through first.
+- Composes them into 18 proven cover patterns, from simple hero crops to bentos, phone trios and before-after comparisons (table below).
 - Every look is configurable: ground (solid, linear, radial, image, photo), pattern (grid, dots, lines, rings, your own SVG), frame and shadow.
 - Exports 1600x1200 (Dribbble, Contra), 1600x900 (X) and 1200x630 (link previews). Each size is laid out again, not cropped.
 - Generic. Branding is off by default; turn it on per render, and the cover stays clean unless you say otherwise.
@@ -20,6 +20,29 @@ npx tsx src/cover.ts render cover.config.ts
 ```
 
 Output lands in `covers/<name>/` as `<name>-<n>-<pattern>-<size>.png`. Captures are cached in `.cover-cache/`; pass `--fresh` to recapture.
+
+## Patterns
+
+| Pattern | What it shows | Needs |
+|---|---|---|
+| `full-bleed` | The hero filling the canvas | a page |
+| `lead-peek` | Lead page with the next page cropped at the edge | two pages or scroll positions |
+| `photo-ground` | The page on its own hero photo | `source.photo` |
+| `strips` | The whole page as staggered columns | a page |
+| `strips-brand` | Strips on the brand colour | a page |
+| `macro` | One component at poster scale | `source.elements` |
+| `page-phone` | Browser page with the phone version overlapping | `source.mobile` |
+| `phone-trio` | Three phones, the middle one raised | `source.mobile` |
+| `bento` | Hero tile plus logo, stat, components, colours | real brand inputs in `bento` |
+| `cascade` | 3 or 4 pages layered diagonally | 3+ views |
+| `floating` | Large centre screen with smaller screens around it | 3+ views |
+| `breakout` | Page with real components pushed past its edge | `source.elements` |
+| `ui-bento` | A grid of product components | 2+ `source.elements` |
+| `brand-split` | Brand panel on the left, page on the right | a logo |
+| `editorial` | Magazine layout, with your stat set large | 3+ views |
+| `overview-grid` | Every view at a glance, for case study openers | 4+ views |
+| `before-after` | Current site next to the new design | `source.before` |
+| `tilt` | One page in a 3D tilt | a page |
 
 ## Commands
 
@@ -57,7 +80,7 @@ A preset is a JSON file with any part of the config. Put one in `presets/` or ne
 
 ## Roadmap
 
-Mobile captures and phone patterns, full-page strips, macro UI crop, bento, motion loops and films, a live preview UI.
+Motion loops and films, a contact sheet, a live preview UI.
 
 ## License
 

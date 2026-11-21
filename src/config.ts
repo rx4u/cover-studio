@@ -8,7 +8,12 @@ const hex = z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/
 const size = z.string().regex(/^\d+x\d+$/, "must look like 1600x1200");
 const logo = z.object({ logo: z.string(), height: z.number().positive().default(36) }).strict();
 
-export const PATTERN_IDS = ["full-bleed", "lead-peek", "photo-ground"] as const;
+export const PATTERN_IDS = [
+  "full-bleed", "lead-peek", "photo-ground",
+  "strips", "strips-brand", "macro", "page-phone", "phone-trio", "bento",
+  "cascade", "floating", "breakout", "ui-bento", "brand-split", "editorial",
+  "overview-grid", "before-after", "tilt",
+] as const;
 
 export const schema = z
   .object({
@@ -22,9 +27,12 @@ export const schema = z
         photo: z.string().nullable().default(null),
         waitFor: z.string().nullable().default(null),
         finishReveals: z.boolean().default(true),
+        mobile: z.boolean().default(true),
+        elements: z.array(z.string()).default([]),
+        before: z.string().url().nullable().default(null),
       })
       .strict(),
-    patterns: z.array(z.enum(PATTERN_IDS)).min(1).default([...PATTERN_IDS]),
+    patterns: z.array(z.enum(PATTERN_IDS)).min(1).default(["full-bleed", "lead-peek", "photo-ground"]),
     focus: z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }).strict().default({ x: 0, y: 0 }),
     ground: z
       .object({
@@ -64,6 +72,23 @@ export const schema = z
         left: logo.nullable().default(null),
         right: logo.nullable().default(null),
         onCover: z.boolean().default(false),
+      })
+      .strict()
+      .default({}),
+    layout: z
+      .object({
+        columns: z.number().int().min(2).max(4).default(3),
+        bleed: z.enum(["right", "bottom"]).default("right"),
+        tilt: z.number().min(0).max(35).default(18),
+      })
+      .strict()
+      .default({}),
+    bento: z
+      .object({
+        logo: z.string().nullable().default(null),
+        accent: hex.nullable().default(null),
+        stat: z.object({ value: z.string(), label: z.string() }).strict().nullable().default(null),
+        colours: z.array(z.object({ name: z.string(), hex }).strict()).max(6).default([]),
       })
       .strict()
       .default({}),
