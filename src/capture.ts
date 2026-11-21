@@ -266,7 +266,8 @@ async function saveAltPhoto(page: Page, dir: string): Promise<string | null> {
       if (top < window.innerHeight * 1.1 || r.width < 500) continue;
       const area = r.width * r.height;
       const s = img.currentSrc || img.src;
-      if (s && (!best || area > best.area)) best = { src: s, area };
+      // Inline data: and blob: images cannot be fetched by URL; only http(s) photos are candidates.
+      if (s && /^https?:/.test(s) && (!best || area > best.area)) best = { src: s, area };
     }
     return best ? best.src : null;
   });
