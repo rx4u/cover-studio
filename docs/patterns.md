@@ -38,6 +38,9 @@ References: Nixtio location app, Afterglow health app, Phenomenon ZeBeyond, Phen
 | Corners | Every system bar takes its left and right inset from the screen's corner radius (iPhone 63.5pt, Pixel 50pt, Galaxy 36pt, iPad 29pt, MacBook 18.7pt) plus a comfort margin of 12pt or a quarter of the radius, so content keeps clear of the curve, not just outside it. Bar heights: iPhone 62pt, Pixel 48pt, Galaxy 42pt, iPad 32pt, MacBook 37pt. `npm run check:corners` renders every device and fails if any text or icon is closer to a corner than that margin |
 | Fit | Phones stay whole on every size; page devices bleed as above |
 
+## Capture
+- Tall and full-page captures are stitched from real screens: the page is scrolled one screen at a time, each screen's reveals play, then the screens are joined. Pinned sections (GSAP pin spacers, large sticky sections) are laid out in normal flow first, fixed bars show on the first screen only, and blank screens (scroll spacers) are dropped.
+
 ## Global rules
 - The cover (first image of a set) carries no text and no logo unless `branding.onCover` is true.
 - The work is the largest thing in every image. Frames run off at least one edge.
@@ -69,17 +72,17 @@ The page on its own hero photograph. Measured from Atelier Aesthetica on Dribbbl
 - No browser chrome. Radius 10, lifted shadow.
 
 ### strips
-The whole page as tall columns.
-- Needs: full-page capture.
-- Columns: 3 (2 when the page has 8 sections or fewer, or `columns` set). Gap 0.025W, margin 0.045W.
-- Stagger: column tops at 0.10H, then offsets so the columns together show the page once, no stretch twice.
-- Chrome: none. Radius 12 px.
+The whole page as tall columns. Measured from the Oliver Hayes three-strip cover and Cuberto's brand-ground strips, gated 21 Nov 2026.
+- Needs: the full-page capture (stitched screen by screen, see Capture) and the section starts.
+- Margins 0.044W, gaps 0.025W, radius 16, soft shadow, no browser chrome.
+- First column from 0.10H with the top of the page, running off the bottom. Last column running off the top, ending at 0.80H on the page's own footer. Middle column running off the top, ending at 0.9875H, opened on the section start nearest to where the last column begins. Together they read top, middle, end.
+- Pages too short for three columns without repeats get two (or one).
+- `strips-brand` is the same on the brand ground.
 
 ### macro
-One component at poster scale.
-- Needs: element capture by `source.elements[]` selector.
-- Layout: element scaled 1.6x to 2.4x so it fills about 0.85 of the shorter side, bleeding off one edge (`bleed: right | bottom`).
-- Frame: none. Radius 16 px.
+One real component at poster scale. Gated 21 Nov 2026.
+- Needs: a component capture (`source.elements`), taken with 32 CSS px of the page's own surface around it and with fixed layers that do not hold it hidden.
+- Never cropped: scaled to at most 0.84W by 0.76H and at most 2.4x its page size, centred, radius 16, soft shadow. `layout.bleed` does not apply.
 
 ### page-phone
 The page in a browser frame with the same page on a phone overlapping its lower right.

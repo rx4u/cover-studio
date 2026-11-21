@@ -25,6 +25,7 @@ Open-source CLI that turns a live website into presentation-ready covers in prov
   - Apple's official bezels look best, but their licence only covers mock-ups of Apple-only apps and bans embedding. Device frames come from react-mockframe (MIT).
   - Frames dropped straight onto a screenshot put the island over the nav. Every device screen has a status bar band and home indicator, and captures use the device's real viewport.
   - One iPhone status bar copied onto every device was wrong. Each platform draws its own system UI: iOS, iPadOS (no signal bars, date), Android (Material icons), macOS (menu bar, no status bar).
+  - Single full-page screenshots came out blank below the hero on sites whose reveals run in view. Tall and full captures are stitched from real screens, with pins unpinned and blank screens dropped.
   - Cropping phone screens from the tall capture opened on half-revealed text. Section screens are captured by scrolling the phone to each section.
   - An earlier 8-phase plan (18 patterns, film, presets UI) was too big. Do not grow V1 scope.
 - What must not change: no text or logo on the cover unless `branding.onCover` is true; every pixel of product comes from a real capture; nothing invented.

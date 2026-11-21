@@ -1,6 +1,6 @@
 import { chromium, type Browser, type Page } from "playwright";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join, resolve } from "node:path";
 import { captureViewports } from "./devices.ts";
@@ -80,6 +80,137 @@ async function finishReveals(page: Page): Promise<void> {
     window.scrollTo(0, 0);
   });
   await page.waitForTimeout(800);
+}
+
+/**
+ * Full-page screenshots paint the whole page at once, so reveal animations that re-hide content outside the viewport
+ * (Framer Motion, GSAP and similar set inline opacity 0, translate and visibility hidden) leave blank sections. Before a
+ * full-page shot, every element hidden by an inline reveal style is set to its revealed state. Elements hidden by the
+ * site's own stylesheet (menus, modals) are left alone, because their hiding is not inline.
+ */
+async function forceRevealed(page: Page): Promise<number> {
+  const n = await page.evaluate(() => {
+    let count = 0;
+    for (const e of document.querySelectorAll<HTMLElement>("body *")) {
+      const st = e.style;
+      if (e.hasAttribute("data-cs-hide")) continue;
+      // Line reveals slide a line of text out of a clipping parent (SplitText and similar): put it back in place.
+      // Text only: images and layers moved out of view on purpose stay where they are.
+      const parent = e.parentElement;
+      const textLine = !!e.textContent?.trim() && !e.querySelector("img, video, canvas, picture, svg") && e.getBoundingClientRect().height < 200;
+      if (textLine && st.transform && st.transform !== "none" && parent && getComputedStyle(parent).overflow === "hidden" && getComputedStyle(e).transform !== "none") {
+        st.setProperty("transform", "none", "important");
+        count++;
+      }
+      const inlineHidden = (st.opacity !== "" && parseFloat(st.opacity) < 0.99) || st.visibility === "hidden";
+      if (!inlineHidden) continue;
+      if (e.closest("[role='dialog'], [aria-hidden='true'], nav [aria-expanded='false']")) continue;
+      st.setProperty("opacity", "1", "important");
+      st.setProperty("visibility", "visible", "important");
+      if (st.transform) st.setProperty("transform", "none", "important");
+      if (st.filter) st.setProperty("filter", "none", "important");
+      if (st.clipPath) st.setProperty("clip-path", "none", "important");
+      count++;
+    }
+    return count;
+  });
+  await page.waitForTimeout(300);
+  return n;
+}
+
+/**
+ * The page as a visitor sees it, screen by screen: scroll one viewport at a time, let each screen's reveals play,
+ * screenshot it, then join the screens. A single full-page screenshot paints everything at once, so sites whose
+ * reveals only run in view (or re-hide out of view) come out blank below the hero. Fixed and sticky bars (under 30%
+ * of the screen tall) show on the first screen only. Writes `tallFile` (the first `tallH` CSS px at 2x) and `fullFile` (up to `fullH` at 1x).
+ */
+async function stitchPage(page: Page, tallFile: string, fullFile: string, tallH: number, fullH: number): Promise<void> {
+  const vh = VIEWPORT.height;
+  // Pinned sections would repeat in every screen they stay pinned for, so lay them out in normal flow: GSAP pins
+  // (a .pin-spacer around the pinned element, re-applied on every scroll, so a stylesheet rule with !important beats
+  // its inline styles) and CSS sticky sections.
+  await page.addStyleTag({
+    content: "[data-cs-hide]{visibility:hidden!important}.pin-spacer{padding:0!important;height:auto!important;max-height:none!important}.pin-spacer>*{position:relative!important;top:auto!important;left:auto!important;bottom:auto!important;transform:none!important;width:auto!important;max-width:none!important}",
+  });
+  await page.evaluate(() => {
+    for (const e of document.querySelectorAll<HTMLElement>("body *")) {
+      const r = e.getBoundingClientRect();
+      if (getComputedStyle(e).position === "sticky" && r.height >= window.innerHeight * 0.3) e.style.setProperty("position", "relative", "important");
+    }
+  });
+  // Let scroll libraries re-measure the unpinned layout, then show anything their reveals left hidden.
+  await page.evaluate(() => window.dispatchEvent(new Event("resize")));
+  await page.waitForTimeout(700);
+  const height = Math.min(await page.evaluate(() => document.documentElement.scrollHeight), fullH);
+  const frames: { y: number; data: string }[] = [];
+  for (let y = 0; ; y += vh) {
+    const top = Math.min(y, Math.max(0, height - vh));
+    await scrollTo(page, top);
+    await page.waitForTimeout(500);
+    await forceRevealed(page);
+    const buf = await page.screenshot({ type: "png", timeout: 120_000 });
+    frames.push({ y: top, data: buf.toString("base64") });
+    if (frames.length === 1)
+      await page.evaluate(() => {
+        for (const e of document.querySelectorAll<HTMLElement>("body *")) {
+          // Only bars (headers, banners, chat buttons): a fixed wrapper holding the whole page must stay.
+          const p = getComputedStyle(e).position;
+          const r = e.getBoundingClientRect();
+          if ((p === "fixed" || p === "sticky") && r.height < window.innerHeight * 0.3) e.setAttribute("data-cs-hide", "");
+        }
+      });
+    if (top + vh >= height) break;
+  }
+  await page.evaluate(() => {
+    for (const e of document.querySelectorAll<HTMLElement>("[data-cs-hide]")) e.removeAttribute("data-cs-hide");
+  });
+  await scrollTo(page, 0);
+  // Join in a blank page: tall at 2x, full at 1x (a 2x canvas past 16k px would fail).
+  const joiner = await page.context().newPage();
+  const join = async (h: number, scale: number) =>
+    joiner.evaluate(
+      async ({ frames, w, h, vh, scale }) => {
+        const cv = document.createElement("canvas");
+        cv.width = w * scale;
+        cv.height = h * scale;
+        const g = cv.getContext("2d", { willReadFrequently: true })!;
+        // Screens that are one flat colour (scroll spacers, sections that never revealed) are dropped and the rest
+        // close up, so the joined page has no empty bands. The canvas is then trimmed to what was drawn.
+        const probe = document.createElement("canvas");
+        probe.width = 48;
+        probe.height = 30;
+        const pg = probe.getContext("2d", { willReadFrequently: true })!;
+        let at = 0;
+        for (const [i, f] of frames.entries()) {
+          if (f.y >= h) break;
+          const img = new Image();
+          img.src = "data:image/png;base64," + f.data;
+          await img.decode();
+          pg.drawImage(img, 0, 0, 48, 30);
+          const d = pg.getImageData(0, 0, 48, 30).data;
+          let mean = 0, sq = 0;
+          for (let j = 0; j < d.length; j += 4) { const l = (d[j] + d[j + 1] + d[j + 2]) / 3; mean += l; sq += l * l; }
+          const n = d.length / 4;
+          const sd = Math.sqrt(sq / n - (mean / n) ** 2);
+          if (i > 0 && sd < 4) continue;
+          // The last screen is aligned to the page end, so it may overlap the one before: draw only its new part.
+          const prevEnd = i > 0 ? frames[i - 1].y + vh : 0;
+          const skip = i > 0 && f.y < prevEnd ? prevEnd - f.y : 0;
+          g.drawImage(img, 0, skip * (img.height / vh), img.width, (vh - skip) * (img.height / vh), 0, at * scale, w * scale, (vh - skip) * scale);
+          at += vh - skip;
+          if (at >= h) break;
+        }
+        const out = document.createElement("canvas");
+        out.width = w * scale;
+        out.height = Math.min(at, h) * scale;
+        out.getContext("2d")!.drawImage(cv, 0, 0);
+        return out.toDataURL("image/png").split(",")[1];
+      },
+      { frames, w: VIEWPORT.width, h, vh, scale },
+    );
+  writeFileSync(tallFile, Buffer.from(await join(Math.min(height, tallH), SCALE), "base64"));
+  writeFileSync(fullFile, Buffer.from(await join(height, 1), "base64"));
+  await joiner.close();
 }
 
 async function scrollTo(page: Page, y: number): Promise<void> {
@@ -262,12 +393,10 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
           return [...new Set(tops)].sort((a, b) => a - b);
         }),
       );
-      const height = await page.evaluate(() => document.documentElement.scrollHeight);
       const tall = join(dir, `p${pi}-tall.png`);
-      await page.screenshot({ path: tall, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: VIEWPORT.width, height: Math.min(height, TALL_HEIGHT) } });
-      talls.push({ page: path, file: tall });
       const fullFile = join(dir, `p${pi}-full.png`);
-      await page.screenshot({ path: fullFile, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: VIEWPORT.width, height: Math.min(height, FULL_HEIGHT) } });
+      await stitchPage(page, tall, fullFile, TALL_HEIGHT, FULL_HEIGHT);
+      talls.push({ page: path, file: tall });
       full.push({ page: path, file: fullFile });
       if (pi === 0) {
         for (const [ei, sel] of c.source.elements.entries()) {
@@ -278,8 +407,22 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
           }
           await el.scrollIntoViewIfNeeded();
           await page.waitForTimeout(600);
+          await forceRevealed(page);
+          // Fixed layers that do not hold the component (headers, a pinned hero) would sit over it in the shot.
+          await el.evaluate((target) => {
+            for (const e of document.querySelectorAll<HTMLElement>("body *"))
+              if (getComputedStyle(e).position === "fixed" && !e.contains(target)) e.setAttribute("data-cs-hide", "");
+          });
           const file = join(dir, `el${ei}.png`);
-          await el.screenshot({ path: file, type: "png", timeout: 120_000 });
+          // A margin of the page's own surface around the component (32 CSS px), so nothing touches the card edge.
+          const b = await el.boundingBox();
+          if (b) {
+            const pad = 32;
+            const vw = page.viewportSize()!.width;
+            const x = Math.max(0, b.x - pad);
+            await page.screenshot({ path: file, type: "png", timeout: 120_000, fullPage: true, clip: { x, y: Math.max(0, b.y + (await page.evaluate(() => window.scrollY)) - pad), width: Math.min(vw, b.x + b.width + pad) - x, height: b.height + pad * 2 } });
+          } else await el.screenshot({ path: file, type: "png", timeout: 120_000 });
+          await page.evaluate(() => document.querySelectorAll("[data-cs-hide]").forEach((e) => e.removeAttribute("data-cs-hide")));
           elements.push(file);
         }
         await scrollTo(page, 0);
@@ -340,6 +483,7 @@ export async function capture(c: Config, fresh = false): Promise<Manifest> {
             if (vi === 0 && scheme === schemes[0]) {
               mobileSections.push(sections);
               const h = await mp.evaluate(() => document.documentElement.scrollHeight);
+              await forceRevealed(mp);
               const tall = join(dir, `m${pi}-tall.png`);
               await mp.screenshot({ path: tall, type: "png", timeout: 120_000, fullPage: true, clip: { x: 0, y: 0, width: vp.width, height: Math.min(h, vp.height * 4) } });
               mobileTalls.push({ page: path, file: tall });

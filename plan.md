@@ -48,9 +48,9 @@ About 20 to 25 minutes of Claude time per pattern with gates, about 40 minutes f
 | phone-trio | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | page-phone | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | bento | done | done | done | done (4 on the gate sites) | sent 21 Nov |
-| strips | | | | | |
-| strips-brand | | | | | |
-| macro | | | | | |
+| strips | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| strips-brand | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+| macro | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | breakout | | | | | |
 | ui-bento | | | | | |
 | cascade | | | | | |
