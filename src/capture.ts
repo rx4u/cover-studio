@@ -31,6 +31,8 @@ export type Manifest = {
   full: Tall[];
   /** For each desktop page: section start offsets in CSS px, so crops can open on a section, never mid-sentence. */
   sections?: number[][];
+  /** For each desktop page, one score per section start: how much picture is in the screen that opens there (block contrast plus colour). Filled at render time. */
+  sectionDetail?: number[][];
   /** Mobile viewport shots and tall mobile captures. */
   mobile: Shot[];
   mobileTalls: Tall[];

@@ -123,7 +123,7 @@ A bento made only of real components, every tile exactly its component. Measured
 ### cascade
 Three pages layered diagonally, back to front. Measured from Zajno on Raja's reference board, gated 21 Nov 2026.
 - Pages 0.76W wide from 0.05W and 0.07H, steps of 0.12W right and 0.11H down. Every page runs off the bottom and the front page off the right, so no ground shows beside or below the group (fixed for dead space 21 Nov 2026). Front page lifted shadow, others soft.
-- Views are three distinct parts of the stitched page: the top, then the section starts nearest a third and two thirds down. Section starts are recorded in the stitched image's own coordinates.
+- Views are three distinct parts of the stitched page: the top at the back, then the two sections that hold the most picture (block contrast plus colour, scored at render time and cached), at least a screen apart, the richest in front. A flat quote or text panel never leads. Without scores, a third and two thirds down.
 
 ### floating
 Two screens floating as one group. Measured from Zajno's Skymetrics shot, fixed for dead space 21 Nov 2026.

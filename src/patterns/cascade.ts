@@ -5,7 +5,7 @@ import type { Pattern } from "./types.ts";
  * Three pages layered diagonally, back to front. Measured from Zajno's cascade on Raja's reference board:
  * plain frames layered back to front, the front page casting the deepest shadow, scaled up so the group fills the
  * canvas and bleeds off the right and bottom. The three views are distinct sections of the page, each opened on a section start:
- * the top, then sections about a third and two thirds down. Extra pages in source.pages are used first when given.
+ * the top at the back, then the two sections with the most picture in them, the richest in front. Extra pages in source.pages are used first when given.
  */
 export const cascade: Pattern = {
   id: "cascade",
@@ -23,11 +23,20 @@ export const cascade: Pattern = {
     const x0 = w * 0.05;
     const y0 = Math.max(h * 0.07, top);
     const fh = (i: number) => h - (y0 + dy * i) + 40 * k;
-    // Section starts in CSS px; pick the top, then the starts nearest a third and two thirds down.
+    // Back: the top of the page, for its nav and headline. Middle and front: the two sections that carry the most picture
+    // (sectionDetail), at least a screen apart, the richest in front where it shows whole. Without scores, a third and two
+    // thirds down.
     const pageH = (ih / iw) * 1440;
     const starts = m.sections?.[0] ?? [];
+    const score = m.sectionDetail?.[0] ?? [];
     const pick = (f: number) => (starts.length ? starts.reduce((a, b) => (Math.abs(b - pageH * f) < Math.abs(a - pageH * f) ? b : a)) : pageH * f);
-    const offs = [0, pick(0.33), pick(0.66)];
+    let offs = [0, pick(0.33), pick(0.66)];
+    if (score.length === starts.length) {
+      const ranked = starts.map((t, i) => ({ t, s: score[i] })).filter((x) => x.t >= 700 && x.t <= pageH - 600).sort((a, b) => b.s - a.s);
+      const chosen: number[] = [];
+      for (const x of ranked) if (chosen.length < 2 && chosen.every((t) => Math.abs(t - x.t) >= 900)) chosen.push(x.t);
+      if (chosen.length === 2) offs = [0, chosen[1], chosen[0]];
+    }
     return offs
       .map((o, i) => {
         const fwr = Math.round(fw);

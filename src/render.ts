@@ -55,6 +55,45 @@ async function groundStill(browser: Browser, c: Config, w: number, h: number): P
   return file;
 }
 
+/**
+ * Scores the screen under each section start of the first page by how much picture it holds: the spread of block
+ * brightness on a 24 px grid plus mean colour. Photographs and product imagery score high; a quote on a flat panel
+ * scores low. Patterns that choose sections use it to lead with the graphic, not an empty panel. Cached in the manifest.
+ */
+async function scoreSections(browser: Browser, c: Config, m: Manifest): Promise<void> {
+  const starts = m.sections?.[0];
+  const full = m.full?.[0]?.file;
+  if (!starts?.length || !full || m.sectionDetail?.[0]?.length === starts.length) return;
+  const ctx = await browser.newContext();
+  const pg = await ctx.newPage();
+  await pg.goto(url(full));
+  const scores = await pg.evaluate((starts: number[]) => {
+    const img = document.images[0];
+    const k = img.naturalWidth / 1440;
+    const cv = document.createElement("canvas");
+    const W = 60, H = 38;
+    cv.width = W; cv.height = H;
+    const g = cv.getContext("2d", { willReadFrequently: true })!;
+    return starts.map((t) => {
+      g.drawImage(img, 0, t * k, img.naturalWidth, 900 * k, 0, 0, W, H);
+      const d = g.getImageData(0, 0, W, H).data;
+      let sum = 0, sq = 0, sat = 0;
+      const n = W * H;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], gg = d[i + 1], b = d[i + 2];
+        const l = 0.2126 * r + 0.7152 * gg + 0.0722 * b;
+        sum += l; sq += l * l;
+        sat += Math.max(r, gg, b) - Math.min(r, gg, b);
+      }
+      const sd = Math.sqrt(Math.max(0, sq / n - (sum / n) ** 2));
+      return Math.round(sd + (sat / n) * 0.6);
+    });
+  }, starts);
+  await ctx.close();
+  m.sectionDetail = [scores];
+  await writeFile(join(cacheDir(c), "manifest.json"), JSON.stringify(m, null, 2));
+}
+
 export async function render(c: Config, m: Manifest, only?: string): Promise<string[]> {
   const ids = only ? [only] : c.patterns;
   for (const id of ids) if (!PATTERNS[id]) throw new Error(`Unknown pattern "${id}". Available: ${Object.keys(PATTERNS).join(", ")}`);
@@ -64,6 +103,7 @@ export async function render(c: Config, m: Manifest, only?: string): Promise<str
   const browser = await launch();
   const written: string[] = [];
   try {
+    await scoreSections(browser, c, m);
     for (const id of ids) {
       const why = PATTERNS[id].unavailable?.({ c, m, top: 0 });
       if (why) {
