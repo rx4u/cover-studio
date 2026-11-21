@@ -71,3 +71,35 @@ Full specs: `docs/patterns.md`. Every config key: `docs/config.md`.
 - Blank sections: the site reveals content on scroll. Capture again with `--fresh`; captures scroll every section first.
 - Wrong phone screens: add `scrollPositions` for the sections you want.
 - Empty space in a pattern: try a pattern from the same row in the table above.
+
+## Copy-paste prompts
+
+For an agent that can run commands (Claude Code, Codex, Cursor, a cloud chat with a terminal):
+
+```
+Make post covers for my design with cover-studio (https://github.com/rx4u/cover-studio).
+
+Design link: <URL>
+Main colour: <hex, or "take it from the design">
+For: <Dribbble / Contra / X / all>
+
+1. Clone the repo if it isn't here, run npm install, and read AGENTS.md. Follow its rules.
+2. Write covers.config.ts for my design: mobile capture on, a tint ground in my main colour, sizes 1600x1200 and 1600x900, and patterns that suit this kind of design (best one first, it becomes the cover).
+3. Run capture, then render. If Playwright's Chromium is missing, use the system Chrome through CHROME_PATH.
+4. Open every cover. Swap out any pattern with empty space, a cut headline or blank sections, and render again.
+5. Give me the cover, the best six at 1600x1200, the 1600x900 set for X, and the full-page capture.
+
+No text or logos on the covers, no painted or invented UI, and no changes to the cover-studio repo.
+```
+
+For a chat without a terminal:
+
+```
+I use cover-studio (https://github.com/rx4u/cover-studio) to make covers and mockups for my design posts. Read its AGENTS.md and docs/config.md.
+
+Design link: <URL>
+Kind of design: <landing page / web app / mobile app / redesign>
+Main colour: <hex>
+
+Write me a covers.config.ts that suits this design, with the patterns in order (best first), and the exact commands to run. Keep it to what the docs support.
+```
