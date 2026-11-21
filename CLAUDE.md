@@ -48,7 +48,7 @@ Update after each step.
 4. The 1600x900 output keeps the subject inside a centred 16:9 safe area.
 5. No colour defaults in the amber, gold or warm yellow-orange range.
 6. No em dashes in code, comments, docs or output.
-7. Do not add dependencies or scope beyond this file without asking.
+7. Do not add dependencies or scope beyond this file without asking. The landing page in `site/` has its own package.json; nothing it uses enters the CLI.
 
 ## Output design defaults
 - Ground: flat neutral `#E4E4E2` (light) or `#0E0F0F` (dark).

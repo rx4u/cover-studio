@@ -60,3 +60,17 @@ About 20 to 25 minutes of Claude time per pattern with gates, about 40 minutes f
 | overview-grid | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | before-after | done | done | done | done (4 on the gate sites) | sent 21 Nov |
 | tilt | done | done | done | done (4 on the gate sites) | sent 21 Nov |
+
+## Landing page (added 21 Nov 2026)
+Lives in `site/` in this repo with its own package.json (Next.js); the CLI stays dependency-free. Deployed from the `site` folder to Vercel.
+| Step | Work | Status |
+|---|---|---|
+| R1 | Product research, scope line | done 21 Nov |
+| R2 | 15 to 20 live references, 1440px captures | done, 23 sites |
+| R3 | Reference board, Raja picks 2 or 3 | screen.studio, godly.website, bun.sh |
+| R4 | Design DNA spec per pick, one build spec | done (claude/cover-studio-site-locked-decisions.md) |
+| 0 to 1 | Concept, colours, type, hero locked | concept "Plates" proposed |
+| Canvas | Concept shown on the Design canvas, approved before code | sent 21 Nov, awaiting approval |
+| Build | Next.js, only the hero animates, every cover shown is a real cover-studio output | |
+| Q | 1440px side by side with the picks, every score 4 or more | |
+| Ship | Live Vercel link in the README; Registry row SHIPPED with repo and site links, Content Log, portfolio.json | |
