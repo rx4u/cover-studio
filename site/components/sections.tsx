@@ -99,6 +99,7 @@ export function Why() {
           className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
         />
       </div>
+      <p className="mt-4 font-mono text-[12px] text-mute">Lune, a hotel site designed by Raja. Left: a raw screenshot. Right: the same site through cover-studio.</p>
     </section>
   );
 }
@@ -228,6 +229,7 @@ export function Patterns() {
           <div data-rise-group>
             <p className="eyebrow rise">03 · Patterns</p>
             <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Eight of eighteen.</h2>
+            <p className="rise mt-4 text-[17px] text-ink-2">Each one made from a site designed by Raja.</p>
           </div>
           <a href={`${REPO}/blob/main/docs/patterns.md`} className="font-mono text-[14px] underline decoration-ink/30 underline-offset-4 hover:text-cobalt">
             All 18, with their measurements
@@ -275,7 +277,7 @@ export function Sizes() {
         <p className="eyebrow rise">04 · Every size</p>
         <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Laid out again for each channel.</h2>
         <p className="rise mt-6 max-w-[620px] text-[19px] leading-[1.55] text-ink-2">
-          One render, three canvases. Each size is composed for its own shape, so nothing is squeezed or cut off.
+          One render, three canvases. Each size is composed for its own shape, so nothing is squeezed or cut off. This one is Lune, a hotel site I designed.
         </p>
       </div>
       <div className="sz-row mt-14 grid gap-6 md:grid-cols-12 md:items-start">
@@ -316,7 +318,7 @@ export function Phones() {
           <p className="eyebrow rise !text-white/55">05 · Mobile, too</p>
           <h2 className="display rise mt-5 text-[48px] sm:text-[64px]">Phones at their real size, with their real screens.</h2>
           <p className="rise mt-6 max-w-[600px] text-[19px] leading-[1.55] text-white/70">
-            Phone screens are captured at each device&apos;s true viewport, in light and dark. These are from Ostler, a fleet van rental app.
+            Phone screens are captured at each device&apos;s true viewport, in light and dark. These are from Ostler, a fleet van rental app I designed.
           </p>
         </div>
         <div className="ph-row mt-20 grid grid-cols-2 gap-6 md:grid-cols-4">
@@ -415,8 +417,16 @@ export function About() {
             I kept rebuilding the same frames by hand, size after size. cover-studio is what I made to stop: it works from the real site, follows
             the layouts that hold up on Dribbble and Contra, and stays free and open source.
           </p>
-          <ul className="rise mt-8 flex flex-wrap gap-3 text-[15px] font-medium">
+          <p className="rise mt-5 text-[17px] leading-[1.6] text-ink-2">
+            Every site, screen and cover on this page is my own work: Aequor, Haven and Lune on the web, Ostler on the phone.
+          </p>
+          <a href="https://contra.com/siraguhq" className="rise mt-8 inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3.5 text-[16px] font-semibold text-white hover:bg-cobalt">
+            Hire me for freelance work on Contra
+            <span aria-hidden="true">→</span>
+          </a>
+          <ul className="rise mt-6 flex flex-wrap gap-3 text-[15px] font-medium">
             {[
+              ["Contra", "https://contra.com/siraguhq"],
               ["Portfolio", "https://rajaraman.vercel.app/"],
               ["Dribbble", "https://dribbble.com/raja-raman"],
               ["X", "https://x.com/1bsfraja"],
@@ -453,7 +463,7 @@ export function Closing() {
       <footer className="border-t border-white/20">
         <div className="wrap flex flex-wrap items-center justify-between gap-6 py-10 text-[14px] text-white/80">
           <Logo light />
-          <p>MIT licence. Device frames from react-mockframe. Icons from Ionicons and Material Icons.</p>
+          <p>Designed and built by Raja. Every site and screen shown is his own work. <a href="https://contra.com/siraguhq" className="underline underline-offset-4">Freelance work on Contra</a>. MIT licence.</p>
           <a href={REPO} className="text-white underline underline-offset-4">github.com/rx4u/cover-studio</a>
         </div>
       </footer>

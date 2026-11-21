@@ -115,6 +115,9 @@ export function Hero() {
               See the patterns
             </a>
           </div>
+          <p className="h-fade mt-10 font-mono text-[12px] text-white/70">
+            Every cover here is made from a site designed by Raja. <a href="https://contra.com/siraguhq" className="underline underline-offset-4 hover:text-white">Hire on Contra</a>
+          </p>
         </div>
       </section>
     </div>
